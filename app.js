@@ -299,46 +299,58 @@ function showSection(id) {
 
 // НОВА ФУНКЦІЯ: Малює профіль та рахує дні
 function renderProfile() {
-    // 1. Рахуємо дні разом (від 16.05.2025)
-    const startDate = new Date('2025-05-16'); 
-    const today = new Date();
-    const diffDays = Math.ceil(Math.abs(today - startDate) / (1000 * 60 * 60 * 24));
-    
-    const daysEl = document.getElementById('together-days');
-    if (daysEl) daysEl.textContent = diffDays;
+    try {
+        // 1. РОЗРАХУНОК ДНІВ РАЗОМ (надійний метод)
+        // Рік, Місяць (0-11, тому 4 - це травень), День
+        const startDate = new Date(2025, 4, 16); 
+        const today = new Date();
+        
+        // Скидаємо час до півночі, щоб рахувати тільки повні дні
+        startDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        
+        const diffTime = Math.abs(today - startDate);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        const daysEl = document.getElementById('together-days');
+        if (daysEl) {
+            daysEl.textContent = diffDays;
+        }
 
-    // 2. Витягуємо статистику
-    const lvl = getLevelInfo(); 
-    document.getElementById('prof-icon').textContent = lvl.icon;
-    document.getElementById('prof-name').textContent = lvl.name;
-    document.getElementById('prof-xp').textContent = lifetimeXP; 
-    document.getElementById('prof-streak').textContent = currentStreak;
-    document.getElementById('prof-sprint').textContent = bestSprint;
-    document.getElementById('prof-games').textContent = userStats.totalGames || 0;
-    document.getElementById('prof-purchases').textContent = userStats.purchases || 0;
+        // 2. ВСТАВКА СТАТИСТИКИ
+        const lvl = getLevelInfo(); 
+        if (document.getElementById('prof-icon')) document.getElementById('prof-icon').textContent = lvl.icon;
+        if (document.getElementById('prof-name')) document.getElementById('prof-name').textContent = lvl.name;
+        if (document.getElementById('prof-xp')) document.getElementById('prof-xp').textContent = lifetimeXP; 
+        if (document.getElementById('prof-streak')) document.getElementById('prof-streak').textContent = currentStreak;
+        if (document.getElementById('prof-sprint')) document.getElementById('prof-sprint').textContent = bestSprint;
+        if (document.getElementById('prof-games')) document.getElementById('prof-games').textContent = userStats.totalGames || 0;
+        if (document.getElementById('prof-purchases')) document.getElementById('prof-purchases').textContent = userStats.purchases || 0;
 
-    // 3. Рахуємо шкалу досвіду
-    let nextLvl = levelSystem[levelSystem.length - 1]; 
-    for(let i=0; i<levelSystem.length; i++) {
-        if(lifetimeXP < levelSystem[i].xp) { nextLvl = levelSystem[i]; break; }
+        // 3. ШКАЛА ПРОГРЕСУ
+        let nextLvl = levelSystem[levelSystem.length - 1]; 
+        for(let i=0; i<levelSystem.length; i++) {
+            if(lifetimeXP < levelSystem[i].xp) { nextLvl = levelSystem[i]; break; }
+        }
+        
+        const currXp = lvl.xp; 
+        const nextXp = nextLvl.xp;
+        let progressPercent = 100;
+        
+        if(currXp !== nextXp) { 
+            progressPercent = ((lifetimeXP - currXp) / (nextXp - currXp)) * 100; 
+        }
+
+        const bar = document.getElementById('prof-lvl-bar');
+        if(bar) bar.style.width = Math.min(100, Math.max(0, progressPercent)) + '%';
+        
+        if(document.getElementById('prof-lvl-curr')) document.getElementById('prof-lvl-curr').textContent = lvl.name;
+        if(document.getElementById('prof-lvl-next')) {
+            document.getElementById('prof-lvl-next').textContent = (lvl.name === nextLvl.name) ? 'МАКСИМУМ 🌌' : `${nextLvl.xp} 🌟`;
+        }
+    } catch (e) {
+        console.error("Помилка профілю:", e);
     }
-    
-    const currXp = lvl.xp; 
-    const nextXp = nextLvl.xp;
-    let progress = 100;
-    
-    if(currXp !== nextXp) { 
-        progress = ((lifetimeXP - currXp) / (nextXp - currXp)) * 100; 
-    }
-
-    const bar = document.getElementById('prof-lvl-bar');
-    if(bar) bar.style.width = Math.min(100, Math.max(0, progress)) + '%';
-    
-    const currText = document.getElementById('prof-lvl-curr');
-    if(currText) currText.textContent = lvl.name;
-    
-    const nextText = document.getElementById('prof-lvl-next');
-    if(nextText) nextText.textContent = (lvl.name === nextLvl.name) ? 'МАКСИМУМ 🌌' : `${nextLvl.xp} 🌟`;
 }
         // ДОДАНО: Якщо користувач переходить у профіль — одразу рахуємо його статистику
         if(id === 'profile') renderProfile(); 
