@@ -119,24 +119,29 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('theme-icon').textContent = '☀️';
     }
     const cmBtn = document.getElementById('cm-btn');
-  if (cmBtn) {
+ if (cmBtn) {
         cmBtn.onclick = () => { 
+            // 1. Шукаємо купон, на який Оля щойно натиснула
             const item = inventory.find(x => x.uid == curCuid);
             
             if(item) {
+                // 2. Створюємо текст повідомлення (можеш змінити текст під себе!)
                 let msg = `Коханий, я активувала купон на "${item.name}"! 👑 Чекаю на виконання!`;
                 
+                // Якщо це супер-купон за перемогу над Босом (можеш видалити, якщо Боса поки не ставиш)
                 if(item.id === 'boss_win') {
                     msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [Напиши своє бажання тут] 👑`;
                 }
 
-                // НОВИЙ СПОСІБ: Використовуємо протокол tg:// замість https://
-                // Замість window.open використовуємо window.location.href
-                window.location.href = `tg://resolve?domain=YU_zIK&text=${encodeURIComponent(msg)}`;
+                // 3. Відкриваємо додаток Telegram (твоє ім'я @YU_zIK)
+                window.open(`https://t.me/YU_zIK?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
+            // 4. Видаляємо цей купон з її інвентарю ("спалюємо" його)
             inventory = inventory.filter(x => x.uid != curCuid); 
             localStorage.setItem('userInventory', JSON.stringify(inventory)); 
+            
+            // 5. Закриваємо вікно і запускаємо сердечка 💖
             closeCoupon(); 
             updateUI(); 
             renderInventory(); 
