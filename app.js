@@ -267,24 +267,77 @@ function updateUI() {
 }
 
 function showSection(id) { 
-    clearInterval(sprintTimerInterval); 
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
-    document.getElementById(id).classList.add('active'); 
-    
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings') {
-        document.querySelector(`.nav-item[onclick="showSection('${id}')"]`).classList.add('active');
+        clearInterval(sprintTimerInterval); 
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
+        document.getElementById(id).classList.add('active'); 
+        
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        // Активуємо іконку в нижньому меню
+        if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings') {
+            const navItem = document.querySelector(`.nav-item[onclick="showSection('${id}')"]`);
+            if(navItem) navItem.classList.add('active');
+        }
+
+        window.scrollTo(0,0); 
+        
+        // Показуємо верхню панель (з рівнем і вогником) тільки на головному екрані
+        if(id === 'home') { 
+            document.getElementById('user-stats').style.display = 'flex'; 
+            if(typeof updateBossUI === 'function') updateBossUI(); // Оновлення для боса
+        } else {
+            document.getElementById('user-stats').style.display = 'none'; 
+        }
+        
+        if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
+        if(id === 'inventory') renderInventory(); 
+        if(id === 'shop') renderShop(); 
+        if(id === 'wheel') checkWheelCooldown(); 
+        
+        // ДОДАНО: Якщо користувач переходить у профіль — одразу рахуємо його статистику
+        if(id === 'profile') renderProfile(); 
     }
 
-    window.scrollTo(0,0); 
-    if(id === 'home') { document.getElementById('user-stats').style.display = 'flex'; updateBossUI(); }
-    else document.getElementById('user-stats').style.display = 'none'; 
-    
-    if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
-    if(id === 'inventory') renderInventory(); 
-    if(id === 'shop') renderShop(); 
-    if(id === 'wheel') checkWheelCooldown(); 
-}
+    // НОВА ФУНКЦІЯ: Збирає дані з пам'яті і малює статистику
+    function renderProfile() {
+        const lvl = getLevelInfo(); 
+        
+        // 1. Вставляємо текст у HTML
+        document.getElementById('prof-icon').textContent = lvl.icon;
+        document.getElementById('prof-name').textContent = lvl.name;
+        document.getElementById('prof-xp').textContent = lifetimeXP; 
+        document.getElementById('prof-streak').textContent = currentStreak;
+        document.getElementById('prof-sprint').textContent = bestSprint;
+        document.getElementById('prof-games').textContent = userStats.totalGames || 0;
+        document.getElementById('prof-purchases').textContent = userStats.purchases || 0;
+
+        // 2. Визначаємо наступний рівень
+        let nextLvl = levelSystem[levelSystem.length - 1]; 
+        for(let i=0; i<levelSystem.length; i++) {
+            if(lifetimeXP < levelSystem[i].xp) { 
+                nextLvl = levelSystem[i]; 
+                break; 
+            }
+        }
+        
+        const currXp = lvl.xp; 
+        const nextXp = nextLvl.xp;
+        let progressPercent = 100; // Якщо рівень максимальний
+        
+        // 3. Рахуємо відсоток для смужки прогресу
+        if(currXp !== nextXp) { 
+            progressPercent = ((lifetimeXP - currXp) / (nextXp - currXp)) * 100; 
+        }
+
+        // 4. Заповнюємо смужку
+        const bar = document.getElementById('prof-lvl-bar');
+        if(bar) bar.style.width = Math.min(100, Math.max(0, progressPercent)) + '%';
+        
+        const currText = document.getElementById('prof-lvl-curr');
+        if(currText) currText.textContent = lvl.name;
+        
+        const nextText = document.getElementById('prof-lvl-next');
+        if(nextText) nextText.textContent = (lvl.name === nextLvl.name) ? 'МАКСИМУМ 🌌' : `${nextLvl.xp} 🌟`;
+    }
 
 function saveDaily() { localStorage.setItem('dailyProg', JSON.stringify(dailyProg)); }
 function saveStats() { localStorage.setItem('userStats', JSON.stringify(userStats)); }
