@@ -44,12 +44,12 @@ header { background-color: var(--header-bg); color: white; padding: calc(12px + 
 
 /* НИЖНЄ МЕНЮ (Оновлено) */
 .bottom-nav { 
-    display: flex !important;
-    position: fixed; 
-    bottom: 0; 
-    left: 0; 
-    width: 100%; 
-    z-index: 1000; 
+    display: flex !important; /* Примусово показувати */
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0;
+    width: 100%;
+    z-index: 9999 !important; /* Бути поверх усього */
     background: var(--card-bg); 
     display: flex; 
     justify-content: space-around; 
