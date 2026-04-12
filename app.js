@@ -1,3 +1,4 @@
+
 // ==========================================
 // 1. БАЗА ДАНИХ (Словник, налаштування)
 // ==========================================
@@ -83,19 +84,20 @@ let achievs = JSON.parse(localStorage.getItem('achievs')) || {};
 let usedCodes = JSON.parse(localStorage.getItem('usedCodes')) || [];
 let userStats = JSON.parse(localStorage.getItem('userStats')) || { purchases: 0, flippedCards: 0, dictOpens: 0, nightGames: 0, totalGames: 0, failedCodes: 0, hugPurchases: 0, modes: [], constructorGames: 0 };
 let dailyGoals = JSON.parse(localStorage.getItem('dailyGoals')) || null;
-
-// ТУТ ОНОВЛЕНО СТАН ДЛЯ БОСА
 let dailyProg = JSON.parse(localStorage.getItem('dailyProg')) || { games: 0, flash: 0, emoji: 0, pairs: 0, quiz_score: 0, spell: 0, sprint: 0, perfect: 0, clean_hm: 0, g1Done: false, g2Done: false, g3Done: false, bossAttempts: 0, bossWon: false };
 
 let currentCat = 'all'; 
-
 let synth = window.speechSynthesis; 
 let voices = []; 
 let audioUnlocked = false;
 let audioCtx = null; 
+let sprintTimerInterval = null;
+let spinLock = false;
+let lastWheelDate = localStorage.getItem('lastWheelDate') || 0;
+let curCuid = null; 
 
 // ==========================================
-// 3. ІНІЦІАЛІЗАЦІЯ ПІД ЧАС ЗАВАНТАЖЕННЯ (DOM)
+// 3. ІНІЦІАЛІЗАЦІЯ ТА ЗВУК
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     let isDark = localStorage.getItem('theme') === 'dark'; 
@@ -103,17 +105,16 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('app-container').classList.add('dark'); 
         document.getElementById('theme-icon').textContent = '☀️';
     }
-
-    document.getElementById('cm-btn').onclick = () => { 
-        inventory = inventory.filter(x => x.uid != curCuid); 
-        localStorage.setItem('userInventory', JSON.stringify(inventory)); 
-        closeCoupon(); 
-        updateUI(); 
-        renderInventory(); 
-        fireParticles(window.innerWidth/2, window.innerHeight/2, true); 
-        setTimeout(() => alert("Купон успішно використано! ❤️"), 500); 
-    };
-
+    const cmBtn = document.getElementById('cm-btn');
+    if (cmBtn) {
+        cmBtn.onclick = () => { 
+            inventory = inventory.filter(x => x.uid != curCuid); 
+            localStorage.setItem('userInventory', JSON.stringify(inventory)); 
+            closeCoupon(); updateUI(); renderInventory(); 
+            fireParticles(window.innerWidth/2, window.innerHeight/2, true); 
+            setTimeout(() => alert("Купон успішно використано! ❤️"), 500); 
+        };
+    }
     initGamification();
 });
 
@@ -123,9 +124,6 @@ function toggleTheme() {
     localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
 }
 
-// ==========================================
-// 4. ДОПОМІЖНІ ФУНКЦІЇ ТА ЗВУК
-// ==========================================
 function unlockAudio() { 
     if(audioUnlocked) return; 
     audioUnlocked = true; 
@@ -151,28 +149,23 @@ function playSFX(correct) {
     if (!window.AudioContext && !window.webkitAudioContext) return;
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume(); 
-    
     const osc = audioCtx.createOscillator(); 
     const gain = audioCtx.createGain(); 
-    osc.connect(gain); 
-    gain.connect(audioCtx.destination); 
-    
+    osc.connect(gain); gain.connect(audioCtx.destination); 
     if (correct) { 
         osc.type = 'sine'; 
         osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
         osc.frequency.exponentialRampToValueAtTime(1046.5, audioCtx.currentTime + 0.15); 
         gain.gain.setValueAtTime(0.1, audioCtx.currentTime); 
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4); 
-        osc.start(); 
-        osc.stop(audioCtx.currentTime + 0.4); 
+        osc.start(); osc.stop(audioCtx.currentTime + 0.4); 
     } else { 
         osc.type = 'square'; 
         osc.frequency.setValueAtTime(150, audioCtx.currentTime); 
         osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2); 
         gain.gain.setValueAtTime(0.05, audioCtx.currentTime); 
         gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2); 
-        osc.start(); 
-        osc.stop(audioCtx.currentTime + 0.2); 
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2); 
     } 
 }
 
@@ -190,29 +183,21 @@ function fireParticles(x, y, cor) {
 
 function shuffleArray(array) { let arr = [...array]; for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
 function getVocab() { return currentCat === 'all' ? baseVocabulary : baseVocabulary.filter(w => w.c === currentCat); }
+function getLevelInfo() { let currentLvl = levelSystem[0]; for(let i=0; i<levelSystem.length; i++) { if(lifetimeXP >= levelSystem[i].xp) currentLvl = levelSystem[i]; } return currentLvl; }
 
 // ==========================================
-// 5. ГЕЙМІФІКАЦІЯ, ПРОФІЛЬ ТА НАВІГАЦІЯ
+// 4. ПРОФІЛЬ ТА НАВІГАЦІЯ
 // ==========================================
-function getLevelInfo() {
-    let currentLvl = levelSystem[0];
-    for(let i=0; i<levelSystem.length; i++) { if(lifetimeXP >= levelSystem[i].xp) currentLvl = levelSystem[i]; }
-    return currentLvl;
-}
-
 function updateBossUI() {
     const d = new Date();
     const bossBtn = document.getElementById('boss-btn');
     const desc = document.getElementById('boss-desc');
+    if(!bossBtn || !desc) return;
     if(d.getDay() === 0) { 
         bossBtn.style.filter = 'grayscale(0)'; bossBtn.style.pointerEvents = 'auto'; bossBtn.style.animation = 'none'; bossBtn.style.borderColor = '#ff0000';
         let attempts = dailyProg.bossAttempts || 0;
         let cost = attempts < 2 ? 0 : (attempts === 2 ? 150 : (attempts === 3 ? 250 : 300));
-        if(cost === 0) {
-            desc.textContent = `Іспит відкрито! (Спроб: ${2 - attempts}/2)`;
-        } else {
-            desc.textContent = `Додаткова спроба: ${cost} 🌟`;
-        }
+        if(cost === 0) { desc.textContent = `Іспит відкрито! (Спроб: ${2 - attempts}/2)`; } else { desc.textContent = `Додаткова спроба: ${cost} 🌟`; }
         desc.style.color = "#ff4444";
     } else {
         bossBtn.style.filter = 'grayscale(1)'; bossBtn.style.pointerEvents = 'none'; bossBtn.style.borderColor = 'transparent';
@@ -222,8 +207,8 @@ function updateBossUI() {
 
 function initGamification() {
     const d = new Date(); const today = d.toDateString(); const hour = d.getHours();
-    
-    document.getElementById('compliment-text').textContent = compliments[Math.floor(Math.random() * compliments.length)];
+    const compText = document.getElementById('compliment-text');
+    if(compText) compText.textContent = compliments[Math.floor(Math.random() * compliments.length)];
     
     updateBossUI();
 
@@ -251,73 +236,67 @@ function initGamification() {
 }
 
 function updateUI() {
-    document.getElementById('xp-count').textContent = totalXP; document.getElementById('streak-count').textContent = currentStreak; document.getElementById('sprint-badge').textContent = bestSprint; document.getElementById('mistakes-count').textContent = mistakeWords.length; document.getElementById('inv-count').textContent = inventory.length;
+    if(document.getElementById('xp-count')) document.getElementById('xp-count').textContent = totalXP; 
+    if(document.getElementById('streak-count')) document.getElementById('streak-count').textContent = currentStreak; 
+    if(document.getElementById('sprint-badge')) document.getElementById('sprint-badge').textContent = bestSprint; 
+    if(document.getElementById('mistakes-count')) document.getElementById('mistakes-count').textContent = mistakeWords.length; 
+    if(document.getElementById('inv-count')) document.getElementById('inv-count').textContent = inventory.length;
     
     const lvl = getLevelInfo();
-    document.getElementById('user-level-name').textContent = lvl.name;
-    document.getElementById('user-level-icon').textContent = lvl.icon;
+    if(document.getElementById('user-level-name')) document.getElementById('user-level-name').textContent = lvl.name;
+    if(document.getElementById('user-level-icon')) document.getElementById('user-level-icon').textContent = lvl.icon;
 
     if (dailyGoals && dailyGoals.length === 3) {
         for(let i=1; i<=3; i++) {
-            const g = dailyGoals[i-1]; document.getElementById(`dg${i}-title`).textContent = g.title; document.getElementById(`dg${i}-rew`).textContent = `+${g.rew} 🌟`;
-            document.getElementById(`dg${i}-bar`).style.width = Math.min(100, (dailyProg[g.type]/g.target)*100) + "%";
-            if (dailyProg[`g${i}Done`]) document.getElementById(`goal-${i}`).classList.add('completed');
+            const g = dailyGoals[i-1]; 
+            if(document.getElementById(`dg${i}-title`)) document.getElementById(`dg${i}-title`).textContent = g.title; 
+            if(document.getElementById(`dg${i}-rew`)) document.getElementById(`dg${i}-rew`).textContent = `+${g.rew} 🌟`;
+            if(document.getElementById(`dg${i}-bar`)) document.getElementById(`dg${i}-bar`).style.width = Math.min(100, (dailyProg[g.type]/g.target)*100) + "%";
+            if (dailyProg[`g${i}Done`] && document.getElementById(`goal-${i}`)) document.getElementById(`goal-${i}`).classList.add('completed');
         }
     }
 }
 
 function showSection(id) { 
-    clearInterval(sprintTimerInterval); 
+    if(sprintTimerInterval) clearInterval(sprintTimerInterval); 
+    
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
-    document.getElementById(id).classList.add('active'); 
+    const t = document.getElementById(id);
+    if(t) t.classList.add('active'); 
     
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    // Активуємо іконку в нижньому меню
-    if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings') {
+    if(['home', 'dictionary', 'shop', 'settings'].includes(id)) {
         const navItem = document.querySelector(`.nav-item[onclick="showSection('${id}')"]`);
         if(navItem) navItem.classList.add('active');
     }
 
     window.scrollTo(0,0); 
+    const st = document.getElementById('user-stats');
+    if(st) st.style.display = (id === 'home') ? 'flex' : 'none'; 
+    if(id === 'home') updateBossUI();
     
-    // Показуємо верхню панель (з рівнем і вогником) тільки на головному екрані
-    if(id === 'home') { 
-        document.getElementById('user-stats').style.display = 'flex'; 
-        if(typeof updateBossUI === 'function') updateBossUI(); // Оновлення для боса
-    } else {
-        document.getElementById('user-stats').style.display = 'none'; 
-    }
-    
-    if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
+    if(id === 'dictionary') { 
+        const ds = document.getElementById('dict-search');
+        if(ds) ds.value = ''; 
+        renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); 
+    } 
     if(id === 'inventory') renderInventory(); 
     if(id === 'shop') renderShop(); 
     if(id === 'wheel') checkWheelCooldown(); 
-    
-    // ДОДАНО: Якщо відкривається профіль, запускаємо підрахунок
     if(id === 'profile') renderProfile(); 
 }
 
-// НОВА ФУНКЦІЯ: Малює профіль та рахує дні
 function renderProfile() {
     try {
-        // 1. РОЗРАХУНОК ДНІВ РАЗОМ (надійний метод)
-        // Рік, Місяць (0-11, тому 4 - це травень), День
         const startDate = new Date(2025, 4, 16); 
         const today = new Date();
-        
-        // Скидаємо час до півночі, щоб рахувати тільки повні дні
-        startDate.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-        
+        startDate.setHours(0, 0, 0, 0); today.setHours(0, 0, 0, 0);
         const diffTime = Math.abs(today - startDate);
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         
         const daysEl = document.getElementById('together-days');
-        if (daysEl) {
-            daysEl.textContent = diffDays;
-        }
+        if (daysEl) daysEl.textContent = diffDays;
 
-        // 2. ВСТАВКА СТАТИСТИКИ
         const lvl = getLevelInfo(); 
         if (document.getElementById('prof-icon')) document.getElementById('prof-icon').textContent = lvl.icon;
         if (document.getElementById('prof-name')) document.getElementById('prof-name').textContent = lvl.name;
@@ -327,96 +306,23 @@ function renderProfile() {
         if (document.getElementById('prof-games')) document.getElementById('prof-games').textContent = userStats.totalGames || 0;
         if (document.getElementById('prof-purchases')) document.getElementById('prof-purchases').textContent = userStats.purchases || 0;
 
-        // 3. ШКАЛА ПРОГРЕСУ
         let nextLvl = levelSystem[levelSystem.length - 1]; 
-        for(let i=0; i<levelSystem.length; i++) {
-            if(lifetimeXP < levelSystem[i].xp) { nextLvl = levelSystem[i]; break; }
-        }
+        for(let i=0; i<levelSystem.length; i++) { if(lifetimeXP < levelSystem[i].xp) { nextLvl = levelSystem[i]; break; } }
         
-        const currXp = lvl.xp; 
-        const nextXp = nextLvl.xp;
-        let progressPercent = 100;
-        
-        if(currXp !== nextXp) { 
-            progressPercent = ((lifetimeXP - currXp) / (nextXp - currXp)) * 100; 
-        }
+        const currXp = lvl.xp; const nextXp = nextLvl.xp; let progressPercent = 100;
+        if(currXp !== nextXp) { progressPercent = ((lifetimeXP - currXp) / (nextXp - currXp)) * 100; }
 
         const bar = document.getElementById('prof-lvl-bar');
         if(bar) bar.style.width = Math.min(100, Math.max(0, progressPercent)) + '%';
-        
         if(document.getElementById('prof-lvl-curr')) document.getElementById('prof-lvl-curr').textContent = lvl.name;
-        if(document.getElementById('prof-lvl-next')) {
-            document.getElementById('prof-lvl-next').textContent = (lvl.name === nextLvl.name) ? 'МАКСИМУМ 🌌' : `${nextLvl.xp} 🌟`;
-        }
-    } catch (e) {
-        console.error("Помилка профілю:", e);
-    }
+        if(document.getElementById('prof-lvl-next')) { document.getElementById('prof-lvl-next').textContent = (lvl.name === nextLvl.name) ? 'МАКСИМУМ 🌌' : `${nextLvl.xp} 🌟`; }
+    } catch (e) { console.error("Profile error:", e); }
 }
-        // ДОДАНО: Якщо користувач переходить у профіль — одразу рахуємо його статистику
-        if(id === 'profile') renderProfile(); 
-    }
-
-    // НОВА ФУНКЦІЯ: Збирає дані з пам'яті і малює статистику
-    function renderProfile() {
-        const lvl = getLevelInfo(); 
-        
-        // 1. Вставляємо текст у HTML
-        document.getElementById('prof-icon').textContent = lvl.icon;
-        document.getElementById('prof-name').textContent = lvl.name;
-        document.getElementById('prof-xp').textContent = lifetimeXP; 
-        document.getElementById('prof-streak').textContent = currentStreak;
-        document.getElementById('prof-sprint').textContent = bestSprint;
-        document.getElementById('prof-games').textContent = userStats.totalGames || 0;
-        document.getElementById('prof-purchases').textContent = userStats.purchases || 0;
-
-        // 2. Визначаємо наступний рівень
-        let nextLvl = levelSystem[levelSystem.length - 1]; 
-        for(let i=0; i<levelSystem.length; i++) {
-            if(lifetimeXP < levelSystem[i].xp) { 
-                nextLvl = levelSystem[i]; 
-                break; 
-            }
-        }
-        
-        const currXp = lvl.xp; 
-        const nextXp = nextLvl.xp;
-        let progressPercent = 100; // Якщо рівень максимальний
-        
-        // 3. Рахуємо відсоток для смужки прогресу
-        if(currXp !== nextXp) { 
-            progressPercent = ((lifetimeXP - currXp) / (nextXp - currXp)) * 100; 
-        }
-
-        // 4. Заповнюємо смужку
-        const bar = document.getElementById('prof-lvl-bar');
-        if(bar) bar.style.width = Math.min(100, Math.max(0, progressPercent)) + '%';
-        
-        const currText = document.getElementById('prof-lvl-curr');
-        if(currText) currText.textContent = lvl.name;
-        
-        const nextText = document.getElementById('prof-lvl-next');
-        if(nextText) nextText.textContent = (lvl.name === nextLvl.name) ? 'МАКСИМУМ 🌌' : `${nextLvl.xp} 🌟`;
-    }
 
 function saveDaily() { localStorage.setItem('dailyProg', JSON.stringify(dailyProg)); }
 function saveStats() { localStorage.setItem('userStats', JSON.stringify(userStats)); }
-function addXP(amount) { 
-    totalXP += amount; localStorage.setItem('totalXP', totalXP); 
-    if(amount > 0) { lifetimeXP += amount; localStorage.setItem('lifetimeXP', lifetimeXP); }
-    if (totalXP >= 2000) checkAchiev('rich'); 
-    updateUI(); 
-}
-
-function showToast(m) { const t = document.getElementById('toast'); document.getElementById('toast-msg').textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
-
-function pokeCat() {
-    const bubble = document.getElementById('cat-bubble');
-    if(bubble.classList.contains('show')) return;
-    bubble.textContent = catTips[Math.floor(Math.random() * catTips.length)];
-    bubble.classList.add('show');
-    playSFX(true);
-    setTimeout(() => bubble.classList.remove('show'), 4000);
-}
+function addXP(amount) { totalXP += amount; localStorage.setItem('totalXP', totalXP); if(amount > 0) { lifetimeXP += amount; localStorage.setItem('lifetimeXP', lifetimeXP); } if (totalXP >= 2000) checkAchiev('rich'); updateUI(); }
+function showToast(m) { const t = document.getElementById('toast'); if(!t)return; document.getElementById('toast-msg').textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
 
 function checkGoals() {
     if (!dailyProg.g1Done && dailyProg[dailyGoals[0].type] >= dailyGoals[0].target) { dailyProg.g1Done = true; addXP(dailyGoals[0].rew); showToast(`Ціль виконана! +${dailyGoals[0].rew}🌟`); fireParticles(window.innerWidth/2, window.innerHeight/2, true); }
@@ -428,11 +334,9 @@ function checkGoals() {
 function gameFinished(perfect = false, type = 'games', score = 0) {
     if(type === 'boss') return; 
     dailyProg.games++; userStats.totalGames = (userStats.totalGames || 0) + 1;
-    
     if(!userStats.modes) userStats.modes = [];
     if(!userStats.modes.includes(type) && type !== 'games') { userStats.modes.push(type); if(userStats.modes.length >= 8) checkAchiev('professor'); }
     if(type === 'constructor') { userStats.constructorGames = (userStats.constructorGames || 0) + 1; if(userStats.constructorGames >= 10) checkAchiev('builder'); }
-
     saveStats();
     if (userStats.totalGames >= 50) checkAchiev('polyglot');
     if (dailyProg.games >= 10) checkAchiev('marathon');
@@ -448,12 +352,11 @@ function gameFinished(perfect = false, type = 'games', score = 0) {
     const h = new Date().getHours(); const m = new Date().getMinutes();
     if(h >= 1 && h <= 4) { userStats.nightGames++; saveStats(); if(userStats.nightGames >= 3) checkAchiev('ninja'); }
     if(h === 0 && m >= 0 && m <= 10) checkAchiev('midnight');
-
     checkGoals(); checkAchiev('first_blood'); if(perfect) checkAchiev('perfect');
 }
 
 // ==========================================
-// 6. МАГАЗИН, КУПОНИ, ДОСЯГНЕННЯ
+// 5. МАГАЗИН, КУПОНИ, РУЛЕТКА
 // ==========================================
 function isBlackMarketOpen() {
     const d = new Date(); const h = d.getHours();
@@ -463,7 +366,8 @@ function isBlackMarketOpen() {
 }
 
 function renderShop() { 
-    const c = document.getElementById('shop-list'); const bmStatus = isBlackMarketOpen();
+    const c = document.getElementById('shop-list'); if(!c) return;
+    const bmStatus = isBlackMarketOpen();
     c.innerHTML = bmStatus ? `<div style="background:#0f172a; color:#10b981; padding:10px; border-radius:12px; margin-bottom:15px; text-align:center; font-weight:800; border:2px solid #10b981;">🕶️ ЧОРНИЙ РИНОК ВІДКРИТО!</div>` : ''; 
     let currentItems = [...shopItems];
     if (bmStatus) {
@@ -499,18 +403,19 @@ function buyItem(id) {
 }
 
 function renderInventory() { 
-    const c = document.getElementById('inv-list'); c.innerHTML = ''; 
+    const c = document.getElementById('inv-list'); if(!c) return;
+    c.innerHTML = ''; 
     if(!inventory.length) { c.innerHTML = "<div style='text-align:center; color:var(--text-muted); padding:20px;'>Тут поки порожньо. Купуй купони в магазині!</div>"; return; } 
     inventory.forEach(i => { c.innerHTML += `<div class="inv-item"><div style="font-size:3rem;">${i.icon}</div><div class="shop-title">${i.name}</div><button class="inv-btn" onclick="openCoupon('${i.uid}')">Використати купон</button></div>`; }); 
 }
 
-let curCuid = null; 
 function openCoupon(u) { const i = inventory.find(x => x.uid == u); if(!i) return; curCuid = u; document.getElementById('cm-icon').textContent = i.icon; document.getElementById('cm-title').textContent = i.name; document.getElementById('coupon-modal').style.display = 'flex'; }
-function closeCoupon() { document.getElementById('coupon-modal').style.display = 'none'; }
+function closeCoupon() { const m = document.getElementById('coupon-modal'); if(m) m.style.display = 'none'; }
 
 function checkAchiev(id){ if(!achievs[id]){ achievs[id]=true; localStorage.setItem('achievs', JSON.stringify(achievs)); showToast("Нове досягнення!"); renderAchievs(); } }
 function renderAchievs() { 
-    const c = document.getElementById('achiev-list'); c.innerHTML = ''; 
+    const c = document.getElementById('achiev-list'); if(!c) return;
+    c.innerHTML = ''; 
     Object.keys(achievList).forEach(k => { 
         const a = achievList[k]; const unl = achievs[k] ? 'unlocked' : ''; 
         if(a.secret && !unl) c.innerHTML += `<div class="achiev-card"><div class="achiev-icon" style="font-size:2.5rem; margin-right:15px;">❓</div><div><div class="achiev-title">Секретне досягнення</div><div class="achiev-desc">Виконай особливі умови, щоб відкрити.</div></div></div>`;
@@ -550,14 +455,8 @@ function enterPromo() {
     }
 }
 
-// ==========================================
-// 7. РУЛЕТКА
-// ==========================================
-let spinLock = false;
-let lastWheelDate = localStorage.getItem('lastWheelDate') || 0;
-
 function checkWheelCooldown() {
-    const btn = document.getElementById('spin-btn');
+    const btn = document.getElementById('spin-btn'); if(!btn) return;
     const now = Date.now(); const diff = now - parseInt(lastWheelDate); const cooldown = 3 * 24 * 60 * 60 * 1000;
     if(lastWheelDate && diff < cooldown) {
         const daysLeft = Math.ceil((cooldown - diff) / (1000 * 60 * 60 * 24));
@@ -611,32 +510,34 @@ function spinWheel() {
 }
 
 // ==========================================
-// 8. СЛОВНИК ТА ВІДПРАЦЮВАННЯ ПОМИЛОК
+// 6. СЛОВНИК
 // ==========================================
 function setCat(c, el) { currentCat = c; document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active')); el.classList.add('active'); if(document.getElementById('dictionary').classList.contains('active')) renderDictionary(); }
 let dictMode = 'en-uk'; function setDictMode(m) { dictMode = m; renderDictionary(); }
 function recordCardFlip() { userStats.flippedCards = (userStats.flippedCards || 0) + 1; saveStats(); if(userStats.flippedCards >= 50) checkAchiev('bookworm'); }
-
 function trackMistake(w) { if (!mistakeWords.find(x => x.en === w.en)) { mistakeWords.push(w); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); } }
 function removeMistake(w) { mistakeWords = mistakeWords.filter(x => x.en !== w.en); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); }
 
 function renderDictionary() { 
-    document.getElementById('btn-dict-en').className = dictMode === 'en-uk' ? 'btn btn-primary' : 'btn'; document.getElementById('btn-dict-uk').className = dictMode === 'uk-en' ? 'btn btn-primary' : 'btn'; 
-    const grid = document.getElementById('dict-grid'); grid.innerHTML = ''; const q = document.getElementById('dict-search').value.toLowerCase().trim(); 
-    if(q === 'love' || q === 'кохаю' || q === 'люблю') { document.getElementById('easter-egg').style.display='flex'; checkAchiev('love'); document.getElementById('dict-search').value=''; return; } 
+    const bEn = document.getElementById('btn-dict-en'); if(bEn) bEn.className = dictMode === 'en-uk' ? 'btn btn-primary' : 'btn'; 
+    const bUk = document.getElementById('btn-dict-uk'); if(bUk) bUk.className = dictMode === 'uk-en' ? 'btn btn-primary' : 'btn'; 
+    const grid = document.getElementById('dict-grid'); if(!grid) return; grid.innerHTML = ''; 
+    const searchInput = document.getElementById('dict-search'); const q = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
+    
+    if(q === 'love' || q === 'кохаю' || q === 'люблю') { document.getElementById('easter-egg').style.display='flex'; checkAchiev('love'); if(searchInput) searchInput.value=''; return; } 
     let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
     if(currentCat !== 'all') { list = list.filter(w => w.c === currentCat); }
 
     list.sort((a,b) => a.en.localeCompare(b.en)).forEach(w => { 
         const c = document.createElement('div'); c.className = 'dict-card'; const f = document.createElement('div'); f.className = 'dict-face'; const b = document.createElement('div'); b.className = 'dict-face dict-back'; 
-        const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${w.em}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🇺🇸 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🇬🇧 UK</button></div>`; }; 
+        const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${w.em}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; }; 
         if(dictMode === 'en-uk') { buildEn(f); b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${w.em}</div><div>${w.uk}</div>`; } else { f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${w.em}</div><div>${w.uk}</div>`; buildEn(b); } 
         c.innerHTML = `<div class="dict-card-inner"></div>`; c.firstChild.appendChild(f); c.firstChild.appendChild(b); c.onclick = () => { c.classList.toggle('flipped'); dailyProg.flash++; checkGoals(); recordCardFlip(); }; grid.appendChild(c); 
     }); 
 }
 
 // ==========================================
-// 9. МІНІ-ІГРИ (КВІЗ, ЕМОДЗІ, БОС тощо)
+// 7. МІНІ-ІГРИ
 // ==========================================
 let emoQ=[], eIdx=0, eScore=0, eAns=false;
 function startEmojiQuiz() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} emoQ = shuffleArray(voc).slice(0, 15); eIdx=0; eScore=0; showSection('emoji-quiz'); document.getElementById('emoji-result').style.display='none'; document.getElementById('emoji-active').style.display='flex'; loadEmo(); }
@@ -667,7 +568,7 @@ function startMatchGame() { const voc = getVocab(); if(voc.length<6){alert("За
 function createMB(c, p) { const b=document.createElement('button'); b.className='match-btn'; b.textContent=c.t; b.onclick=(e)=>{ if(mLock||b.classList.contains('correct'))return; if(b===mSel){b.classList.remove('selected'); mSel=null; return;} if(!mSel){b.classList.add('selected'); mSel=b; b.dataset.id=c.id; b.dataset.lang=c.l; b.word=c.w;} else if(mSel.dataset.lang===c.l){mSel.classList.remove('selected'); b.classList.add('selected'); mSel=b; b.dataset.id=c.id; b.dataset.lang=c.l; b.word=c.w;} else{ mLock=true; b.classList.add('selected'); const cor=mSel.dataset.id==c.id; fireParticles(e.clientX, e.clientY, cor); if(cor){b.classList.add('correct'); mSel.classList.add('correct'); mFound++; addXP(1); updM(); mSel=null; mLock=false; if(mFound===6)setTimeout(()=>{document.getElementById('match-columns').style.display='none'; document.getElementById('match-result').style.display='flex'; document.getElementById('match-final-score').textContent=mErr+" помилок"; gameFinished(mErr===0, 'pairs', mFound);},400);} else{b.classList.add('wrong'); mSel.classList.add('wrong'); mErr++; trackMistake(c.w); updM(); let s1=b,s2=mSel; mSel=null; setTimeout(()=>{s1.classList.remove('wrong','selected'); s2.classList.remove('wrong','selected'); mLock=false;},300);} } }; p.appendChild(b); }
 function updM() { document.getElementById('match-counter').textContent=`Пари: ${mFound}/6`; }
 
-let sprTime=60, sprScore=0, sprQ=[], sprLock=false, sprintTimerInterval=null;
+let sprTime=60, sprScore=0, sprQ=[], sprLock=false;
 function startSprint() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} showSection('sprint'); document.getElementById('sprint-result').style.display='none'; document.getElementById('sprint-active').style.display='flex'; sprTime=60; sprScore=0; sprQ=shuffleArray(voc); updSpr(); clearInterval(sprintTimerInterval); sprintTimerInterval=setInterval(()=>{sprTime--; updSpr(); if(sprTime<=0) endSpr();},1000); loadSpr(); }
 function updSpr() { document.getElementById('sprint-time-text').textContent=sprTime; document.getElementById('sprint-score-text').textContent=sprScore; let b=document.getElementById('sprint-bar'); b.style.width=Math.max(0,(sprTime/60)*100)+"%"; if(sprTime<15) b.classList.add('low'); else b.classList.remove('low'); }
 function loadSpr() { sprLock = false; let w=sprQ[Math.floor(Math.random()*sprQ.length)]; document.getElementById('sprint-question').innerHTML=`<div style="font-size:3rem;">${w.em}</div>`+w.uk; const o=shuffleArray([w,...shuffleArray(baseVocabulary.filter(x=>x.en!==w.en)).slice(0,3)]); const c=document.getElementById('sprint-options'); c.innerHTML=''; o.forEach(opt=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=opt.en; b.onclick=(e)=>{ if(sprLock) return; sprLock = true; const cor=opt.en===w.en; fireParticles(e.clientX, e.clientY, cor); if(cor){sprScore++; addXP(1); sprTime=Math.min(sprTime+1,60);}else{sprTime=Math.max(sprTime-2,0); trackMistake(w);} updSpr(); if(sprTime>0) setTimeout(loadSpr, 150); else endSpr(); }; c.appendChild(b); }); }
@@ -716,14 +617,10 @@ function startBoss() {
         addXP(-cost); 
     }
 
-    dailyProg.bossAttempts = attempts + 1;
-    saveDaily();
-    updateBossUI();
-
+    dailyProg.bossAttempts = attempts + 1; saveDaily(); updateBossUI();
     bQ = shuffleArray(voc).slice(0, 50); bIdx=0; bErr=3; showSection('boss'); 
     document.getElementById('boss-result').style.display='none'; 
-    document.getElementById('boss-active').style.display='flex'; 
-    loadBoss(); 
+    document.getElementById('boss-active').style.display='flex'; loadBoss(); 
 }
 
 function loadBoss() { 
@@ -737,39 +634,26 @@ function loadBoss() {
         const b = document.createElement('button'); b.className='option-btn'; b.textContent=o.en; 
         b.onclick = (e) => { 
             if(bLock) return; bLock=true; const c = o.en===w.en; fireParticles(e.clientX, e.clientY, c); 
-            if(c) { 
-                b.classList.add('correct'); 
-                setTimeout(()=>{ bIdx++; if(bIdx<50) loadBoss(); else finishBoss(true); }, 300); 
-            } else { 
-                b.classList.add('wrong'); bErr--; document.getElementById('boss-errors').textContent=`${bErr}/3`; 
-                setTimeout(()=>{ if(bErr <= 0) finishBoss(false); else { bIdx++; if(bIdx<50) loadBoss(); else finishBoss(true); } }, 400); 
-            } 
-        }; 
-        g.appendChild(b); 
+            if(c) { b.classList.add('correct'); setTimeout(()=>{ bIdx++; if(bIdx<50) loadBoss(); else finishBoss(true); }, 300); } 
+            else { b.classList.add('wrong'); bErr--; document.getElementById('boss-errors').textContent=`${bErr}/3`; setTimeout(()=>{ if(bErr <= 0) finishBoss(false); else { bIdx++; if(bIdx<50) loadBoss(); else finishBoss(true); } }, 400); } 
+        }; g.appendChild(b); 
     }); 
 }
 
 function finishBoss(win) { 
-    document.getElementById('boss-active').style.display='none'; 
-    document.getElementById('boss-result').style.display='flex'; 
+    document.getElementById('boss-active').style.display='none'; document.getElementById('boss-result').style.display='flex'; 
     document.getElementById('boss-final').textContent = win ? "ПЕРЕМОГА!" : "ПРОВАЛ"; 
     document.getElementById('boss-result-title').textContent = win ? "Ти здолала Боса! 🎉" : "Ти загинула... 💔"; 
     
     if(win) { 
         if(!dailyProg.bossWon) {
             document.getElementById('boss-result-desc').textContent = "Оля - справжня войовниця! Ось твої +500 🌟 та Золотий купон! Юра тобою пишається! 🥰"; 
-            addXP(500); 
-            inventory.push({ id:'boss_win', name:'🥇 Золотий купон від Юри (Перемога над Босом)', price:0, icon:'🥇', uid:Date.now() }); 
-            localStorage.setItem('userInventory', JSON.stringify(inventory)); 
-            checkAchiev('boss_killer'); 
-            dailyProg.bossWon = true;
-            saveDaily();
+            addXP(500); inventory.push({ id:'boss_win', name:'🥇 Золотий купон від Юри (Перемога над Босом)', price:0, icon:'🥇', uid:Date.now() }); 
+            localStorage.setItem('userInventory', JSON.stringify(inventory)); checkAchiev('boss_killer'); dailyProg.bossWon = true; saveDaily();
         } else {
             document.getElementById('boss-result-desc').textContent = "Ти вже отримувала головну нагороду сьогодні! Але тренування робить тебе ще сильнішою. Юра пишається тобою! 🥰";
         }
-    } else { 
-        document.getElementById('boss-result-desc').textContent = "Життя скінчилися. Бос виявився сильнішим. Повтори словник і повертайся за реваншем! Юра вірить в тебе!"; 
-    } 
+    } else { document.getElementById('boss-result-desc').textContent = "Життя скінчилися. Бос виявився сильнішим. Повтори словник і повертайся за реваншем! Юра вірить в тебе!"; } 
     renderInventory(); updateUI(); 
 }
 
