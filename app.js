@@ -26,11 +26,44 @@ const catTips = [
 const compliments = ["Ти сьогодні неймовірна! ✨", "Моя найрозумніша дівчинка 🥰", "Пишаюся тобою ❤️", "Твоя посмішка - найкраща 😍", "Твоя наполегливість вражає! 🚀", "Кохаю тебе безмежно 💖", "Кохаю тебе дужче🤗", "Моя манюня😊", "Моє серденько ❤️", "Кохаю тебе кицюня😘", "Ти моє найбільше натхнення 🌸"];
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
+const levelSystem = [
+    { xp: 0, name: "Кошеня", icon: "🐈" }, 
+    { xp: 100, name: "Студентка", icon: "🐈" },
+    { xp: 500, name: "Розумничка", icon: "🐈‍⬛😎" }, 
+    { xp: 1000, name: "Леді", icon: "🐈‍⬛😎" },
+    { xp: 2500, name: "Королева", icon: "👑🐈" }, 
+    { xp: 5000, name: "Моя Богиня", icon: "👑🐈✨" }
+];
+
 const shopItems = [
-    { id: 'olya_love', name: 'Оля любить дужче Юру', price: 'ERROR', icon: '♾️' },
-    { id: 'massage', name: 'Масаж', price: 500, icon: '💆‍♀️' },
-    { id: 'dinner', name: 'Романтична вечеря', price: 1500, icon: '🍷' },
-    { id: 'hug', name: 'Безлімітні обійми на день', price: 200, icon: '🫂' }
+    { id: 'freeze', name: 'Заморозка стріку ❄️', price: 300, icon: '🧊' },
+    { id: 'shield', name: 'Щит для Боса 🛡️', price: 400, icon: '🛡️' },
+    { id: 'hint', name: 'Лупа Шерлока (50/50) 🔍', price: 50, icon: '🔍' },
+    { id: 'title_queen', name: 'Титул: Володарка серця 👑', price: 1000, icon: '📜' },
+    { id: 'vip_slang', name: 'VIP: Пікантні фрази 🌶️', price: 1000, icon: '🌶️' },
+    { id: 'day_off', name: 'День без рішень 🧘‍♀️', price: 500, icon: '🧘‍♀️' },
+    { id: 'movie_veto', name: 'Право вето на фільм 🍿', price: 300, icon: '🚫' },
+    { id: 'coffee_bed', name: 'Кава/Чай у ліжко ☕', price: 200, icon: '☕' },
+    { id: 'culinary', name: 'Кулінарний експеримент 👨‍🍳', price: 500, icon: '🍲' }
+];
+
+const loveNotes = [
+    "Ти мой найулюбленіше сповіщення у телефоні 📱❤️",
+    "Пишаюся тим, як ти стараєшся! Ти неймовірна 🌟",
+    "Щоразу, коли ти посміхаєшся, я закохуюся заново 🥰",
+    "Не можу дочекатися, щоб тебе обійняти 🫂",
+    "Твій сміх — моя улюблена пісня 🎶",
+    "Ти робиш мене кращим щодня 💪",
+    "Цьомаю тебе в носик і в оченята! 😘",
+    "Моя розумничка! Я так тобою пишаюся 🧠",
+    "Ти найкраще, що траплялося зі мною ✨",
+    "Мрію про наші майбутні поїздки разом 🚐",
+    "Навіть коли ти злишся, ти страшенно мила 🥺",
+    "Дякую, що ти є в моєму житті 💖",
+    "Ти виглядаєш чарівно сьогодні (навіть якщо я тебе не бачу) 😍",
+    "Пам'ятай: я завжди на твоєму боці 🤝",
+    "Кохаю тебе до нестями 🌌"
+];
 ];
 
 const bmItems = [
@@ -64,11 +97,6 @@ const achievList = {
     first_blood: { icon: "🌱", title: "Перший крок", desc: "Зіграти першу гру", secret: false }, perfect: { icon: "👑", title: "Моя відмінниця", desc: "Пройти квіз без помилок", secret: false }, speed: { icon: "⚡", title: "Швидша за вітер", desc: "Набрати 15+ у спринті", secret: false }, love: { icon: "💘", title: "Справжнє кохання", desc: "Знайти таємну пасхалку", secret: false }, streak3: { icon: "🔥", title: "Капітан Стрік", desc: "Зайти 3 дні підряд", secret: false }, streak7: { icon: "🔥", title: "Тиждень в ділі", desc: "Зайти 7 днів підряд", secret: false }, owl: { icon: "🦉", title: "Нічна пташка", desc: "Вчити слова після 22:00", secret: false }, polyglot: { icon: "🎓", title: "Поліглот", desc: "Зіграти 50 ігор загалом", secret: false }, rich: { icon: "💰", title: "Багачка", desc: "Накопичити 2000 зірочок", secret: false }, shopaholic: { icon: "🛍️", title: "Шопоголік", desc: "Купити 3 товари в магазині", secret: false }, early_bird: { icon: "🌅", title: "Рання пташка", desc: "Зайти в додаток з 05:00 до 09:00", secret: false }, sniper: { icon: "🎯", title: "Снайпер", desc: "15/15 у свайп T/F без помилок", secret: false }, bookworm: { icon: "📚", title: "Книжковий черв'як", desc: "Перегорнути 50 карток", secret: false }, builder: { icon: "🏗️", title: "Будівельник", desc: "Зіграти 10 разів у Конструктор", secret: false }, vocab_king: { icon: "📖", title: "Леді Словник", desc: "Відкрити словник 50 разів", secret: false }, marathon: { icon: "🏃‍♀️", title: "Марафон", desc: "Зіграти 10 ігор за день", secret: false }, survivor: { icon: "🪓", title: "Виживальниця", desc: "СЕКРЕТ! Виграти Шибеницю з 1 ❤️", secret: true }, crafter: { icon: "⛏️", title: "Майстер крафту", desc: "СЕКРЕТ! Конструктор без помилок", secret: true }, ninja: { icon: "🥷", title: "Нічний ніндзя", desc: "СЕКРЕТ! Грати з 01:00 до 04:00", secret: true }, sherlock: { icon: "🕵️‍♀️", title: "Шерлок", desc: "СЕКРЕТ! Знайти 3 промокоди", secret: true }, navigator: { icon: "🚐", title: "Головний штурман", desc: "СЕКРЕТ! Знайти код авто", secret: true }, hacker: { icon: "👨‍💻", title: "Хакер", desc: "СЕКРЕТ! Ввести 3 хибних промокоди", secret: true }, sleeping_beauty: { icon: "😴", title: "Спляча красуня", desc: "СЕКРЕТ! Повернутися через 3 дні", secret: true }, hug_addict: { icon: "🫂", title: "Ненаситна", desc: "СЕКРЕТ! Купити 3 рази обійми", secret: true }, lucky_bastard: { icon: "🍀", title: "Улюблениця фортуни", desc: "СЕКРЕТ! Зірвати джекпот", secret: true }, professor: { icon: "👩‍🏫", title: "Професор", desc: "СЕКРЕТ! Зіграти в усі режими", secret: true }, midnight: { icon: "🕛", title: "Опівнічна магія", desc: "СЕКРЕТ! Зіграти рівно опівночі", secret: true }, lucky7: { icon: "🎰", title: "Щаслива сімка", desc: "СЕКРЕТ! Набрати рівно 7 у Спринті", secret: true }, sweet_tooth: { icon: "🍩", title: "Ласунка", desc: "СЕКРЕТ! Ввести солодкий промокод", secret: true }, boss_killer: { icon: "😈", title: "Переможниця", desc: "СЕКРЕТ! Здати Недільний Іспит", secret: true }
 };
 
-const levelSystem = [
-    { xp: 0, name: "Кошеня", icon: "🐾" }, { xp: 100, name: "Студентка", icon: "📚" },
-    { xp: 500, name: "Розумничка", icon: "💡" }, { xp: 1000, name: "Леді", icon: "💃" },
-    { xp: 2500, name: "Королева", icon: "👑" }, { xp: 5000, name: "Моя Богиня", icon: "🌌" }
-];
 
 // ==========================================
 // 2. ГЛОБАЛЬНИЙ СТАН ТА НАЛАШТУВАННЯ
@@ -108,13 +136,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const cmBtn = document.getElementById('cm-btn');
     if (cmBtn) {
         cmBtn.onclick = () => { 
+            // 1. Знаходимо купон, який вона хоче використати
+            const item = inventory.find(x => x.uid == curCuid);
+            if(item) {
+                let msg = `Коханий, я активувала купон на "${item.name}"! 👑 Чекаю на виконання!`;
+                
+                // Якщо це Джокер за Боса
+                if(item.id === 'boss_win') {
+                    msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [НАПИШИ ТУТ БАЖАННЯ] 👑`;
+                }
+
+                // Відкриваємо твій Telegram з готовим текстом
+                window.open(`https://t.me/YU_zIK?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            // 2. Видаляємо купон з інвентарю та оновлюємо екран
             inventory = inventory.filter(x => x.uid != curCuid); 
             localStorage.setItem('userInventory', JSON.stringify(inventory)); 
-            closeCoupon(); updateUI(); renderInventory(); 
+            closeCoupon(); 
+            updateUI(); 
+            renderInventory(); 
             fireParticles(window.innerWidth/2, window.innerHeight/2, true); 
-            setTimeout(() => alert("Купон успішно використано! ❤️"), 500); 
         };
     }
+    
+    // Запускаємо гру
     initGamification();
 });
 
