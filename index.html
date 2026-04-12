@@ -49,9 +49,9 @@
     <div class="user-stats" id="user-stats">
         <div class="stat-badge" title="Дні підряд">🔥 <span id="streak-count">0</span></div>
         <div class="stat-badge" title="Зірочки">🌟 <span id="xp-count">0</span></div>
-        <div class="stat-badge" title="Твій Рівень" style="background: linear-gradient(135deg, #fce7f3, #e0e7ff); border: 1px solid #c7d2fe;">
-            <span id="user-level-icon">🐾</span> <span id="user-level-name" style="color:var(--text-main);">Кошеня</span>
-        </div>
+        <div class="stat-badge" title="Твій Рівень" style="background: linear-gradient(135deg, #fce7f3, #e0e7ff); border: 1px solid #c7d2fe; cursor: pointer;" onclick="showSection('profile')">
+    <span id="user-level-icon">🐾</span> <span id="user-level-name" style="color:var(--text-main);">Кошеня</span>
+</div>
     </div>
 
     <div class="main-content">
@@ -110,11 +110,66 @@
         <div id="shop" class="section"><h1 class="welcome-title">Магазин 🛍️</h1><p class="welcome-subtitle" style="text-align:center; margin-bottom:15px;">Обмінюй 🌟 на подарунки!</p><div id="shop-list" class="shop-list"></div></div>
         
         <div id="settings" class="section">
-            <h1 class="welcome-title">Опції ⚙️</h1>
-            <div class="question-box"><p style="font-size: 1rem; color:var(--text-muted); margin-bottom:10px;">Маєш секретний код або вгадай ?)</p><button class="btn btn-primary" onclick="enterPromo()">🎁 Ввести код</button></div>
-            <div class="question-box"><p style="font-size: 1rem; color:var(--text-muted); margin-bottom:10px;">Збереження прогресу</p><button class="btn" style="border:2px solid var(--primary); margin-bottom:10px;" onclick="exportProgress()">💾 Скопіювати прогрес</button><button class="btn" onclick="importProgress()">📂 Відновити прогрес</button></div>
-        </div>
+    <h1 class="welcome-title">Опції ⚙️</h1>
+    
+    <div class="question-box">
+        <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Маєш секретний код? Вводь!</p>
+        <button class="btn btn-primary" onclick="enterPromo()">🎁 Ввести код</button>
+    </div>
+    
+    <div class="question-box">
+        <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Статистика та Профіль</p>
+        <button class="btn btn-primary" onclick="showSection('profile')">📊 Статистика Киці</button>
+    </div>
 
+    <div class="question-box">
+        <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Збереження прогресу</p>
+        <button class="btn" style="border:2px solid var(--primary); margin-bottom:10px;" onclick="exportProgress()">💾 Скопіювати прогрес</button>
+        <button class="btn" onclick="importProgress()">📂 Відновити прогрес</button>
+    </div>
+</div>
+
+<div id="profile" class="section">
+    <h1 class="welcome-title">Профіль 📊</h1>
+    
+    <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); text-align: center; margin-bottom: 15px;">
+        <div style="font-size: 4rem; margin-bottom: 10px;" id="prof-icon">🐾</div>
+        <h2 style="color: var(--text-main); margin-bottom: 5px;" id="prof-name">Кошеня</h2>
+        <p style="color: var(--primary); font-weight: 700; margin-bottom: 15px;">За весь час: <span id="prof-xp">0</span> 🌟</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
+            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Серія днів</div>
+                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🔥 <span id="prof-streak">0</span></div>
+            </div>
+            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Рекорд Спринту</div>
+                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">⚡ <span id="prof-sprint">0</span></div>
+            </div>
+            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Усього ігор</div>
+                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🎮 <span id="prof-games">0</span></div>
+            </div>
+            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Покупки</div>
+                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🛍️ <span id="prof-purchases">0</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 15px;">
+        <h3 style="color: var(--text-main); margin-bottom: 15px; font-size: 0.9rem; text-align: center; font-weight: 800;">ПРОГРЕС ДО НАСТУПНОГО ЗВАННЯ</h3>
+        <div style="width: 100%; height: 12px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 8px;">
+            <div id="prof-lvl-bar" style="height: 100%; background: var(--correct); width: 0%; transition: width 1s ease-out;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">
+            <span id="prof-lvl-curr">Поточний</span>
+            <span id="prof-lvl-next">Наступний</span>
+        </div>
+    </div>
+
+    <button class="btn" style="margin-top:auto; width:100%;" onclick="showSection('settings')">Назад в Опції</button>
+</div>
         <div id="inventory" class="section"><h1 class="welcome-title">Купони 🎁</h1><div id="inv-list" class="shop-list"></div></div>
         <div id="achievements" class="section"><h1 class="welcome-title">Досягнення 🏆</h1><div id="achiev-list" class="achiev-list"></div></div>
 
