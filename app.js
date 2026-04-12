@@ -398,7 +398,9 @@ function renderShop() {
     const c = document.getElementById('shop-list'); if(!c) return;
     const bmStatus = isBlackMarketOpen();
     c.innerHTML = bmStatus ? `<div style="background:#0f172a; color:#10b981; padding:10px; border-radius:12px; margin-bottom:15px; text-align:center; font-weight:800; border:2px solid #10b981;">🕶️ ЧОРНИЙ РИНОК ВІДКРИТО!</div>` : ''; 
-    let currentItems = [...];
+    
+    let currentItems = [...shopItems]; // ВИПРАВЛЕНО ТУТ
+    
     if (bmStatus) {
         currentItems = currentItems.map(i => i.id === 'dinner' ? { ...i, price: Math.floor(i.price * 0.85) } : i);
         if (bmStatus === 'ALL') currentItems.push(...bmItems);
@@ -406,14 +408,19 @@ function renderShop() {
     }
     currentItems.forEach(i => { 
         const isErr = i.price === 'ERROR'; const can = !isErr && totalXP >= i.price;
-        const originalPrice = .find(x=>x.id === i.id)?.price;
+        
+        const originalPrice = shopItems.find(x => x.id === i.id)?.price; // ВИПРАВЛЕНО ТУТ
+        
         const discountLabel = (bmStatus && i.id === 'dinner') ? `<s style="color:var(--text-muted);font-size:0.7rem;">${originalPrice}</s>` : '';
         c.innerHTML += `<div class="shop-item"><div class="shop-info"><div style="font-size:2rem;">${i.icon}</div><div><div class="shop-title">${i.name}</div><div class="shop-price" style="${isErr?'color:var(--wrong)':(bmStatus && i.id==='dinner'?'color:#10b981':'')}">${isErr?'':'🌟 '}${i.price} ${discountLabel}</div></div></div><button class="buy-btn" ${can?'':'disabled'} onclick="buyItem('${i.id}')">${isErr?'Неможливо':(can?'Купити':'Бракує')}</button></div>`;
     }); 
 }
 
 function buyItem(id) { 
-    const bmStatus = isBlackMarketOpen(); let currentItems = [...];
+    const bmStatus = isBlackMarketOpen(); 
+    
+    let currentItems = [...shopItems]; // ВИПРАВЛЕНО ТУТ
+    
     if (bmStatus) {
         currentItems = currentItems.map(i => i.id === 'dinner' ? { ...i, price: Math.floor(i.price * 0.85) } : i);
         if (bmStatus === 'ALL') currentItems.push(...bmItems);
@@ -430,7 +437,6 @@ function buyItem(id) {
         showToast("Куплено: " + i.name); renderInventory(); renderShop(); updateUI();
     } 
 }
-
 function renderInventory() { 
     const c = document.getElementById('inv-list'); if(!c) return;
     c.innerHTML = ''; 
