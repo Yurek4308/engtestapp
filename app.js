@@ -26,10 +26,24 @@ const compliments = ["Ти сьогодні неймовірна! ✨", "Моя 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
 const shopItems = [
+    // Твоя особлива картка
     { id: 'olya_love', name: 'Оля любить дужче Юру', price: 'ERROR', icon: '♾️' },
-    { id: 'massage', name: 'Масаж', price: 500, icon: '💆‍♀️' },
+    
+    // Віртуальні предмети (допомога в грі)
+    { id: 'freeze', name: 'Заморозка стріку ❄️', price: 300, icon: '🧊' },
+    { id: 'shield', name: 'Щит для Боса 🛡️', price: 400, icon: '🛡️' },
+    { id: 'hint', name: 'Лупа Шерлока (50/50) 🔍', price: 50, icon: '🔍' },
+    { id: 'vip_slang', name: 'VIP: Пікантні фрази 🌶️', price: 1000, icon: '🌶️' },
+    { id: 'title_queen', name: 'Титул: Володарка серця 👑', price: 1000, icon: '📜' },
+    
+    // Реальні купони (твої обіцянки)
+    { id: 'massage', name: 'Масаж спини', price: 500, icon: '💆‍♀️' },
     { id: 'dinner', name: 'Романтична вечеря', price: 1500, icon: '🍷' },
-    { id: 'hug', name: 'Безлімітні обійми на день', price: 200, icon: '🫂' }
+    { id: 'hug', name: 'Безлімітні обійми на день', price: 200, icon: '🫂' },
+    { id: 'day_off', name: 'День без рішень 🧘‍♀️', price: 500, icon: '🧘‍♀️' },
+    { id: 'movie_veto', name: 'Право вето на фільм 🍿', price: 300, icon: '🚫' },
+    { id: 'coffee_bed', name: 'Кава/Чай у ліжко ☕', price: 200, icon: '☕' },
+    { id: 'culinary', name: 'Кулінарний експеримент 👨‍🍳', price: 500, icon: '🍲' }
 ];
 
 const bmItems = [
@@ -368,7 +382,7 @@ function renderShop() {
     const c = document.getElementById('shop-list'); if(!c) return;
     const bmStatus = isBlackMarketOpen();
     c.innerHTML = bmStatus ? `<div style="background:#0f172a; color:#10b981; padding:10px; border-radius:12px; margin-bottom:15px; text-align:center; font-weight:800; border:2px solid #10b981;">🕶️ ЧОРНИЙ РИНОК ВІДКРИТО!</div>` : ''; 
-    let currentItems = [...shopItems];
+    let currentItems = [...];
     if (bmStatus) {
         currentItems = currentItems.map(i => i.id === 'dinner' ? { ...i, price: Math.floor(i.price * 0.85) } : i);
         if (bmStatus === 'ALL') currentItems.push(...bmItems);
@@ -376,14 +390,14 @@ function renderShop() {
     }
     currentItems.forEach(i => { 
         const isErr = i.price === 'ERROR'; const can = !isErr && totalXP >= i.price;
-        const originalPrice = shopItems.find(x=>x.id === i.id)?.price;
+        const originalPrice = .find(x=>x.id === i.id)?.price;
         const discountLabel = (bmStatus && i.id === 'dinner') ? `<s style="color:var(--text-muted);font-size:0.7rem;">${originalPrice}</s>` : '';
         c.innerHTML += `<div class="shop-item"><div class="shop-info"><div style="font-size:2rem;">${i.icon}</div><div><div class="shop-title">${i.name}</div><div class="shop-price" style="${isErr?'color:var(--wrong)':(bmStatus && i.id==='dinner'?'color:#10b981':'')}">${isErr?'':'🌟 '}${i.price} ${discountLabel}</div></div></div><button class="buy-btn" ${can?'':'disabled'} onclick="buyItem('${i.id}')">${isErr?'Неможливо':(can?'Купити':'Бракує')}</button></div>`;
     }); 
 }
 
 function buyItem(id) { 
-    const bmStatus = isBlackMarketOpen(); let currentItems = [...shopItems];
+    const bmStatus = isBlackMarketOpen(); let currentItems = [...];
     if (bmStatus) {
         currentItems = currentItems.map(i => i.id === 'dinner' ? { ...i, price: Math.floor(i.price * 0.85) } : i);
         if (bmStatus === 'ALL') currentItems.push(...bmItems);
