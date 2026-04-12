@@ -570,7 +570,33 @@ function renderDictionary() {
     const grid = document.getElementById('dict-grid'); if(!grid) return; grid.innerHTML = ''; 
     const searchInput = document.getElementById('dict-search'); const q = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
     
+    // --- ПАСХАЛКИ ПОЧИНАЮТЬСЯ ТУТ ---
     if(q === 'love' || q === 'кохаю' || q === 'люблю') { document.getElementById('easter-egg').style.display='flex'; checkAchiev('love'); if(searchInput) searchInput.value=''; return; } 
+    
+    if(q === 'bunker') { 
+        document.body.style.background = '#ff0000'; 
+        setTimeout(() => document.body.style.background = '', 500);
+        setTimeout(() => document.body.style.background = '#ff0000', 1000);
+        setTimeout(() => document.body.style.background = '', 1500);
+        alert("🚨 Shelter closed! Only YOU and I are allowed! ☢️"); 
+        if(searchInput) searchInput.value=''; return; 
+    }
+    
+    if(q === 'car') { 
+        const car = document.createElement('div'); car.textContent = '🚐';
+        car.style.cssText = 'position:fixed; left:-100px; top:50%; font-size:5rem; z-index:9999; transition:left 2s linear;';
+        document.body.appendChild(car);
+        setTimeout(() => car.style.left = '120vw', 50);
+        setTimeout(() => car.remove(), 2100);
+        if(searchInput) searchInput.value=''; return; 
+    }
+    
+    if(q === 'kiss') { 
+        for(let i=0; i<5; i++) { setTimeout(() => fireParticles(window.innerWidth/2, window.innerHeight/2, true), i*300); }
+        if(searchInput) searchInput.value=''; return; 
+    }
+    // --- ПАСХАЛКИ ЗАКІНЧУЮТЬСЯ ---
+
     let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
     if(currentCat !== 'all') { list = list.filter(w => w.c === currentCat); }
 
