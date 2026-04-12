@@ -119,29 +119,25 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('theme-icon').textContent = '☀️';
     }
     const cmBtn = document.getElementById('cm-btn');
- if (cmBtn) {
+if (cmBtn) {
         cmBtn.onclick = () => { 
-            // 1. Шукаємо купон, на який Оля щойно натиснула
             const item = inventory.find(x => x.uid == curCuid);
-            
             if(item) {
-                // 2. Створюємо текст повідомлення (можеш змінити текст під себе!)
+                // Текст для Telegram залежно від купона
                 let msg = `Коханий, я активувала купон на "${item.name}"! 👑 Чекаю на виконання!`;
                 
-                // Якщо це супер-купон за перемогу над Босом (можеш видалити, якщо Боса поки не ставиш)
+                // Спеціальний текст для Золотого Джокера
                 if(item.id === 'boss_win') {
-                    msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [Напиши своє бажання тут] 👑`;
+                    msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [Впиши своє бажання тут] 👑`;
                 }
 
-                // 3. Відкриваємо додаток Telegram (твоє ім'я @YU_zIK)
+                // Відкриваємо Telegram!
                 window.open(`https://t.me/YU_zIK?text=${encodeURIComponent(msg)}`, '_blank');
             }
 
-            // 4. Видаляємо цей купон з її інвентарю ("спалюємо" його)
+            // Видаляємо з інвентарю
             inventory = inventory.filter(x => x.uid != curCuid); 
             localStorage.setItem('userInventory', JSON.stringify(inventory)); 
-            
-            // 5. Закриваємо вікно і запускаємо сердечка 💖
             closeCoupon(); 
             updateUI(); 
             renderInventory(); 
