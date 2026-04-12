@@ -44,6 +44,7 @@ header { background-color: var(--header-bg); color: white; padding: calc(12px + 
 
 /* НИЖНЄ МЕНЮ (Оновлено) */
 .bottom-nav { 
+    display: flex !important;
     position: fixed; 
     bottom: 0; 
     left: 0; 
