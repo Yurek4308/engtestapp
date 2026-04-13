@@ -826,56 +826,128 @@ function loadSpy() {
     document.getElementById('spy-counter').textContent = `${spyI+1}/${spyQ.length}`;
     document.getElementById('spy-score').textContent = spyS;
     const g = document.getElementById('spy-options'); g.innerHTML = '';
+    
     spyQ[spyI].words.forEach(w => {
-        const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = w.uk;
+        const b = document.createElement('button'); 
+        b.className = 'option-btn'; 
+        
+        // Налаштовуємо ідеальний вигляд кнопок
+        b.style.fontSize = '1.3rem';
+        b.style.padding = '15px 10px';
+        b.style.wordBreak = 'break-word';
+        b.style.display = 'flex';
+        b.style.flexDirection = 'column';
+        b.style.alignItems = 'center';
+        b.style.gap = '5px';
+        b.style.lineHeight = '1.1';
+        
+        // Показуємо англійське слово, а український переклад ховаємо (висота 0, прозорість 0)
+        b.innerHTML = `
+            <span style="font-weight: 800;">${w.en}</span>
+            <span class="spy-uk-hint" style="font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 600; opacity: 0; height: 0; overflow: hidden; transition: 0.3s;">${w.uk}</span>
+        `;
+        
         b.onclick = (e) => {
             if(spyLock) return; spyLock = true;
             const isCorrect = w.en === spyQ[spyI].odd.en;
             fireParticles(e.clientX, e.clientY, isCorrect);
+            
             document.querySelectorAll('#spy-options .option-btn').forEach(btn => {
                 btn.disabled = true;
-                if(btn.textContent === spyQ[spyI].odd.uk) btn.classList.add('correct');
-                else if(btn === b && !isCorrect) btn.classList.add('wrong');
+                
+                // МАГІЯ: Відкриваємо переклад для всіх слів, коли гравець зробив вибір!
+                const hint = btn.querySelector('.spy-uk-hint');
+                if(hint) { 
+                    hint.style.opacity = '1'; 
+                    hint.style.height = 'auto';
+                    hint.style.marginTop = '5px';
+                }
+                
+                if(btn.querySelector('span').textContent === spyQ[spyI].odd.en) {
+                    btn.classList.add('correct');
+                }
+                else if(btn === b && !isCorrect) {
+                    btn.classList.add('wrong');
+                }
             });
+            
             if(isCorrect) { spyS++; addXP(2); } else trackMistake(spyQ[spyI].odd);
             document.getElementById('btn-next-spy').style.display = 'block';
         };
         g.appendChild(b);
     });
 }
-function nextSpy() {
-    spyI++; if(spyI < spyQ.length) loadSpy();
-    else { document.getElementById('spy-active').style.display='none'; document.getElementById('spy-result').style.display='flex'; document.getElementById('spy-final-score').textContent = `${spyS}/${spyQ.length}`; gameFinished(spyS === spyQ.length, 'spy', 1); }
+// --- 2. СЕЙФ (WORDLE) ---
+let wdlWord = "", wdlAttempts = 0, wdlGrid = [], wdlObj = null, wdlLen = 5;
+
+function startWordle() {
+    // Беремо всі слова (від 3 літер і більше), які складаються тільки з букв
+    const validWords = getVocab().filter(w => w.en.length >= 3 && /^[a-zA-Z]+$/.test(w.en));
+    if(validWords.length === 0) { alert("Немає підходящих слів у словнику!"); return; }
+    
+    showSection('wordle'); 
+    document.getElementById('wordle-result').style.display='none'; 
+    document.getElementById('wordle-active').style.display='flex';
+    
+    wdlObj = validWords[Math.floor(Math.random() * validWords.length)];
+    wdlWord = wdlObj.en.toUpperCase(); 
+    wdlLen = wdlWord.length; // Динамічна довжина слова
+    wdlAttempts = 0; 
+    
+    // Створюємо порожню матрицю під конкретну довжину
+    wdlGrid = Array.from({length: 6}, () => Array(wdlLen).fill(""));
+    
+    initWordleGrid(); // Створюємо HTML-сітку один раз
+    drawWordleKeyboard(); 
+    document.getElementById('wordle-attempts').textContent = `Спроби: 0/6`;
 }
 
-// --- 2. СЕЙФ (WORDLE) ---
-let wdlWord = "", wdlAttempts = 0, wdlGrid = [], wdlObj = null;
-function startWordle() {
-    const validWords = getVocab().filter(w => w.en.length === 5 && /^[a-zA-Z]+$/.test(w.en));
-    if(validWords.length === 0) { alert("Немає слів з 5 літер у словнику!"); return; }
-    showSection('wordle'); document.getElementById('wordle-result').style.display='none'; document.getElementById('wordle-active').style.display='flex';
-    wdlObj = validWords[Math.floor(Math.random() * validWords.length)];
-    wdlWord = wdlObj.en.toUpperCase(); wdlAttempts = 0; wdlGrid = Array.from({length: 6}, () => Array(5).fill(""));
-    drawWordleGrid(); drawWordleKeyboard(); document.getElementById('wordle-attempts').textContent = `Спроби: 0/6`;
-}
-function drawWordleGrid() {
-    const g = document.getElementById('wordle-grid'); g.innerHTML = '';
+function initWordleGrid() {
+    const g = document.getElementById('wordle-grid'); 
+    g.innerHTML = '';
+    
+    // Розширюємо контейнер, якщо слово дуже довге
+    g.style.maxWidth = wdlLen > 6 ? '380px' : '280px';
+    
     for(let r=0; r<6; r++) {
-        let row = document.createElement('div'); row.className = 'wordle-row';
-        for(let c=0; c<5; c++) {
-            let cell = document.createElement('div'); cell.className = 'wordle-cell';
-            cell.id = `wcell-${r}-${c}`; cell.textContent = wdlGrid[r][c];
-            if(wdlGrid[r][c]) cell.classList.add('filled');
+        let row = document.createElement('div'); 
+        row.className = 'wordle-row';
+        // Автоматично підлаштовуємо кількість колонок
+        row.style.gridTemplateColumns = `repeat(${wdlLen}, 1fr)`; 
+        
+        for(let c=0; c<wdlLen; c++) {
+            let cell = document.createElement('div'); 
+            cell.className = 'wordle-cell';
+            cell.id = `wcell-${r}-${c}`; 
+            
+            // Розумний розмір шрифту: чим довше слово, тим менший шрифт
+            if (wdlLen >= 9) cell.style.fontSize = '1rem';
+            else if (wdlLen >= 7) cell.style.fontSize = '1.3rem';
+            else cell.style.fontSize = '2rem';
+            
             row.appendChild(cell);
         }
         g.appendChild(row);
     }
 }
+
+// Нова функція, яка оновлює ТІЛЬКИ поточний рядок, зберігаючи кольори попередніх!
+function updateWordleCurrentRow() {
+    if(wdlAttempts >= 6) return;
+    for(let c=0; c<wdlLen; c++) {
+        let cell = document.getElementById(`wcell-${wdlAttempts}-${c}`);
+        cell.textContent = wdlGrid[wdlAttempts][c];
+        if(wdlGrid[wdlAttempts][c]) cell.classList.add('filled');
+        else cell.classList.remove('filled');
+    }
+}
+
 function drawWordleKeyboard() {
     const keys = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
     const g = document.getElementById('wordle-keyboard'); g.innerHTML = '';
     keys.forEach(rowStr => {
-        let row = document.createElement('div'); row.style.display = 'flex'; row.style.justifyContent = 'center'; row.style.gap = '4px'; row.style.width = '100%';
+        let row = document.createElement('div'); 
+        row.style.display = 'flex'; row.style.justifyContent = 'center'; row.style.gap = '4px'; row.style.width = '100%';
         rowStr.split('').forEach(l => {
             let b = document.createElement('button'); b.className = 'hm-key'; b.textContent = l; b.id = `wkey-${l}`;
             b.onclick = () => handleWordleKey(l); row.appendChild(b);
@@ -888,43 +960,60 @@ function drawWordleKeyboard() {
         g.appendChild(row);
     });
 }
+
 function handleWordleKey(k) {
     if(wdlAttempts >= 6) return;
     let col = wdlGrid[wdlAttempts].findIndex(x => x === "");
+    
     if(k === 'DEL') {
-        let delCol = col === -1 ? 4 : col - 1;
-        if(delCol >= 0) { wdlGrid[wdlAttempts][delCol] = ""; drawWordleGrid(); }
+        let delCol = col === -1 ? wdlLen - 1 : col - 1;
+        if(delCol >= 0) { wdlGrid[wdlAttempts][delCol] = ""; updateWordleCurrentRow(); }
     } else if(col !== -1) {
-        wdlGrid[wdlAttempts][col] = k; drawWordleGrid();
+        wdlGrid[wdlAttempts][col] = k; updateWordleCurrentRow();
     }
 }
+
 function checkWordleRow() {
     if(wdlAttempts >= 6 || wdlGrid[wdlAttempts].includes("")) return;
-    let guess = wdlGrid[wdlAttempts].join(''); let target = wdlWord.split(''); let gArr = guess.split('');
-    let status = Array(5).fill('gray');
+    let guess = wdlGrid[wdlAttempts].join(''); 
+    let target = wdlWord.split(''); 
+    let gArr = guess.split('');
+    let status = Array(wdlLen).fill('gray');
     
-    // Check greens
-    for(let i=0; i<5; i++) { if(gArr[i] === target[i]) { status[i] = 'green'; target[i] = null; } }
-    // Check yellows
-    for(let i=0; i<5; i++) {
-        if(status[i] !== 'green' && target.includes(gArr[i])) { status[i] = 'yellow'; target[target.indexOf(gArr[i])] = null; }
+    // Перевіряємо зелені літери (повний збіг)
+    for(let i=0; i<wdlLen; i++) { 
+        if(gArr[i] === target[i]) { status[i] = 'green'; target[i] = null; } 
+    }
+    // Перевіряємо жовті літери (не на своєму місці)
+    for(let i=0; i<wdlLen; i++) {
+        if(status[i] !== 'green' && target.includes(gArr[i])) { 
+            status[i] = 'yellow'; 
+            target[target.indexOf(gArr[i])] = null; 
+        }
     }
     
-    // Animate row
-    for(let i=0; i<5; i++) {
+    // Анімація розкриття кольорів для поточного рядка
+    for(let i=0; i<wdlLen; i++) {
         setTimeout(() => {
-            let cell = document.getElementById(`wcell-${wdlAttempts}-${i}`); cell.classList.add(status[i]); cell.style.color = 'white'; cell.style.borderColor = 'transparent';
+            let cell = document.getElementById(`wcell-${wdlAttempts}-${i}`); 
+            cell.classList.add(status[i]); 
+            cell.style.color = 'white'; 
+            cell.style.borderColor = 'transparent';
+            
             let key = document.getElementById(`wkey-${gArr[i]}`);
             if(!key.classList.contains('correct')) {
                 if(status[i] === 'green') { key.style.background = 'var(--correct)'; key.style.color = 'white'; key.classList.add('correct'); }
                 else if(status[i] === 'yellow' && key.style.background !== 'var(--correct)') { key.style.background = 'var(--warning)'; key.style.color = 'white'; }
                 else if(key.style.background === '') { key.style.background = '#475569'; key.style.color = 'white'; }
             }
-        }, i * 300);
+        }, i * 300); // Кожна літера відкривається по черзі
     }
     
+    // Чекаємо, поки анімація закінчиться, і перевіряємо перемогу
     setTimeout(() => {
-        wdlAttempts++; document.getElementById('wordle-attempts').textContent = `Спроби: ${wdlAttempts}/6`;
+        wdlAttempts++; 
+        document.getElementById('wordle-attempts').textContent = `Спроби: ${wdlAttempts}/6`;
+        
         if(guess === wdlWord) {
             document.getElementById('wordle-active').style.display='none'; document.getElementById('wordle-result').style.display='flex';
             document.getElementById('wordle-result-title').textContent = "Зламано! 🔓"; document.getElementById('wordle-final-word').textContent = wdlWord;
@@ -935,9 +1024,8 @@ function checkWordleRow() {
             document.getElementById('wordle-result-title').textContent = "Сейф заблоковано 🔒"; document.getElementById('wordle-final-word').textContent = wdlWord;
             document.getElementById('wordle-uk-translation').textContent = wdlObj.uk; trackMistake(wdlObj); gameFinished(false, 'wordle', 0);
         }
-    }, 1500);
+    }, wdlLen * 300 + 300); // Таймер залежить від довжини слова
 }
-
 // --- 3. МЕТЕОРИТНИЙ ДОЩ ---
 let metTimer, metPos = -50, metSpeed = 1, metScore = 0, metWordObj = null;
 function startMeteor() {
