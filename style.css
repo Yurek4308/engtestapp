@@ -258,21 +258,41 @@ header {
 .cat-bubble.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
 /* НЕДІЛЬНИЙ БОС ПОКРАЩЕНИЙ */
-#boss { padding: 0; }
-#boss-active { background: radial-gradient(circle at center, #2d0a3d 0%, #000000 100%); padding: 30px 20px; border-radius: 0; position: relative; overflow: hidden; border: 4px solid #ff0000; box-shadow: 0 0 30px rgba(255,0,0,0.5); animation: bossBgPulse 4s infinite;}
+#boss { 
+    padding: 0; 
+    display: flex; 
+    flex: 1; 
+}
+
+#boss-active { 
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: radial-gradient(circle at center, #2d0a3d 0%, #000000 100%); 
+    padding: 30px 20px 100px 20px; /* 🔥 Відступ для нижнього меню */
+    border-radius: 0; 
+    position: relative; 
+    overflow-y: auto; /* 🔥 Дозволяємо скролити арену */
+    border: 4px solid #ff0000; 
+    box-shadow: 0 0 30px rgba(255,0,0,0.5); 
+    animation: bossBgPulse 4s infinite;
+}
+
 @keyframes bossBgPulse { 0% { box-shadow: 0 0 30px rgba(255,0,0,0.5); } 50% { box-shadow: 0 0 60px rgba(255,0,0,0.8); } 100% { box-shadow: 0 0 30px rgba(255,0,0,0.5); } }
+
 #boss-question-box { background: rgba(0, 0, 0, 0.7); border: 3px solid #ff0000; color: white; text-shadow: 0 0 10px #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.4); animation: bossQuestionPulse 1s infinite;}
 @keyframes bossQuestionPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+
 #boss-options .option-btn { background: #1a1a1a; color: white; border: 2px solid #4a4a4a; transition: 0.2s; box-shadow: 0 4px 0 #000;}
 #boss-options .option-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #000; }
 #boss-options .option-btn:hover { background: #333; border-color: #ff0000; color: #ff0000; text-shadow: 0 0 5px #ff0000;}
 #boss-options .option-btn.correct { background: #10b981 !important; color: white !important; border-color: white !important; box-shadow: 0 0 20px #10b981 !important;}
 #boss-options .option-btn.wrong { background: #ef4444 !important; color: white !important; border-color: white !important; box-shadow: 0 0 20px #ef4444 !important;}
 
+/* ПАСХАЛКА */
 #easter-egg { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(253, 242, 248, 0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;}
 .dark #easter-egg { background: rgba(15, 23, 42, 0.98); }
 .ee-photo { width: 80%; max-width: 300px; border-radius: 24px; border: 5px solid white; box-shadow: 0 10px 25px rgba(236, 72, 153, 0.5); margin-bottom: 20px;}
-
 /* СТИЛІ ДЛЯ СЕЙФУ (WORDLE) */
 .wordle-grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 6px; margin: 0 auto 20px auto; width: 100%; max-width: 280px; }
 .wordle-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
