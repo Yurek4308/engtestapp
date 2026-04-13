@@ -9,7 +9,9 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
 body { background-color: #e5e7eb; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+
 .app-container {
     width: 100%;
     max-width: 480px;
@@ -17,9 +19,11 @@ body { background-color: #e5e7eb; display: flex; justify-content: center; height
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden; /* Міняємо на hidden тут */
+    overflow: hidden; /* Екран не скролиться, скролиться тільки main-content */
     position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
+
 header {
     background-color: var(--header-bg);
     color: white;
@@ -27,11 +31,13 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky; /* Фіксуємо */
+    position: sticky;
     top: 0;
-    z-index: 1001; /* Вище за все */
+    z-index: 1001;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    flex-shrink: 0; /* Щоб шапка не сплющувалась */
 }
+
 .header-actions { display: flex; gap: 8px; }
 .header-btn { background: rgba(255, 255, 255, 0.2); border: none; color: white; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; transition: 0.1s;}
 .header-btn:active { transform: scale(0.9); }
@@ -45,44 +51,49 @@ header {
     justify-content: space-around;
     padding: 12px;
     background: var(--card-bg);
-    position: sticky; /* Теж фіксуємо */
-    top: 60px; /* Одразу під хедером */
+    position: sticky;
+    top: 60px;
     z-index: 1000;
     border-bottom: 1px solid rgba(0,0,0,0.05);
+    flex-shrink: 0; /* Щоб статистика не сплющувалась */
 }
+
 .stat-badge { font-size: 1rem; font-weight: 800; background: var(--bg); padding: 6px 16px; border-radius: 20px; color: var(--text-main); display: flex; align-items: center; gap: 6px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);}
 
+/* ТУТ УВІМКНЕНО СКРОЛ ДЛЯ ЦЕНТРУ ДОДАТКА */
 .main-content {
-    flex: 1;
-    overflow-y: auto; /* Скролиться тільки ця частина */
-    padding-bottom: 120px; /* Місце для нижнього меню */
-    -webkit-overflow-scrolling: touch;
+    flex: 1; /* Займає вільний простір */
+    overflow-y: auto; /* Вмикає вертикальний скрол */
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch; /* Плавність для iOS */
 }
+
 .section { 
     display: none; 
     flex-direction: column; 
-    /* Прибираємо жорстке height: 100%, щоб контент міг рости вниз */
     min-height: 100%; 
     padding: 20px; 
-    /* Додаємо відступ знизу рівно на висоту меню + запас */
-    padding-bottom: 100px !important; 
+    padding-bottom: 110px !important; /* Відступ для Спринту над меню */
     animation: fadeIn 0.2s ease-out; 
-    box-sizing: border-box; /* Щоб падінги не роздували ширину */
+    box-sizing: border-box; 
+    width: 100%;
 }
 
 .section.active { 
     display: flex; 
 }
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* НИЖНЄ МЕНЮ (Оновлено) */
+/* НИЖНЄ МЕНЮ */
 .bottom-nav { 
-    display: flex !important; /* Примусово показувати */
-    position: fixed !important;
+    display: flex !important; 
+    position: absolute !important; /* Міняємо на absolute відносно контейнера */
     bottom: 0 !important;
     left: 0;
     width: 100%;
-    z-index: 9999 !important; /* Бути поверх усього */
+    z-index: 9999 !important; 
     background: var(--card-bg); 
     display: flex; 
     justify-content: space-around; 
@@ -90,7 +101,9 @@ header {
     padding: 10px 10px calc(10px + env(safe-area-inset-bottom)) 10px; 
     border-top: 1px solid rgba(0,0,0,0.05); 
     box-shadow: 0 -5px 15px rgba(0,0,0,0.05); 
+    flex-shrink: 0; /* Щоб меню не сплющувалось */
 }
+
 .welcome-header { text-align: center; padding: 10px 5px 15px; flex-shrink: 0; }
 .welcome-title { font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
 .welcome-subtitle { font-size: 1rem; color: var(--primary); font-weight: 600; line-height: 1.4; font-style: italic;}
