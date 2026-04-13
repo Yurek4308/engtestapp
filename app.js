@@ -775,17 +775,24 @@ function renderDictionary() {
     
     let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
     
-  // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
+    // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
-            // Шукаємо картку незалежно від того, як вона збереглася в системі
             hasSpicyCard = inventory.some(item => 
                 item === 'VIP: Пікантні фрази 🌶️' || 
-                (item && item.name === 'VIP: Пікантні фрази 🌶️')
+                (item && item.name && item.name.includes('Пікантні фрази'))
             );
         }
     } catch(e) { }
+
+    // 🔥 ОСЬ ВІН: МАГІЧНИЙ КОД ДЛЯ КНОПКИ 🔥
+    // Шукаємо наш секретний тег і показуємо його тільки власникам картки!
+    const spicyBtn = document.getElementById('btn-spicy-cat');
+    if (spicyBtn) {
+        // Використовуємо inline-block, щоб він гарно вписався в горизонтальний скрол
+        spicyBtn.style.display = hasSpicyCard ? 'inline-block' : 'none';
+    }
 
     // Відсіюємо пікантні слова, якщо картки ще немає
     list = list.filter(w => {
