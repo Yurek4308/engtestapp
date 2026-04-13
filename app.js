@@ -731,42 +731,41 @@ function renderDictionary() {
         return; 
     } 
     
-    // БРОНЬОВАНИЙ ЗАХИСТ ІНВЕНТАРЮ: якщо він ще не завантажився, вважаємо його пустим масивом
-    const safeInventory = Array.isArray(inventory) ? inventory : [];
-    const hasSpicyCard = safeInventory.includes('VIP: Пікантні фрази 🌶️');
+    let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
     
-    // БРОНЬОВАНИЙ ФІЛЬТР ПОШУКУ
-    let list = baseVocabulary.filter(w => {
-        const enText = w.en ? w.en.toLowerCase() : '';
-        const ukText = w.uk ? w.uk.toLowerCase() : '';
-        return enText.includes(q) || ukText.includes(q);
-    });
-    
-    // ПРИХОВУВАННЯ ПІКАНТНИХ СЛІВ
+    // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
+    let hasSpicyCard = false;
+    try { 
+        // Перевіряємо дуже обережно, щоб не викликати помилку
+        if (typeof inventory !== 'undefined' && inventory !== null && inventory.includes('VIP: Пікантні фрази 🌶️')) {
+            hasSpicyCard = true; 
+        }
+    } catch(e) { 
+        // Якщо інвентар ще не завантажився, просто ігноруємо
+    }
+
+    // Відсіюємо пікантні слова, якщо картки ще немає
     list = list.filter(w => {
         if (w.c === 'spicy' && !hasSpicyCard) return false;
         return true;
     });
-    
-    // ФІЛЬТР КАТЕГОРІЙ (із захистом від помилок)
-    if(typeof currentCat !== 'undefined' && currentCat !== 'all') { 
-        list = list.filter(w => w.c === currentCat); 
-    }
 
-    list.sort((a,b) => (a.en || '').localeCompare(b.en || '')).forEach(w => { 
+    if(typeof currentCat !== 'undefined' && currentCat !== 'all') { list = list.filter(w => w.c === currentCat); }
+
+    list.sort((a,b) => a.en.localeCompare(b.en)).forEach(w => { 
         const c = document.createElement('div'); c.className = 'dict-card'; 
         const f = document.createElement('div'); f.className = 'dict-face'; 
         const b = document.createElement('div'); b.className = 'dict-face dict-back'; 
         
-        // Захист емодзі
-        const emoji = w.em ? w.em : (w.c === 'spicy' ? '🌶️' : '✨');
+        // Автоматично додаємо перчинку всім пікантним словам
+        const emj = w.em || (w.c === 'spicy' ? '🌶️' : '✨');
 
-        const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; }; 
-        if(dictMode === 'en-uk') { buildEn(f); b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.uk}</div>`; } else { f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.uk}</div>`; buildEn(b); } 
+        const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; }; 
+        if(dictMode === 'en-uk') { buildEn(f); b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.uk}</div>`; } else { f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.uk}</div>`; buildEn(b); } 
         c.innerHTML = `<div class="dict-card-inner"></div>`; c.firstChild.appendChild(f); c.firstChild.appendChild(b); 
         c.onclick = () => { 
             c.classList.toggle('flipped'); 
-            if(typeof dailyProg !== 'undefined' && dailyProg.flash !== undefined) dailyProg.flash++; 
+            if(typeof dailyProg !== 'undefined') dailyProg.flash++; 
             if(typeof checkGoals === 'function') checkGoals(); 
             if(typeof recordCardFlip === 'function') recordCardFlip(); 
         }; 
