@@ -335,3 +335,20 @@ header {
     color: #b45309 !important;
     font-weight: 900 !important;
 }
+/* ІДЕАЛЬНЕ ВІКНО ПЕРЕМОГИ НАД БОСОМ */
+#boss-result {
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(253, 242, 248, 0.98) !important;
+    z-index: 99999 !important;
+    display: none; /* JS сам перемкне на flex */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+.dark #boss-result {
+    background: rgba(15, 23, 42, 0.98) !important;
+}
