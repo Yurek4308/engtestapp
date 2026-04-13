@@ -307,32 +307,37 @@ function updateUI() {
 }
 
 function showSection(id) { 
-    if(sprintTimerInterval) clearInterval(sprintTimerInterval); 
-    
+    clearInterval(sprintTimerInterval); 
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
-    const t = document.getElementById(id);
-    if(t) t.classList.add('active'); 
+    document.getElementById(id).classList.add('active'); 
     
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    if(['home', 'dictionary', 'shop', 'settings'].includes(id)) {
-        const navItem = document.querySelector(`.nav-item[onclick="showSection('${id}')"]`);
-        if(navItem) navItem.classList.add('active');
+    if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings') {
+        document.querySelector(`.nav-item[onclick="showSection('${id}')"]`).classList.add('active');
     }
 
     window.scrollTo(0,0); 
-    const st = document.getElementById('user-stats');
-    if(st) st.style.display = (id === 'home') ? 'flex' : 'none'; 
-    if(id === 'home') updateBossUI();
+    if(id === 'home') document.getElementById('user-stats').style.display = 'flex'; 
+    else document.getElementById('user-stats').style.display = 'none'; 
     
-    if(id === 'dictionary') { 
-        const ds = document.getElementById('dict-search');
-        if(ds) ds.value = ''; 
-        renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); 
-    } 
-    if(id === 'inventory') renderInventory(); 
-    if(id === 'shop') renderShop(); 
-    if(id === 'wheel') checkWheelCooldown(); 
-    if(id === 'profile') renderProfile(); 
+    if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
+    if(id === 'inventory') { renderInventory(); } 
+    if(id === 'shop') { renderShop(); } 
+    if(id === 'wheel') { checkWheelCooldown(); } 
+
+    // МАГІЯ ДЛЯ КИЦІ: Ховаємо її під час ігор!
+    const cat = document.querySelector('.cat-assistant');
+    if(cat) {
+        // Киця сидить тільки на цих мирних вкладках:
+        if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings' || id === 'profile' || id === 'inventory' || id === 'achievements') {
+            cat.style.display = 'block';
+        } else {
+            // У всіх інших випадках (ігри, рулетка, бос) — ховаємо!
+            cat.style.display = 'none';
+            // Також ховаємо її хмарку з текстом, якщо вона якраз щось говорила
+            document.getElementById('cat-bubble').classList.remove('show');
+        }
+    }
 }
 
 function renderProfile() {
