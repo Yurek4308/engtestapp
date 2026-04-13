@@ -725,23 +725,26 @@ function renderInventory() {
     if(!inventory.length) { c.innerHTML = "<div style='text-align:center; color:var(--text-muted); padding:20px;'>Тут поки порожньо. Купуй купони в магазині!</div>"; return; } 
     
     inventory.forEach(i => { 
-        // 🔥 Більш надійна перевірка: за ID або за назвою (незалежно від регістру)
+        // 🔥 Надійна перевірка: за ID або за назвою
         const isGolden = i.id === 'golden_coupon' || (i.name && i.name.toLowerCase().includes('золотий'));
         
-        const goldenStyle = isGolden ? 'border: 2px solid #fbbf24; background: linear-gradient(145deg, #fffbeb, #fef3c7); box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);' : '';
+        // 1. Створюємо змінну для класу
+        const goldenClass = isGolden ? 'golden' : '';
+        
+        // Стиль для кнопки залишаємо інлайновим
         const btnStyle = isGolden ? 'background: #fbbf24; color: #78350f; font-weight: 800;' : '';
 
+        // 2. Вставляємо ${goldenClass} прямо поруч з inv-item
         c.innerHTML += `
-            <div class="inv-item" style="${goldenStyle}">
+            <div class="inv-item ${goldenClass}">
                 <div style="font-size:3rem; ${isGolden ? 'filter: drop-shadow(0 0 5px #fbbf24);' : ''}">${i.icon}</div>
-                <div class="shop-title" style="${isGolden ? 'color: #b45309;' : ''}">${i.name}</div>
+                <div class="shop-title">${i.name}</div>
                 <button class="inv-btn" style="${btnStyle}" onclick="openCoupon('${i.uid}')">
                     ${isGolden ? '✨ ВИКОРИСТАТИ ДЖОКЕР' : 'Використати купон'}
                 </button>
             </div>`; 
     }); 
 }
-
 function enterPromo() {
     const input = prompt("Введи код:"); if(!input) return;
     const code = input.replace(/[^A-Z0-9]/gi, '').toUpperCase();
