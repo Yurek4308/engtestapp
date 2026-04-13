@@ -827,7 +827,6 @@ function spinWheel() {
         spinLock = false; 
     }, 4000);
 }
-
 // ==========================================
 // 6. СЛОВНИК
 // ==========================================
@@ -837,19 +836,33 @@ function recordCardFlip() { userStats.flippedCards = (userStats.flippedCards || 
 function trackMistake(w) { if (!mistakeWords.find(x => x.en === w.en)) { mistakeWords.push(w); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); } }
 function removeMistake(w) { mistakeWords = mistakeWords.filter(x => x.en !== w.en); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); }
 
-// --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
+function renderDictionary() { 
+    const bEn = document.getElementById('btn-dict-en'); if(bEn) bEn.className = dictMode === 'en-uk' ? 'btn btn-primary' : 'btn'; 
+    const bUk = document.getElementById('btn-dict-uk'); if(bUk) bUk.className = dictMode === 'uk-en' ? 'btn btn-primary' : 'btn'; 
+    const grid = document.getElementById('dict-grid'); if(!grid) return; grid.innerHTML = ''; 
+    const searchInput = document.getElementById('dict-search'); const q = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
+    
+    if(q === 'love' || q === 'кохаю' || q === 'люблю') { 
+        const egg = document.getElementById('easter-egg');
+        if(egg) egg.style.display='flex'; 
+        if(typeof checkAchiev === 'function') checkAchiev('love'); 
+        if(searchInput) searchInput.value=''; 
+        return; 
+    } 
+    
+    let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
+
+    // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
-            // Тепер код точно знає, що шукати всередині об'єкта
             hasSpicyCard = inventory.some(item => item && item.name && item.name.includes('Пікантні фрази'));
         }
     } catch(e) { }
-    // 🔥 ОСЬ ВІН: МАГІЧНИЙ КОД ДЛЯ КНОПКИ 🔥
-    // Шукаємо наш секретний тег і показуємо його тільки власникам картки!
+
+    // 🔥 ПОКАЗУЄМО/ХОВАЄМО КНОПКУ КАТЕГОРІЇ 🔥
     const spicyBtn = document.getElementById('btn-spicy-cat');
     if (spicyBtn) {
-        // Використовуємо inline-block, щоб він гарно вписався в горизонтальний скрол
         spicyBtn.style.display = hasSpicyCard ? 'inline-block' : 'none';
     }
 
@@ -859,19 +872,33 @@ function removeMistake(w) { mistakeWords = mistakeWords.filter(x => x.en !== w.e
         return true;
     });
 
-    if(typeof currentCat !== 'undefined' && currentCat !== 'all') { list = list.filter(w => w.c === currentCat); }
+    if(typeof currentCat !== 'undefined' && currentCat !== 'all') { 
+        list = list.filter(w => w.c === currentCat); 
+    }
 
     list.sort((a,b) => a.en.localeCompare(b.en)).forEach(w => { 
         const c = document.createElement('div'); c.className = 'dict-card'; 
         const f = document.createElement('div'); f.className = 'dict-face'; 
         const b = document.createElement('div'); b.className = 'dict-face dict-back'; 
         
-        // Автоматично додаємо перчинку всім пікантним словам
         const emj = w.em || (w.c === 'spicy' ? '🌶️' : '✨');
 
-        const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; }; 
-        if(dictMode === 'en-uk') { buildEn(f); b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.uk}</div>`; } else { f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.uk}</div>`; buildEn(b); } 
-        c.innerHTML = `<div class="dict-card-inner"></div>`; c.firstChild.appendChild(f); c.firstChild.appendChild(b); 
+        const buildEn = (el) => { 
+            el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; 
+        }; 
+
+        if(dictMode === 'en-uk') { 
+            buildEn(f); 
+            b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.uk}</div>`; 
+        } else { 
+            f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emj}</div><div>${w.uk}</div>`; 
+            buildEn(b); 
+        } 
+
+        c.innerHTML = `<div class="dict-card-inner"></div>`; 
+        c.firstChild.appendChild(f); 
+        c.firstChild.appendChild(b); 
+        
         c.onclick = () => { 
             c.classList.toggle('flipped'); 
             if(typeof dailyProg !== 'undefined') dailyProg.flash++; 
@@ -881,7 +908,6 @@ function removeMistake(w) { mistakeWords = mistakeWords.filter(x => x.en !== w.e
         grid.appendChild(c); 
     }); 
 }
-
 // ==========================================
 // 7. МІНІ-ІГРИ
 // ==========================================
