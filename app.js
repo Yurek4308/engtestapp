@@ -180,6 +180,53 @@ function pokeCat() {
     // Ховаємо хмарку через 4 секунди
     setTimeout(() => bubble.classList.remove('show'), 4000);
 }
+// 🔥 ВСТАВЛЯЙ НОВИЙ БЛОК КОДУ ПРЯМО ТУТ 🔥
+// --- 🌶️ ЛОГІКА ПІКАНТНОГО РУБИЛЬНИКА ---
+let spicyInGames = localStorage.getItem('spicyInGames') === 'true';
+
+// Зберігаємо вибір Олі
+function toggleSpicyGames(checkbox) {
+    spicyInGames = checkbox.checked;
+    localStorage.setItem('spicyInGames', spicyInGames);
+}
+
+// Функція, яка видає правильний список слів для ігор
+function getGameWords() {
+    let hasSpicyCard = false;
+    try { 
+        if (typeof inventory !== 'undefined' && inventory !== null) {
+            hasSpicyCard = inventory.some(item => 
+                item === 'VIP: Пікантні фрази 🌶️' || 
+                (item && item.name && item.name.includes('Пікантні фрази'))
+            );
+        }
+    } catch(e) { }
+
+    // Якщо картки немає АБО галочка вимкнена — забираємо всі гарячі слова з ігор
+    if (!hasSpicyCard || !spicyInGames) {
+        return baseVocabulary.filter(w => w.c !== 'spicy');
+    }
+    
+    // Якщо картка є і галочка стоїть — повертаємо весь словник
+    return baseVocabulary;
+}
+
+// Функція, яка показує/ховає рубильник в Налаштуваннях
+function updateSpicyToggle() {
+    let hasSpicyCard = false;
+    try { 
+        if (typeof inventory !== 'undefined' && inventory !== null) {
+            hasSpicyCard = inventory.some(item => item === 'VIP: Пікантні фрази 🌶️' || (item && item.name && item.name.includes('Пікантні фрази')));
+        }
+    } catch(e) { }
+    
+    const container = document.getElementById('spicy-toggle-container');
+    const checkbox = document.getElementById('spicy-games-toggle');
+    if (container && checkbox) {
+        container.style.display = hasSpicyCard ? 'block' : 'none';
+        checkbox.checked = spicyInGames; // Ставимо галочку так, як вона зберегла
+    }
+}
 
 const compliments = ["Ти сьогодні неймовірна! ✨", "Моя найрозумніша дівчинка 🥰", "Пишаюся тобою ❤️", "Твоя посмішка - найкраща 😍", "Твоя наполегливість вражає! 🚀", "Кохаю тебе безмежно 💖", "Кохаю тебе дужче🤗", "Моя манюня😊", "Моє серденько ❤️", "Кохаю тебе кицюня😘", "Ти моє найбільше натхнення 🌸"];
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
@@ -368,11 +415,12 @@ function fireParticles(x, y, cor) {
     } 
     document.body.appendChild(frag);
 }
-
 function shuffleArray(array) { let arr = [...array]; for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
-function getVocab() { return currentCat === 'all' ? baseVocabulary : baseVocabulary.filter(w => w.c === currentCat); }
-function getLevelInfo() { let currentLvl = levelSystem[0]; for(let i=0; i<levelSystem.length; i++) { if(lifetimeXP >= levelSystem[i].xp) currentLvl = levelSystem[i]; } return currentLvl; }
 
+// 🔥 ОСЬ ТУТ МАГІЯ: Тепер ігри беруть слова через нашого "Охоронця"
+function getVocab() { return currentCat === 'all' ? getGameWords() : getGameWords().filter(w => w.c === currentCat); }
+
+function getLevelInfo() { let currentLvl = levelSystem[0]; for(let i=0; i<levelSystem.length; i++) { if(lifetimeXP >= levelSystem[i].xp) currentLvl = levelSystem[i]; } return currentLvl; }
 // ==========================================
 // 4. ПРОФІЛЬ ТА НАВІГАЦІЯ
 // ==========================================
@@ -828,7 +876,7 @@ function renderDictionary() {
 // ==========================================
 let emoQ=[], eIdx=0, eScore=0, eAns=false;
 function startEmojiQuiz() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} emoQ = shuffleArray(voc).slice(0, 15); eIdx=0; eScore=0; showSection('emoji-quiz'); document.getElementById('emoji-result').style.display='none'; document.getElementById('emoji-active').style.display='flex'; loadEmo(); }
-function loadEmo() { eAns = false; document.getElementById('btn-next-emoji').style.display='none'; let w = emoQ[eIdx]; document.getElementById('emoji-counter').textContent=`${eIdx+1}/${emoQ.length}`; document.getElementById('emoji-score').textContent=eScore; document.getElementById('emoji-question').innerHTML=`<div style="font-size: 4.5rem; line-height: 1;">${w.em}</div><div style="font-size: 1.2rem; color: var(--text-muted); font-weight: 700;">${w.uk}</div>`; const opts = shuffleArray([w, ...shuffleArray(baseVocabulary.filter(x=>x.en!==w.en)).slice(0,3)]); const g = document.getElementById('emoji-options'); g.innerHTML=''; opts.forEach(o => { const b = document.createElement('button'); b.className='option-btn'; b.textContent=o.en; b.onclick = (e) => { if(eAns) return; eAns=true; const c = o.en===w.en; fireParticles(e.clientX, e.clientY, c); document.querySelectorAll('#emoji-options .option-btn').forEach(btn => { btn.disabled=true; if(btn.textContent===w.en) btn.classList.add('correct'); else if(btn===b && !c) btn.classList.add('wrong'); }); if(c) { eScore++; addXP(1); } else trackMistake(w); document.getElementById('emoji-score').textContent=eScore; document.getElementById('btn-next-emoji').style.display='block'; }; g.appendChild(b); }); }
+function loadEmo() { eAns = false; document.getElementById('btn-next-emoji').style.display='none'; let w = emoQ[eIdx]; document.getElementById('emoji-counter').textContent=`${eIdx+1}/${emoQ.length}`; document.getElementById('emoji-score').textContent=eScore; document.getElementById('emoji-question').innerHTML=`<div style="font-size: 4.5rem; line-height: 1;">${w.em}</div><div style="font-size: 1.2rem; color: var(--text-muted); font-weight: 700;">${w.uk}</div>`; const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const g = document.getElementById('emoji-options'); g.innerHTML=''; opts.forEach(o => { const b = document.createElement('button'); b.className='option-btn'; b.textContent=o.en; b.onclick = (e) => { if(eAns) return; eAns=true; const c = o.en===w.en; fireParticles(e.clientX, e.clientY, c); document.querySelectorAll('#emoji-options .option-btn').forEach(btn => { btn.disabled=true; if(btn.textContent===w.en) btn.classList.add('correct'); else if(btn===b && !c) btn.classList.add('wrong'); }); if(c) { eScore++; addXP(1); } else trackMistake(w); document.getElementById('emoji-score').textContent=eScore; document.getElementById('btn-next-emoji').style.display='block'; }; g.appendChild(b); }); }
 function nextEmoji() { eIdx++; if(eIdx<emoQ.length) loadEmo(); else { document.getElementById('emoji-active').style.display='none'; document.getElementById('emoji-result').style.display='flex'; document.getElementById('emoji-final').textContent=eScore+"/"+emoQ.length; gameFinished(eScore===emoQ.length, 'emoji', eScore); } }
 
 let constQ=[], cIdx=0, cScore=0, cAns=[], constLock=false, constErrors=0;
@@ -839,7 +887,7 @@ function nextConst() { cIdx++; if(cIdx<5) loadConst(); else { document.getElemen
 
 let tfQ=[], tfIdx=0, tfScore=0, tfTrue=false, tfLock=false, tfErrors=0;
 function startTrueFalse() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} tfQ=shuffleArray(voc).slice(0,15); tfIdx=0; tfScore=0; tfErrors=0; showSection('truefalse'); document.getElementById('tf-result').style.display='none'; document.getElementById('tf-active').style.display='flex'; loadTfSwipe(); }
-function loadTfSwipe() { tfLock=false; document.getElementById('tf-counter').textContent=`${tfIdx+1}/15`; document.getElementById('tf-score').textContent=tfScore; let w=tfQ[tfIdx]; tfTrue=Math.random()>0.5; let dUk=w.uk; if(!tfTrue){ let o=baseVocabulary.filter(x=>x.en!==w.en); dUk=o[Math.floor(Math.random()*o.length)].uk; } const card = document.getElementById('tf-card'); card.innerHTML=`<div style="font-size:4rem;margin-bottom:10px;">${w.em}</div><span id="tf-en">${w.en}</span><span class="tf-equals">=</span><span id="tf-uk">${dUk}</span>`; card.style.transform="translate(0px, 0px) rotate(0deg)"; card.style.opacity="1"; card.style.background="var(--card-bg)"; setupSwipe(card); }
+function loadTfSwipe() { tfLock=false; document.getElementById('tf-counter').textContent=`${tfIdx+1}/15`; document.getElementById('tf-score').textContent=tfScore; let w=tfQ[tfIdx]; tfTrue=Math.random()>0.5; let dUk=w.uk; if(!tfTrue){ let o=getGameWords().filter(x=>x.en!==w.en); dUk=o[Math.floor(Math.random()*o.length)].uk; } const card = document.getElementById('tf-card'); card.innerHTML=`<div style="font-size:4rem;margin-bottom:10px;">${w.em}</div><span id="tf-en">${w.en}</span><span class="tf-equals">=</span><span id="tf-uk">${dUk}</span>`; card.style.transform="translate(0px, 0px) rotate(0deg)"; card.style.opacity="1"; card.style.background="var(--card-bg)"; setupSwipe(card); }
 function setupSwipe(card) { let stX=0, stY=0, currX=0; card.ontouchstart = e => { stX=e.touches[0].clientX; stY=e.touches[0].clientY; card.style.transition='none'; }; card.ontouchmove = e => { if(tfLock) return; const dx=e.touches[0].clientX-stX; const dy=e.touches[0].clientY-stY; if(Math.abs(dx)>Math.abs(dy)) { e.preventDefault(); currX=dx; card.style.transform=`translate(${dx}px, ${dy}px) rotate(${dx/15}deg)`; } }; card.ontouchend = e => { if(tfLock) return; card.style.transition='transform 0.2s, opacity 0.2s'; if(currX>100) { checkTfSwipe(true); card.style.transform=`translate(1000px, 0) rotate(30deg)`; card.style.opacity="0"; } else if(currX<-100) { checkTfSwipe(false); card.style.transform=`translate(-1000px, 0) rotate(-30deg)`; card.style.opacity="0"; } else { card.style.transform="translate(0,0) rotate(0)"; currX=0; } }; }
 function checkTfSwipe(guess) { if(tfLock) return; tfLock=true; const c = guess===tfTrue; const card=document.getElementById('tf-card'); const r=card.getBoundingClientRect(); card.style.background = c ? "var(--correct)" : "var(--wrong)"; fireParticles(r.left+r.width/2, r.top+r.height/2, c); if(c) { tfScore++; addXP(1); } else { tfErrors++; trackMistake(tfQ[tfIdx]); } setTimeout(()=>{ tfIdx++; if(tfIdx<15) loadTfSwipe(); else{ document.getElementById('tf-active').style.display='none'; document.getElementById('tf-result').style.display='flex'; document.getElementById('tf-final-score').textContent=tfScore+"/15"; gameFinished(tfScore===15, 'swipe', 1); if(tfScore===15 && tfErrors===0) checkAchiev('sniper'); } }, 250); }
 
@@ -847,7 +895,7 @@ let quizQ=[], qIdx=0, qScore=0, qType='uk-en', isMist=false;
 function startMistakesMode() { if(mistakeWords.length===0){ showToast("Помилок немає! ❤️"); return; } qType='uk-en'; isMist=true; quizQ=shuffleArray(mistakeWords); qIdx=0; qScore=0; showSection('quiz'); document.getElementById('quiz-result').style.display='none'; document.getElementById('quiz-active').style.display='flex'; loadQuiz(); }
 function startQuiz(t) { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} qType=t; isMist=false; quizQ=shuffleArray(voc).slice(0,20); qIdx=0; qScore=0; showSection('quiz'); document.getElementById('quiz-result').style.display='none'; document.getElementById('quiz-active').style.display='flex'; loadQuiz(); }
 function restartQuiz() { if(isMist) startMistakesMode(); else startQuiz(qType); }
-function loadQuiz() { document.getElementById('btn-next-quiz').style.display='none'; let w=quizQ[qIdx]; document.getElementById('quiz-counter').textContent=`${qIdx+1}/${quizQ.length}`; document.getElementById('quiz-score').textContent=qScore; document.getElementById('quiz-question').innerHTML=`<div style="font-size:3rem;margin-bottom:10px;">${w.em}</div>`+(qType==='uk-en'?w.uk:w.en); const opts=shuffleArray([w, ...shuffleArray(baseVocabulary.filter(x=>x.en!==w.en)).slice(0,3)]); const g=document.getElementById('quiz-options'); g.innerHTML=''; opts.forEach(o=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=qType==='uk-en'?o.en:o.uk; b.onclick=(e)=>{ const c=o.en===w.en; fireParticles(e.clientX, e.clientY, c); if(c){b.classList.add('correct'); qScore++; addXP(1); if(isMist)removeMistake(w);}else{b.classList.add('wrong'); trackMistake(w); document.querySelectorAll('.option-btn').forEach(btn=>{if(btn.textContent===(qType==='uk-en'?w.en:w.uk))btn.classList.add('correct');});} document.querySelectorAll('.option-btn').forEach(btn=>btn.disabled=true); document.getElementById('btn-next-quiz').style.display='block'; }; g.appendChild(b); }); }
+function loadQuiz() { document.getElementById('btn-next-quiz').style.display='none'; let w=quizQ[qIdx]; document.getElementById('quiz-counter').textContent=`${qIdx+1}/${quizQ.length}`; document.getElementById('quiz-score').textContent=qScore; document.getElementById('quiz-question').innerHTML=`<div style="font-size:3rem;margin-bottom:10px;">${w.em}</div>`+(qType==='uk-en'?w.uk:w.en); const opts=shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const g=document.getElementById('quiz-options'); g.innerHTML=''; opts.forEach(o=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=qType==='uk-en'?o.en:o.uk; b.onclick=(e)=>{ const c=o.en===w.en; fireParticles(e.clientX, e.clientY, c); if(c){b.classList.add('correct'); qScore++; addXP(1); if(isMist)removeMistake(w);}else{b.classList.add('wrong'); trackMistake(w); document.querySelectorAll('.option-btn').forEach(btn=>{if(btn.textContent===(qType==='uk-en'?w.en:w.uk))btn.classList.add('correct');});} document.querySelectorAll('.option-btn').forEach(btn=>btn.disabled=true); document.getElementById('btn-next-quiz').style.display='block'; }; g.appendChild(b); }); }
 function nextQuizQuestion() { qIdx++; if(qIdx<quizQ.length) loadQuiz(); else{ document.getElementById('quiz-active').style.display='none'; document.getElementById('quiz-result').style.display='flex'; document.getElementById('final-score').textContent=qScore+"/"+quizQ.length; gameFinished(qScore===quizQ.length && !isMist, 'quiz_score', qScore); } }
 
 let mFound=0, mErr=0, mSel=null, mLock=false;
@@ -858,7 +906,7 @@ function updM() { document.getElementById('match-counter').textContent=`Пари
 let sprTime=60, sprScore=0, sprQ=[], sprLock=false;
 function startSprint() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} showSection('sprint'); document.getElementById('sprint-result').style.display='none'; document.getElementById('sprint-active').style.display='flex'; sprTime=60; sprScore=0; sprQ=shuffleArray(voc); updSpr(); clearInterval(sprintTimerInterval); sprintTimerInterval=setInterval(()=>{sprTime--; updSpr(); if(sprTime<=0) endSpr();},1000); loadSpr(); }
 function updSpr() { document.getElementById('sprint-time-text').textContent=sprTime; document.getElementById('sprint-score-text').textContent=sprScore; let b=document.getElementById('sprint-bar'); b.style.width=Math.max(0,(sprTime/60)*100)+"%"; if(sprTime<15) b.classList.add('low'); else b.classList.remove('low'); }
-function loadSpr() { sprLock = false; let w=sprQ[Math.floor(Math.random()*sprQ.length)]; document.getElementById('sprint-question').innerHTML=`<div style="font-size:3rem;">${w.em}</div>`+w.uk; const o=shuffleArray([w,...shuffleArray(baseVocabulary.filter(x=>x.en!==w.en)).slice(0,3)]); const c=document.getElementById('sprint-options'); c.innerHTML=''; o.forEach(opt=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=opt.en; b.onclick=(e)=>{ if(sprLock) return; sprLock = true; const cor=opt.en===w.en; fireParticles(e.clientX, e.clientY, cor); if(cor){sprScore++; addXP(1); sprTime=Math.min(sprTime+1,60);}else{sprTime=Math.max(sprTime-2,0); trackMistake(w);} updSpr(); if(sprTime>0) setTimeout(loadSpr, 150); else endSpr(); }; c.appendChild(b); }); }
+function loadSpr() { sprLock = false; let w=sprQ[Math.floor(Math.random()*sprQ.length)]; document.getElementById('sprint-question').innerHTML=`<div style="font-size:3rem;">${w.em}</div>`+w.uk; const o=shuffleArray([w,...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const c=document.getElementById('sprint-options'); c.innerHTML=''; o.forEach(opt=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=opt.en; b.onclick=(e)=>{ if(sprLock) return; sprLock = true; const cor=opt.en===w.en; fireParticles(e.clientX, e.clientY, cor); if(cor){sprScore++; addXP(1); sprTime=Math.min(sprTime+1,60);}else{sprTime=Math.max(sprTime-2,0); trackMistake(w);} updSpr(); if(sprTime>0) setTimeout(loadSpr, 150); else endSpr(); }; c.appendChild(b); }); }
 function endSpr() { clearInterval(sprintTimerInterval); document.getElementById('sprint-active').style.display='none'; document.getElementById('sprint-result').style.display='flex'; document.getElementById('sprint-final-score').textContent=sprScore; if(sprScore>bestSprint){bestSprint=sprScore; localStorage.setItem('sprintRecord',bestSprint); document.getElementById('sprint-badge').textContent=bestSprint; checkAchiev('speed');} gameFinished(false, 'sprint', sprScore); }
 
 let sQ=[], sIdx=0, sSco=0, sTar="", sCur=[], sLet=[], spellLock=false;
@@ -878,7 +926,7 @@ function endHm(w) { if(w && hmLiv===1) checkAchiev('survivor'); setTimeout(()=>{
 let lstQ=[], lstI=0, lstS=0, cLw="", lstLock=false;
 function startListening() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} lstQ=shuffleArray(voc).slice(0,15); lstI=0; lstS=0; showSection('listening'); document.getElementById('listen-result').style.display='none'; document.getElementById('listen-active').style.display='flex'; loadLst(); }
 function playWordAudio(a, e) { speak(cLw, a, e); }
-function loadLst() { lstLock = false; document.getElementById('btn-next-listen').style.display='none'; let w=lstQ[lstI]; cLw=w.en; document.getElementById('listen-counter').textContent=`${lstI+1}/15`; document.getElementById('listen-score').textContent=lstS; const o=shuffleArray([w, ...shuffleArray(baseVocabulary.filter(x=>x.en!==w.en)).slice(0,3)]); const g=document.getElementById('listen-options'); g.innerHTML=''; o.forEach(opt=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=opt.uk; b.onclick=(e)=>{ if(lstLock) return; lstLock = true; const c=opt.en===w.en; fireParticles(e.clientX, e.clientY, c); document.querySelectorAll('#listen-options .option-btn').forEach(x=>{ x.disabled=true; if(x.textContent===w.uk) x.classList.add('correct'); else if(x===b&&!c) x.classList.add('wrong'); }); if(c){lstS++; addXP(1);} else trackMistake(w); document.getElementById('btn-next-listen').style.display='block'; }; g.appendChild(b); }); setTimeout(()=>speak(cLw, 'us', null), 300); }
+function loadLst() { lstLock = false; document.getElementById('btn-next-listen').style.display='none'; let w=lstQ[lstI]; cLw=w.en; document.getElementById('listen-counter').textContent=`${lstI+1}/15`; document.getElementById('listen-score').textContent=lstS; const o=shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const g=document.getElementById('listen-options'); g.innerHTML=''; o.forEach(opt=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=opt.uk; b.onclick=(e)=>{ if(lstLock) return; lstLock = true; const c=opt.en===w.en; fireParticles(e.clientX, e.clientY, c); document.querySelectorAll('#listen-options .option-btn').forEach(x=>{ x.disabled=true; if(x.textContent===w.uk) x.classList.add('correct'); else if(x===b&&!c) x.classList.add('wrong'); }); if(c){lstS++; addXP(1);} else trackMistake(w); document.getElementById('btn-next-listen').style.display='block'; }; g.appendChild(b); }); setTimeout(()=>speak(cLw, 'us', null), 300); }
 function nextListenQuestion() { lstI++; if(lstI<15) loadLst(); else{ document.getElementById('listen-active').style.display='none'; document.getElementById('listen-result').style.display='flex'; document.getElementById('listen-final-score').textContent=lstS+"/15"; gameFinished(lstS===15, 'listening', 1); } }
 
 let fcI=0, fcM='en-uk', fcArr=[];
@@ -887,7 +935,6 @@ function updFc() { const c=document.getElementById('flashcard'); c.classList.rem
 function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); dailyProg.flash++; checkGoals(); recordCardFlip(); }
 function nextCard() { fcI=(fcI+1)%fcArr.length; updFc(); }
 function prevCard() { fcI=(fcI-1+fcArr.length)%fcArr.length; updFc(); }
-
 // ==========================================
 // ЕПІЧНИЙ БОС (3 СТАДІЇ + ТАЙМЕР)
 // ==========================================
@@ -973,7 +1020,8 @@ function loadBoss() {
     if (currentPhase === 1) {
         qBox.innerHTML = `<div style="font-size:3.5rem;margin-bottom:10px;">${w.em}</div>${w.uk}`; 
         optsGrid.style.display = 'grid'; typingArea.style.display = 'none';
-        const opts = shuffleArray([w, ...shuffleArray(baseVocabulary.filter(x=>x.en!==w.en)).slice(0,3)]); 
+        // 🔥 ЗАХИЩЕНО ТУТ 🔥
+        const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); 
         optsGrid.innerHTML = ''; 
         opts.forEach(o => { 
             const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.en; 
@@ -984,6 +1032,28 @@ function loadBoss() {
             }; optsGrid.appendChild(b); 
         }); 
     } 
+    else if (currentPhase === 2) {
+        qBox.innerHTML = `<div style="font-size:3.5rem;margin-bottom:10px;">${w.em}</div>${w.uk}`; 
+        optsGrid.style.display = 'none'; typingArea.style.display = 'flex';
+        const input = document.getElementById('boss-input'); input.value = ''; setTimeout(() => input.focus(), 100); 
+    } 
+    else if (currentPhase === 3) {
+        qBox.innerHTML = `<div style="font-size:5rem; margin-bottom:10px; animation: pulse 1s infinite;">🔊</div><span style="font-size:1rem; color:var(--text-muted);">Слухай уважно!</span>`; 
+        optsGrid.style.display = 'grid'; typingArea.style.display = 'none'; speak(w.en, 'us', null); 
+        // 🔥 ЗАХИЩЕНО ТУТ 🔥
+        const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); 
+        optsGrid.innerHTML = ''; 
+        opts.forEach(o => { 
+            const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.uk; 
+            b.onclick = (e) => { 
+                if(bLock) return; bLock = true; clearInterval(bossInterval); const isCorrect = o.en === w.en; fireParticles(e.clientX, e.clientY, isCorrect); 
+                if(isCorrect) { b.classList.add('correct'); dealDamage(); setTimeout(()=>{ bIdx++; if(bIdx < 50) loadBoss(); else finishBoss(true); }, 400); } 
+                else { b.classList.add('wrong'); if(!takeDamage()) setTimeout(()=>{ bIdx++; if(bIdx < 50) loadBoss(); else finishBoss(true); }, 500); } 
+            }; optsGrid.appendChild(b); 
+        });
+    }
+    startBossTimer();
+}
     else if (currentPhase === 2) {
         qBox.innerHTML = `<div style="font-size:3.5rem;margin-bottom:10px;">${w.em}</div>${w.uk}`; 
         optsGrid.style.display = 'none'; typingArea.style.display = 'flex';
@@ -1041,20 +1111,19 @@ let spyQ = [], spyI = 0, spyS = 0, spyLock = false;
 function startSpy() {
     showSection('spy'); document.getElementById('spy-result').style.display='none'; document.getElementById('spy-active').style.display='flex';
     spyQ = []; spyI = 0; spyS = 0;
-    // Генеруємо 10 рівнів
-    const categories = [...new Set(baseVocabulary.map(w => w.c))];
+    // 🔥 ЗАХИЩЕНО УСІ 4 РЯДКИ ТУТ 🔥
+    const categories = [...new Set(getGameWords().map(w => w.c))];
     for(let i=0; i<10; i++) {
-        let validCats = categories.filter(c => baseVocabulary.filter(w => w.c === c).length >= 3);
+        let validCats = categories.filter(c => getGameWords().filter(w => w.c === c).length >= 3);
         if(validCats.length < 2) break;
         let mainCat = validCats[Math.floor(Math.random() * validCats.length)];
         let oddCat = categories.filter(c => c !== mainCat)[Math.floor(Math.random() * (categories.length - 1))];
-        let mainWords = shuffleArray(baseVocabulary.filter(w => w.c === mainCat)).slice(0, 3);
-        let oddWord = shuffleArray(baseVocabulary.filter(w => w.c === oddCat))[0];
+        let mainWords = shuffleArray(getGameWords().filter(w => w.c === mainCat)).slice(0, 3);
+        let oddWord = shuffleArray(getGameWords().filter(w => w.c === oddCat))[0];
         spyQ.push({ words: shuffleArray([...mainWords, oddWord]), odd: oddWord });
     }
     loadSpy();
 }
-
 function loadSpy() {
     spyLock = false; document.getElementById('btn-next-spy').style.display = 'none';
     document.getElementById('spy-counter').textContent = `${spyI+1}/${spyQ.length}`;
@@ -1286,11 +1355,13 @@ function spawnMeteor() {
     document.getElementById('meteor-speed').textContent = metSpeed.toFixed(1) + "x";
     document.getElementById('meteor-score').textContent = `Рахунок: ${metScore}`;
     
-    metWordObj = baseVocabulary[Math.floor(Math.random() * baseVocabulary.length)];
+    // 🔥 ЗАХИЩЕНО ТУТ 🔥
+    metWordObj = getGameWords()[Math.floor(Math.random() * getGameWords().length)];
     const el = document.getElementById('meteor-word');
     el.textContent = metWordObj.en; el.style.top = metPos + 'px';
     
-    const opts = shuffleArray([metWordObj, ...shuffleArray(baseVocabulary.filter(x => x.en !== metWordObj.en)).slice(0,2)]);
+    // 🔥 І ТУТ 🔥
+    const opts = shuffleArray([metWordObj, ...shuffleArray(getGameWords().filter(x => x.en !== metWordObj.en)).slice(0,2)]);
     const g = document.getElementById('meteor-options'); g.innerHTML = '';
     opts.forEach(o => {
         const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.uk; b.style.padding = '12px'; b.style.fontSize = '1rem';
