@@ -190,33 +190,26 @@ function toggleSpicyGames(checkbox) {
     localStorage.setItem('spicyInGames', spicyInGames);
 }
 
-// Функція, яка видає правильний список слів для ігор
 function getGameWords() {
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
-            hasSpicyCard = inventory.some(item => 
-                item === 'VIP: Пікантні фрази 🌶️' || 
-                (item && item.name && item.name.includes('Пікантні фрази'))
-            );
+            // Тепер шукаємо тільки за назвою — це 100% надійно
+            hasSpicyCard = inventory.some(item => item && item.name && item.name.includes('Пікантні фрази'));
         }
     } catch(e) { }
 
-    // Якщо картки немає АБО галочка вимкнена — забираємо всі гарячі слова з ігор
     if (!hasSpicyCard || !spicyInGames) {
         return baseVocabulary.filter(w => w.c !== 'spicy');
     }
     
-    // Якщо картка є і галочка стоїть — повертаємо весь словник
     return baseVocabulary;
 }
-
-// Функція, яка показує/ховає рубильник в Налаштуваннях
 function updateSpicyToggle() {
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
-            hasSpicyCard = inventory.some(item => item === 'VIP: Пікантні фрази 🌶️' || (item && item.name && item.name.includes('Пікантні фрази')));
+            hasSpicyCard = inventory.some(item => item && item.name && item.name.includes('Пікантні фрази'));
         }
     } catch(e) { }
     
@@ -224,7 +217,7 @@ function updateSpicyToggle() {
     const checkbox = document.getElementById('spicy-games-toggle');
     if (container && checkbox) {
         container.style.display = hasSpicyCard ? 'block' : 'none';
-        checkbox.checked = spicyInGames; // Ставимо галочку так, як вона зберегла
+        checkbox.checked = spicyInGames;
     }
 }
 
@@ -730,20 +723,22 @@ function renderInventory() {
     const c = document.getElementById('inv-list'); if(!c) return;
     c.innerHTML = ''; 
     if(!inventory.length) { c.innerHTML = "<div style='text-align:center; color:var(--text-muted); padding:20px;'>Тут поки порожньо. Купуй купони в магазині!</div>"; return; } 
-    inventory.forEach(i => { c.innerHTML += `<div class="inv-item"><div style="font-size:3rem;">${i.icon}</div><div class="shop-title">${i.name}</div><button class="inv-btn" onclick="openCoupon('${i.uid}')">Використати купон</button></div>`; }); 
-}
+    
+    inventory.forEach(i => { 
+        // 🔥 Більш надійна перевірка: за ID або за назвою (незалежно від регістру)
+        const isGolden = i.id === 'golden_coupon' || (i.name && i.name.toLowerCase().includes('золотий'));
+        
+        const goldenStyle = isGolden ? 'border: 2px solid #fbbf24; background: linear-gradient(145deg, #fffbeb, #fef3c7); box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);' : '';
+        const btnStyle = isGolden ? 'background: #fbbf24; color: #78350f; font-weight: 800;' : '';
 
-function openCoupon(u) { const i = inventory.find(x => x.uid == u); if(!i) return; curCuid = u; document.getElementById('cm-icon').textContent = i.icon; document.getElementById('cm-title').textContent = i.name; document.getElementById('coupon-modal').style.display = 'flex'; }
-function closeCoupon() { const m = document.getElementById('coupon-modal'); if(m) m.style.display = 'none'; }
-
-function checkAchiev(id){ if(!achievs[id]){ achievs[id]=true; localStorage.setItem('achievs', JSON.stringify(achievs)); showToast("Нове досягнення!"); renderAchievs(); } }
-function renderAchievs() { 
-    const c = document.getElementById('achiev-list'); if(!c) return;
-    c.innerHTML = ''; 
-    Object.keys(achievList).forEach(k => { 
-        const a = achievList[k]; const unl = achievs[k] ? 'unlocked' : ''; 
-        if(a.secret && !unl) c.innerHTML += `<div class="achiev-card"><div class="achiev-icon" style="font-size:2.5rem; margin-right:15px;">❓</div><div><div class="achiev-title">Секретне досягнення</div><div class="achiev-desc">Виконай особливі умови, щоб відкрити.</div></div></div>`;
-        else c.innerHTML += `<div class="achiev-card ${unl}"><div class="achiev-icon" style="font-size:2.5rem; margin-right:15px;">${a.icon}</div><div><div class="achiev-title">${a.title}</div><div class="achiev-desc">${a.desc}</div></div></div>`; 
+        c.innerHTML += `
+            <div class="inv-item" style="${goldenStyle}">
+                <div style="font-size:3rem; ${isGolden ? 'filter: drop-shadow(0 0 5px #fbbf24);' : ''}">${i.icon}</div>
+                <div class="shop-title" style="${isGolden ? 'color: #b45309;' : ''}">${i.name}</div>
+                <button class="inv-btn" style="${btnStyle}" onclick="openCoupon('${i.uid}')">
+                    ${isGolden ? '✨ ВИКОРИСТАТИ ДЖОКЕР' : 'Використати купон'}
+                </button>
+            </div>`; 
     }); 
 }
 
@@ -842,33 +837,14 @@ function recordCardFlip() { userStats.flippedCards = (userStats.flippedCards || 
 function trackMistake(w) { if (!mistakeWords.find(x => x.en === w.en)) { mistakeWords.push(w); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); } }
 function removeMistake(w) { mistakeWords = mistakeWords.filter(x => x.en !== w.en); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); }
 
-function renderDictionary() { 
-    const bEn = document.getElementById('btn-dict-en'); if(bEn) bEn.className = dictMode === 'en-uk' ? 'btn btn-primary' : 'btn'; 
-    const bUk = document.getElementById('btn-dict-uk'); if(bUk) bUk.className = dictMode === 'uk-en' ? 'btn btn-primary' : 'btn'; 
-    const grid = document.getElementById('dict-grid'); if(!grid) return; grid.innerHTML = ''; 
-    const searchInput = document.getElementById('dict-search'); const q = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
-    
-    if(q === 'love' || q === 'кохаю' || q === 'люблю') { 
-        const egg = document.getElementById('easter-egg');
-        if(egg) egg.style.display='flex'; 
-        if(typeof checkAchiev === 'function') checkAchiev('love'); 
-        if(searchInput) searchInput.value=''; 
-        return; 
-    } 
-    
-    let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
-    
-    // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
+// --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
-            hasSpicyCard = inventory.some(item => 
-                item === 'VIP: Пікантні фрази 🌶️' || 
-                (item && item.name && item.name.includes('Пікантні фрази'))
-            );
+            // Тепер код точно знає, що шукати всередині об'єкта
+            hasSpicyCard = inventory.some(item => item && item.name && item.name.includes('Пікантні фрази'));
         }
     } catch(e) { }
-
     // 🔥 ОСЬ ВІН: МАГІЧНИЙ КОД ДЛЯ КНОПКИ 🔥
     // Шукаємо наш секретний тег і показуємо його тільки власникам картки!
     const spicyBtn = document.getElementById('btn-spicy-cat');
@@ -1110,7 +1086,7 @@ function finishBoss(win) {
     if(win) { 
         if(!dailyProg.bossWon) {
             document.getElementById('boss-result-desc').textContent = "Оля - справжня войовниця! Бос переможений. Ось твої +500 🌟 та Золотий купон! Юра тобою пишається! 🥰"; 
-            addXP(500); inventory.push({ id:'boss_win', name:'🥇 Золотий Джокер (Будь-яке бажання!)', price:0, icon:'🥇', uid:Date.now() }); 
+            addXP(500); inventory.push({ id:'golden_coupon', name:'🥇 Золотий Джокер (Будь-яке бажання!)', price:0, icon:'🥇', uid:Date.now() });
             localStorage.setItem('userInventory', JSON.stringify(inventory)); checkAchiev('boss_killer'); dailyProg.bossWon = true; saveDaily();
         } else {
             document.getElementById('boss-result-desc').textContent = "Боса розбито вдруге! Нагороду вже отримано, але твоя англійська стала ще сильнішою!";
