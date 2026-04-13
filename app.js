@@ -733,16 +733,17 @@ function renderDictionary() {
     
     let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
     
-    // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
+  // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
     let hasSpicyCard = false;
     try { 
-        // Перевіряємо дуже обережно, щоб не викликати помилку
-        if (typeof inventory !== 'undefined' && inventory !== null && inventory.includes('VIP: Пікантні фрази 🌶️')) {
-            hasSpicyCard = true; 
+        if (typeof inventory !== 'undefined' && inventory !== null) {
+            // Шукаємо картку незалежно від того, як вона збереглася в системі
+            hasSpicyCard = inventory.some(item => 
+                item === 'VIP: Пікантні фрази 🌶️' || 
+                (item && item.name === 'VIP: Пікантні фрази 🌶️')
+            );
         }
-    } catch(e) { 
-        // Якщо інвентар ще не завантажився, просто ігноруємо
-    }
+    } catch(e) { }
 
     // Відсіюємо пікантні слова, якщо картки ще немає
     list = list.filter(w => {
