@@ -404,7 +404,7 @@ function updateBossUI() {
     const bossBtn = document.getElementById('boss-btn');
     const desc = document.getElementById('boss-desc');
     if(!bossBtn || !desc) return;
-    if(d.getDay() === 0) { 
+    if(true) {
         bossBtn.style.filter = 'grayscale(0)'; bossBtn.style.pointerEvents = 'auto'; bossBtn.style.animation = 'none'; bossBtn.style.borderColor = '#ff0000';
         let attempts = dailyProg.bossAttempts || 0;
         let cost = attempts < 2 ? 0 : (attempts === 2 ? 150 : (attempts === 3 ? 250 : 300));
