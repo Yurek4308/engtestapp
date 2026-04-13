@@ -830,11 +830,35 @@ function spinWheel() {
 // ==========================================
 // 6. СЛОВНИК
 // ==========================================
-function setCat(c, el) { currentCat = c; document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active')); el.classList.add('active'); if(document.getElementById('dictionary').classList.contains('active')) renderDictionary(); }
-let dictMode = 'en-uk'; function setDictMode(m) { dictMode = m; renderDictionary(); }
-function recordCardFlip() { userStats.flippedCards = (userStats.flippedCards || 0) + 1; saveStats(); if(userStats.flippedCards >= 50) checkAchiev('bookworm'); }
-function trackMistake(w) { if (!mistakeWords.find(x => x.en === w.en)) { mistakeWords.push(w); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); } }
-function removeMistake(w) { mistakeWords = mistakeWords.filter(x => x.en !== w.en); localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); updateUI(); }
+function setCat(c, el) { 
+    currentCat = c; 
+    document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('active')); 
+    el.classList.add('active'); 
+    if(document.getElementById('dictionary').classList.contains('active')) renderDictionary(); 
+}
+
+let dictMode = 'en-uk'; 
+function setDictMode(m) { dictMode = m; renderDictionary(); }
+
+function recordCardFlip() { 
+    userStats.flippedCards = (userStats.flippedCards || 0) + 1; 
+    saveStats(); 
+    if(userStats.flippedCards >= 50) checkAchiev('bookworm'); 
+}
+
+function trackMistake(w) { 
+    if (!mistakeWords.find(x => x.en === w.en)) { 
+        mistakeWords.push(w); 
+        localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); 
+        updateUI(); 
+    } 
+}
+
+function removeMistake(w) { 
+    mistakeWords = mistakeWords.filter(x => x.en !== w.en); 
+    localStorage.setItem('userMistakes', JSON.stringify(mistakeWords)); 
+    updateUI(); 
+}
 
 function renderDictionary() { 
     const bEn = document.getElementById('btn-dict-en'); if(bEn) bEn.className = dictMode === 'en-uk' ? 'btn btn-primary' : 'btn'; 
@@ -852,7 +876,7 @@ function renderDictionary() {
     
     let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
 
-    // --- 100% БЕЗПЕЧНА ПЕРЕВІРКА ІНВЕНТАРЮ ---
+    // --- ПЕРЕВІРКА ПІКАНТНОЇ КАРТКИ ---
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
@@ -860,27 +884,23 @@ function renderDictionary() {
         }
     } catch(e) { }
 
-    // 🔥 ПОКАЗУЄМО/ХОВАЄМО КНОПКУ КАТЕГОРІЇ 🔥
+    // ПОКАЗУЄМО КНОПКУ КАТЕГОРІЇ
     const spicyBtn = document.getElementById('btn-spicy-cat');
     if (spicyBtn) {
         spicyBtn.style.display = hasSpicyCard ? 'inline-block' : 'none';
     }
 
-    // Відсіюємо пікантні слова, якщо картки ще немає
+    // Фільтруємо за категорією та пікантністю
     list = list.filter(w => {
         if (w.c === 'spicy' && !hasSpicyCard) return false;
+        if (currentCat !== 'all' && w.c !== currentCat) return false;
         return true;
     });
-
-    if(typeof currentCat !== 'undefined' && currentCat !== 'all') { 
-        list = list.filter(w => w.c === currentCat); 
-    }
 
     list.sort((a,b) => a.en.localeCompare(b.en)).forEach(w => { 
         const c = document.createElement('div'); c.className = 'dict-card'; 
         const f = document.createElement('div'); f.className = 'dict-face'; 
         const b = document.createElement('div'); b.className = 'dict-face dict-back'; 
-        
         const emj = w.em || (w.c === 'spicy' ? '🌶️' : '✨');
 
         const buildEn = (el) => { 
@@ -901,9 +921,9 @@ function renderDictionary() {
         
         c.onclick = () => { 
             c.classList.toggle('flipped'); 
-            if(typeof dailyProg !== 'undefined') dailyProg.flash++; 
-            if(typeof checkGoals === 'function') checkGoals(); 
-            if(typeof recordCardFlip === 'function') recordCardFlip(); 
+            dailyProg.flash++; 
+            checkGoals(); 
+            recordCardFlip(); 
         }; 
         grid.appendChild(c); 
     }); 
