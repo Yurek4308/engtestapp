@@ -69,7 +69,7 @@ const baseVocabulary = [
     { en: "Pull my hair", uk: "Потягни мене за волосся", c: "spicy" },
     { en: "I'm in control now", uk: "Тепер я тут головний", c: "spicy" },
     { en: "Swallow", uk: "Ковтай", c: "spicy" },
-// --- ПІКАНТНІ ФРАЗИ: ДРАЖНІННЯ В ПОВІДОМЛЕННЯХ ТА ОЧІКУВАННЯ 📱🔥 ---
+    // --- ПІКАНТНІ ФРАЗИ: ДРАЖНІННЯ В ПОВІДОМЛЕННЯХ ТА ОЧІКУВАННЯ 📱🔥 ---
     { en: "I have a dirty secret", uk: "У мене є брудний секрет", c: "spicy" },
     { en: "I can't wait to get you home", uk: "Не можу дочекатися, коли привезу тебе додому", c: "spicy" },
     { en: "What would you do to me?", uk: "Що б ти зі мною зробив?", c: "spicy" },
@@ -160,31 +160,25 @@ const catTips = [
     "Заглянь у Словник, я додав туди твої улюблені смаколики! 🍩",
     "Бачиш ту кнопочку з купонами? Там є дещо цікаве для нас двох... 😉"
 ];
-// Функція, яка показує текст при натисканні
+
 function pokeCat() {
     const bubble = document.getElementById('cat-bubble');
-    if (!bubble) return; // Захист від помилок
-    if (bubble.classList.contains('show')) return; // Якщо вже говорить, то чекаємо
+    if (!bubble) return;
+    if (bubble.classList.contains('show')) return;
     
-    // Вибираємо випадкову фразу
     bubble.textContent = catTips[Math.floor(Math.random() * catTips.length)];
-    
-    // Показуємо хмарку з текстом
     bubble.classList.add('show');
     
-    // Пробуємо відтворити звук (якщо функція існує)
     try { 
         if (typeof playSFX === "function") playSFX(true); 
     } catch(e) {}
     
-    // Ховаємо хмарку через 4 секунди
     setTimeout(() => bubble.classList.remove('show'), 4000);
 }
-// 🔥 ВСТАВЛЯЙ НОВИЙ БЛОК КОДУ ПРЯМО ТУТ 🔥
+
 // --- 🌶️ ЛОГІКА ПІКАНТНОГО РУБИЛЬНИКА ---
 let spicyInGames = localStorage.getItem('spicyInGames') === 'true';
 
-// Зберігаємо вибір Олі
 function toggleSpicyGames(checkbox) {
     spicyInGames = checkbox.checked;
     localStorage.setItem('spicyInGames', spicyInGames);
@@ -194,7 +188,6 @@ function getGameWords() {
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
-            // Тепер шукаємо тільки за назвою — це 100% надійно
             hasSpicyCard = inventory.some(item => item && item.name && item.name.includes('Пікантні фрази'));
         }
     } catch(e) { }
@@ -205,6 +198,7 @@ function getGameWords() {
     
     return baseVocabulary;
 }
+
 function updateSpicyToggle() {
     let hasSpicyCard = false;
     try { 
@@ -225,17 +219,12 @@ const compliments = ["Ти сьогодні неймовірна! ✨", "Моя 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 
 const shopItems = [
-    // Твоя особлива картка
     { id: 'olya_love', name: 'Оля любить дужче Юру', price: 'ERROR', icon: '♾️' },
-    
-    // Віртуальні предмети (допомога в грі)
     { id: 'freeze', name: 'Заморозка стріку ❄️', price: 300, icon: '🧊' },
     { id: 'shield', name: 'Щит для Боса 🛡️', price: 400, icon: '🛡️' },
     { id: 'hint', name: 'Лупа Шерлока (50/50) 🔍', price: 50, icon: '🔍' },
     { id: 'vip_slang', name: 'VIP: Пікантні фрази 🌶️', price: 1000, icon: '🌶️' },
     { id: 'title_queen', name: 'Титул: Володарка серця 👑', price: 1000, icon: '📜' },
-    
-    // Реальні купони (твої обіцянки)
     { id: 'massage', name: 'Масаж спини', price: 500, icon: '💆‍♀️' },
     { id: 'dinner', name: 'Романтична вечеря', price: 1500, icon: '🍷' },
     { id: 'hug', name: 'Безлімітні обійми на день', price: 200, icon: '🫂' },
@@ -318,23 +307,16 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('theme-icon').textContent = '☀️';
     }
     const cmBtn = document.getElementById('cm-btn');
-if (cmBtn) {
+    if (cmBtn) {
         cmBtn.onclick = () => { 
             const item = inventory.find(x => x.uid == curCuid);
             if(item) {
-                // Текст для Telegram залежно від купона
                 let msg = `Коханий, я активувала купон на "${item.name}"! 👑 Чекаю на виконання!`;
-                
-                // Спеціальний текст для Золотого Джокера
-                if(item.id === 'boss_win') {
+                if(item.id === 'golden_coupon') {
                     msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [Впиши своє бажання тут] 👑`;
                 }
-
-                // Відкриваємо Telegram!
                 window.open(`https://t.me/YU_zIK?text=${encodeURIComponent(msg)}`, '_blank');
             }
-
-            // Видаляємо з інвентарю
             inventory = inventory.filter(x => x.uid != curCuid); 
             localStorage.setItem('userInventory', JSON.stringify(inventory)); 
             closeCoupon(); 
@@ -410,10 +392,10 @@ function fireParticles(x, y, cor) {
 }
 function shuffleArray(array) { let arr = [...array]; for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
 
-// 🔥 ОСЬ ТУТ МАГІЯ: Тепер ігри беруть слова через нашого "Охоронця"
 function getVocab() { return currentCat === 'all' ? getGameWords() : getGameWords().filter(w => w.c === currentCat); }
 
 function getLevelInfo() { let currentLvl = levelSystem[0]; for(let i=0; i<levelSystem.length; i++) { if(lifetimeXP >= levelSystem[i].xp) currentLvl = levelSystem[i]; } return currentLvl; }
+
 // ==========================================
 // 4. ПРОФІЛЬ ТА НАВІГАЦІЯ
 // ==========================================
@@ -433,7 +415,7 @@ function updateBossUI() {
         desc.textContent = "Тільки в неділю!"; desc.style.color = "#cbd5e1";
     }
 }
-// ==========================================
+
 function checkAchiev(id){ 
     if(!achievs[id]){ 
         achievs[id]=true; 
@@ -452,6 +434,7 @@ function renderAchievs() {
         else c.innerHTML += `<div class="achiev-card ${unl}"><div class="achiev-icon" style="font-size:2.5rem; margin-right:15px;">${a.icon}</div><div><div class="achiev-title">${a.title}</div><div class="achiev-desc">${a.desc}</div></div></div>`; 
     }); 
 }
+
 function initGamification() {
     const d = new Date(); const today = d.toDateString(); const hour = d.getHours();
     const compText = document.getElementById('compliment-text');
@@ -523,7 +506,6 @@ function showSection(id) {
     if(id === 'shop') { renderShop(); } 
     if(id === 'wheel') { checkWheelCooldown(); } 
 
-    // МАГІЯ ДЛЯ КИЦІ: Ховаємо її під час ігор!
     const cat = document.querySelector('.cat-assistant');
     if(cat) {
         if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings' || id === 'profile' || id === 'inventory' || id === 'achievements') {
@@ -534,7 +516,6 @@ function showSection(id) {
         }
     }
 
-    // 🔥 ОСТАННІЙ ШТРИХ: Оновлюємо рубильник пікантності, коли заходимо в Опції
     if(id === 'settings' && typeof updateSpicyToggle === 'function') updateSpicyToggle();
 }
 function renderProfile() {
@@ -620,12 +601,10 @@ function renderShop() {
     const c = document.getElementById('shop-list'); if(!c) return;
     const bmStatus = isBlackMarketOpen();
     
-    // Очищуємо список і додаємо плашку Чорного Ринку
     c.innerHTML = bmStatus ? `<div style="background:#0f172a; color:#10b981; padding:10px; border-radius:12px; margin-bottom:15px; text-align:center; font-weight:800; border:2px solid #10b981;">🕶️ ЧОРНИЙ РИНОК ВІДКРИТО!</div>` : ''; 
     
     let currentItems = [...shopItems]; 
     
-    // Логіка Чорного Ринку (знижки та ексклюзиви)
     if (bmStatus) {
         currentItems = currentItems.map(i => i.id === 'dinner' ? { ...i, price: Math.floor(i.price * 0.85) } : i);
         if (bmStatus === 'ALL') currentItems.push(...bmItems);
@@ -637,20 +616,16 @@ function renderShop() {
     }
 
     currentItems.forEach(i => { 
-        // 1. ПЕРЕВІРЯЄМО, ЧИ ЦЕ УНІКАЛЬНИЙ ПРЕДМЕТ (VIP або Титул)
         const isUnique = i.name.includes('VIP') || i.name.includes('Титул');
         const isOwned = inventory.some(item => item.id === i.id);
         
         const isErr = i.price === 'ERROR'; 
         
-        // 2. ЛОГІКА КНОПКИ: 
-        // Не можна купити, якщо: ERROR, мало зірок АБО (це VIP і він вже є)
         const can = !isErr && totalXP >= i.price && (!isUnique || !isOwned);
         
         const originalPrice = shopItems.find(x => x.id === i.id)?.price;
         const discountLabel = (bmStatus && i.id === 'dinner') ? `<s style="color:var(--text-muted);font-size:0.7rem;">${originalPrice}</s>` : '';
         
-        // 3. ТЕКСТ ТА СТИЛЬ КНОПКИ
         let btnText = isErr ? 'Неможливо' : (isOwned && isUnique ? 'Вже є ✅' : (can ? 'Купити' : 'Бракує'));
         let btnStyle = (isOwned && isUnique) ? 'background: #10b981 !important; color: white;' : '';
 
@@ -685,7 +660,6 @@ function buyItem(id) {
     const i = currentItems.find(x => x.id === id); 
     if(!i || i.price === 'ERROR') return;
 
-    // 🔥 УНІВЕРСАЛЬНА ПЕРЕВІРКА НА VIP/ТИТУЛ
     const isUnique = i.name.includes('VIP') || i.name.includes('Титул');
     if (isUnique && inventory.some(owned => owned.id === i.id)) {
         showToast("Це в тебе вже є! ❤️");
@@ -707,7 +681,6 @@ function buyItem(id) {
         renderShop(); 
         updateUI();
 
-        // МАГІЯ СЮРПРИЗУ (тільки для пікантної картки)
         if (i.name && i.name.includes('Пікантні фрази')) {
             for(let k=0; k<50; k++) {
                 setTimeout(() => {
@@ -743,16 +716,10 @@ function renderInventory() {
     if(!inventory.length) { c.innerHTML = "<div style='text-align:center; color:var(--text-muted); padding:20px;'>Тут поки порожньо. Купуй купони в магазині!</div>"; return; } 
     
     inventory.forEach(i => { 
-        // 🔥 Надійна перевірка: за ID або за назвою
         const isGolden = i.id === 'golden_coupon' || (i.name && i.name.toLowerCase().includes('золотий'));
-        
-        // 1. Створюємо змінну для класу
         const goldenClass = isGolden ? 'golden' : '';
-        
-        // Стиль для кнопки залишаємо інлайновим
         const btnStyle = isGolden ? 'background: #fbbf24; color: #78350f; font-weight: 800;' : '';
 
-        // 2. Вставляємо ${goldenClass} прямо поруч з inv-item
         c.innerHTML += `
             <div class="inv-item ${goldenClass}">
                 <div style="font-size:3rem; ${isGolden ? 'filter: drop-shadow(0 0 5px #fbbf24);' : ''}">${i.icon}</div>
@@ -763,6 +730,37 @@ function renderInventory() {
             </div>`; 
     }); 
 }
+
+function openCoupon(u) { 
+    const i = inventory.find(x => x.uid == u); 
+    if(!i) return; 
+    curCuid = u; 
+
+    const isGolden = i.id === 'golden_coupon' || (i.name && i.name.toLowerCase().includes('золотий'));
+    
+    if (isGolden) {
+        const wish = prompt("🌟 ЦЕ ТВІЙ ЗОЛОТИЙ ДЖОКЕР!\n\nВпиши сюди своє будь-яке бажання (наприклад: вечеря, фільм чи щось особливе):");
+        if (wish && wish.trim() !== "") {
+            const msg = `Коханий, я активувала ЗОЛОТИЙ ДЖОКЕР! 👑\n\nМоє бажання: "${wish}"`;
+            window.open(`https://t.me/YU_zIK?text=${encodeURIComponent(msg)}`, '_blank');
+            
+            inventory = inventory.filter(x => x.uid != u);
+            localStorage.setItem('userInventory', JSON.stringify(inventory));
+            renderInventory();
+            updateUI();
+        }
+    } else {
+        document.getElementById('cm-icon').textContent = i.icon; 
+        document.getElementById('cm-title').textContent = i.name; 
+        document.getElementById('coupon-modal').style.display = 'flex'; 
+    }
+}
+
+function closeCoupon() {
+    const m = document.getElementById('coupon-modal');
+    if(m) m.style.display = 'none';
+}
+
 function enterPromo() {
     const input = prompt("Введи код:"); if(!input) return;
     const code = input.replace(/[^A-Z0-9]/gi, '').toUpperCase();
@@ -897,7 +895,6 @@ function renderDictionary() {
     
     let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
 
-    // --- ПЕРЕВІРКА ПІКАНТНОЇ КАРТКИ ---
     let hasSpicyCard = false;
     try { 
         if (typeof inventory !== 'undefined' && inventory !== null) {
@@ -905,13 +902,11 @@ function renderDictionary() {
         }
     } catch(e) { }
 
-    // ПОКАЗУЄМО КНОПКУ КАТЕГОРІЇ
     const spicyBtn = document.getElementById('btn-spicy-cat');
     if (spicyBtn) {
         spicyBtn.style.display = hasSpicyCard ? 'inline-block' : 'none';
     }
 
-    // Фільтруємо за категорією та пікантністю
     list = list.filter(w => {
         if (w.c === 'spicy' && !hasSpicyCard) return false;
         if (currentCat !== 'all' && w.c !== currentCat) return false;
@@ -1072,7 +1067,7 @@ function dealDamage() { bossHp -= 20; updateBossHpBar(); }
 
 function startBossTimer() {
     clearInterval(bossInterval);
-    bossTimer = currentPhase === 2 ? 12 : 6; // На друк 12 сек, на клік 6 сек
+    bossTimer = currentPhase === 2 ? 12 : 6; 
     document.getElementById('boss-timer-text').textContent = bossTimer;
     document.getElementById('boss-timer-text').style.color = "var(--primary)";
     
@@ -1167,7 +1162,7 @@ let spyQ = [], spyI = 0, spyS = 0, spyLock = false;
 function startSpy() {
     showSection('spy'); document.getElementById('spy-result').style.display='none'; document.getElementById('spy-active').style.display='flex';
     spyQ = []; spyI = 0; spyS = 0;
-    // 🔥 ЗАХИЩЕНО УСІ 4 РЯДКИ ТУТ 🔥
+    
     const categories = [...new Set(getGameWords().map(w => w.c))];
     for(let i=0; i<10; i++) {
         let validCats = categories.filter(c => getGameWords().filter(w => w.c === c).length >= 3);
@@ -1189,8 +1184,6 @@ function loadSpy() {
     spyQ[spyI].words.forEach(w => {
         const b = document.createElement('button'); 
         b.className = 'option-btn'; 
-        
-        // Налаштовуємо ідеальний вигляд кнопок
         b.style.fontSize = '1.3rem';
         b.style.padding = '15px 10px';
         b.style.wordBreak = 'break-word';
@@ -1200,7 +1193,6 @@ function loadSpy() {
         b.style.gap = '5px';
         b.style.lineHeight = '1.1';
         
-        // Показуємо англійське слово, а український переклад ховаємо
         b.innerHTML = `
             <span class="spy-en-word" style="font-weight: 800;">${w.en}</span>
             <span class="spy-uk-hint" style="font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 600; opacity: 0; height: 0; overflow: hidden; transition: 0.3s;">${w.uk}</span>
@@ -1213,16 +1205,12 @@ function loadSpy() {
             
             document.querySelectorAll('#spy-options .option-btn').forEach(btn => {
                 btn.disabled = true;
-                
-                // МАГІЯ: Відкриваємо переклад для всіх слів
                 const hint = btn.querySelector('.spy-uk-hint');
                 if(hint) { 
                     hint.style.opacity = '1'; 
                     hint.style.height = 'auto';
                     hint.style.marginTop = '5px';
                 }
-                
-                // Надійна перевірка через клас .spy-en-word
                 if(btn.querySelector('.spy-en-word').textContent === spyQ[spyI].odd.en) {
                     btn.classList.add('correct');
                 }
@@ -1238,7 +1226,6 @@ function loadSpy() {
     });
 }
 
-// ОСЬ ЦЯ ФУНКЦІЯ БУЛА ВТРАЧЕНА! ТЕПЕР КНОПКА "ДАЛІ" ПРАЦЮВАТИМЕ
 function nextSpy() {
     spyI++; 
     if(spyI < spyQ.length) {
@@ -1254,7 +1241,6 @@ function nextSpy() {
 let wdlWord = "", wdlAttempts = 0, wdlGrid = [], wdlObj = null, wdlLen = 5;
 
 function startWordle() {
-    // Беремо всі слова (від 3 літер і більше), які складаються тільки з букв
     const validWords = getVocab().filter(w => w.en.length >= 3 && /^[a-zA-Z]+$/.test(w.en));
     if(validWords.length === 0) { alert("Немає підходящих слів у словнику!"); return; }
     
@@ -1264,13 +1250,12 @@ function startWordle() {
     
     wdlObj = validWords[Math.floor(Math.random() * validWords.length)];
     wdlWord = wdlObj.en.toUpperCase(); 
-    wdlLen = wdlWord.length; // Динамічна довжина слова
+    wdlLen = wdlWord.length; 
     wdlAttempts = 0; 
     
-    // Створюємо порожню матрицю під конкретну довжину
     wdlGrid = Array.from({length: 6}, () => Array(wdlLen).fill(""));
     
-    initWordleGrid(); // Створюємо HTML-сітку один раз
+    initWordleGrid(); 
     drawWordleKeyboard(); 
     document.getElementById('wordle-attempts').textContent = `Спроби: 0/6`;
 }
@@ -1278,14 +1263,11 @@ function startWordle() {
 function initWordleGrid() {
     const g = document.getElementById('wordle-grid'); 
     g.innerHTML = '';
-    
-    // Розширюємо контейнер, якщо слово дуже довге
     g.style.maxWidth = wdlLen > 6 ? '380px' : '280px';
     
     for(let r=0; r<6; r++) {
         let row = document.createElement('div'); 
         row.className = 'wordle-row';
-        // Автоматично підлаштовуємо кількість колонок
         row.style.gridTemplateColumns = `repeat(${wdlLen}, 1fr)`; 
         
         for(let c=0; c<wdlLen; c++) {
@@ -1293,7 +1275,6 @@ function initWordleGrid() {
             cell.className = 'wordle-cell';
             cell.id = `wcell-${r}-${c}`; 
             
-            // Розумний розмір шрифту: чим довше слово, тим менший шрифт
             if (wdlLen >= 9) cell.style.fontSize = '1rem';
             else if (wdlLen >= 7) cell.style.fontSize = '1.3rem';
             else cell.style.fontSize = '2rem';
@@ -1304,7 +1285,6 @@ function initWordleGrid() {
     }
 }
 
-// Нова функція, яка оновлює ТІЛЬКИ поточний рядок, зберігаючи кольори попередніх!
 function updateWordleCurrentRow() {
     if(wdlAttempts >= 6) return;
     for(let c=0; c<wdlLen; c++) {
@@ -1353,11 +1333,9 @@ function checkWordleRow() {
     let gArr = guess.split('');
     let status = Array(wdlLen).fill('gray');
     
-    // Перевіряємо зелені літери (повний збіг)
     for(let i=0; i<wdlLen; i++) { 
         if(gArr[i] === target[i]) { status[i] = 'green'; target[i] = null; } 
     }
-    // Перевіряємо жовті літери (не на своєму місці)
     for(let i=0; i<wdlLen; i++) {
         if(status[i] !== 'green' && target.includes(gArr[i])) { 
             status[i] = 'yellow'; 
@@ -1365,7 +1343,6 @@ function checkWordleRow() {
         }
     }
     
-    // Анімація розкриття кольорів для поточного рядка
     for(let i=0; i<wdlLen; i++) {
         setTimeout(() => {
             let cell = document.getElementById(`wcell-${wdlAttempts}-${i}`); 
@@ -1379,10 +1356,9 @@ function checkWordleRow() {
                 else if(status[i] === 'yellow' && key.style.background !== 'var(--correct)') { key.style.background = 'var(--warning)'; key.style.color = 'white'; }
                 else if(key.style.background === '') { key.style.background = '#475569'; key.style.color = 'white'; }
             }
-        }, i * 300); // Кожна літера відкривається по черзі
+        }, i * 300);
     }
     
-    // Чекаємо, поки анімація закінчиться, і перевіряємо перемогу
     setTimeout(() => {
         wdlAttempts++; 
         document.getElementById('wordle-attempts').textContent = `Спроби: ${wdlAttempts}/6`;
@@ -1397,7 +1373,7 @@ function checkWordleRow() {
             document.getElementById('wordle-result-title').textContent = "Сейф заблоковано 🔒"; document.getElementById('wordle-final-word').textContent = wdlWord;
             document.getElementById('wordle-uk-translation').textContent = wdlObj.uk; trackMistake(wdlObj); gameFinished(false, 'wordle', 0);
         }
-    }, wdlLen * 300 + 300); // Таймер залежить від довжини слова
+    }, wdlLen * 300 + 300);
 }
 // --- 3. МЕТЕОРИТНИЙ ДОЩ ---
 let metTimer, metPos = -50, metSpeed = 1, metScore = 0, metWordObj = null;
@@ -1407,16 +1383,14 @@ function startMeteor() {
     spawnMeteor();
 }
 function spawnMeteor() {
-    metPos = -50; metSpeed = 1.5 + (metScore * 0.2); // Кожен бал збільшує швидкість
+    metPos = -50; metSpeed = 1.5 + (metScore * 0.2); 
     document.getElementById('meteor-speed').textContent = metSpeed.toFixed(1) + "x";
     document.getElementById('meteor-score').textContent = `Рахунок: ${metScore}`;
     
-    // 🔥 ЗАХИЩЕНО ТУТ 🔥
     metWordObj = getGameWords()[Math.floor(Math.random() * getGameWords().length)];
     const el = document.getElementById('meteor-word');
     el.textContent = metWordObj.en; el.style.top = metPos + 'px';
     
-    // 🔥 І ТУТ 🔥
     const opts = shuffleArray([metWordObj, ...shuffleArray(getGameWords().filter(x => x.en !== metWordObj.en)).slice(0,2)]);
     const g = document.getElementById('meteor-options'); g.innerHTML = '';
     opts.forEach(o => {
@@ -1437,7 +1411,7 @@ function spawnMeteor() {
     metTimer = setInterval(() => {
         metPos += metSpeed;
         el.style.top = metPos + 'px';
-        if(metPos > areaHeight - 80) { // Метеорит впав на кота
+        if(metPos > areaHeight - 80) { 
             clearInterval(metTimer);
             document.getElementById('meteor-cat').classList.add('hit');
             playSFX(false); trackMistake(metWordObj);
