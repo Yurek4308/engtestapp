@@ -161,7 +161,17 @@
         <div id="dictionary" class="section">
             <h1 class="welcome-title">Словник 📖</h1>
             <div class="category-scroll" id="cat-filters">
-                <div class="cat-chip active" onclick="setCat('all', this)">Усі слова</div><div class="cat-chip" onclick="setCat('co', this)">😍 Компліменти</div><div class="cat-chip" onclick="setCat('cl', this)">👗 Одяг</div><div class="cat-chip" onclick="setCat('fo', this)">🍩 Смаколики</div><div class="cat-chip" onclick="setCat('bh', this)">🩺 Тіло</div><div class="cat-chip" onclick="setCat('p', this)">💬 Фрази</div><div class="cat-chip" onclick="setCat('n', this)">🌿 Природа</div><div class="cat-chip" onclick="setCat('f', this)">❤️ Почуття</div><div class="cat-chip" onclick="setCat('a', this)">🏃‍♀️ Дії</div><div class="cat-chip" onclick="setCat('h', this)">🏠 Дім</div>
+                <div class="cat-chip active" onclick="setCat('all', this)">Усі слова</div>
+                <div class="cat-chip" onclick="setCat('co', this)">😍 Компліменти</div>
+                <div class="cat-chip" onclick="setCat('cl', this)">👗 Одяг</div>
+                <div class="cat-chip" onclick="setCat('fo', this)">🍩 Смаколики</div>
+                <div class="cat-chip" onclick="setCat('bh', this)">🩺 Тіло</div>
+                <div class="cat-chip" onclick="setCat('p', this)">💬 Фрази</div>
+                <div class="cat-chip" onclick="setCat('n', this)">🌿 Природа</div>
+                <div class="cat-chip" onclick="setCat('f', this)">❤️ Почуття</div>
+                <div class="cat-chip" onclick="setCat('a', this)">🏃‍♀️ Дії</div>
+                <div class="cat-chip" onclick="setCat('h', this)">🏠 Дім</div>
+                <div class="cat-chip" id="btn-spicy-cat" style="display: none;" onclick="setCat('spicy', this)">🌶️ Пікантне</div>
             </div>
             <input type="text" id="dict-search" class="dict-search-input" placeholder="Пошук..." oninput="renderDictionary()">
             <div class="controls" style="margin-bottom: 15px;"><button class="btn btn-primary" id="btn-dict-en" onclick="setDictMode('en-uk')">En ➡️ Uk</button><button class="btn" id="btn-dict-uk" onclick="setDictMode('uk-en')">Uk ➡️ En</button></div>
