@@ -220,18 +220,19 @@ header {
 .dark .wheel-container { border-color: #475569; }
 
 .wheel { 
-    width: 100%; height: 100%; position: absolute; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    width: 100%; height: 100%; position: absolute; 
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
     background: conic-gradient(
-        #ef4444 0deg 36deg,     /* 1. Джекпот */
-        #a855f7 36deg 72deg,    /* 2. Кіндер */
-        #3b82f6 72deg 108deg,   /* 3. 100xp */
-        #10b981 108deg 144deg,  /* 4. 50xp */
-        #f59e0b 144deg 180deg,  /* 5. 20xp */
-        #94a3b8 180deg 216deg,  /* 6. 0xp */
-        #f59e0b 216deg 252deg,  /* 7. 20xp */
-        #94a3b8 252deg 288deg,  /* 8. 0xp */
-        #f59e0b 288deg 324deg,  /* 9. 20xp */
-        #94a3b8 324deg 360deg   /* 10. 0xp */
+        #ef4444 0deg 36deg,     /* 0. Джекпот (Масаж) */
+        #f59e0b 36deg 72deg,    /* 1. 20xp */
+        #94a3b8 72deg 108deg,   /* 2. 0xp (Пусто) */
+        #f59e0b 108deg 144deg,  /* 3. 20xp */
+        #94a3b8 144deg 180deg,  /* 4. 0xp (Пусто) */
+        #f59e0b 180deg 216deg,  /* 5. 20xp */
+        #10b981 216deg 252deg,  /* 6. 50xp */
+        #3b82f6 252deg 288deg,  /* 7. 100xp */
+        #a855f7 288deg 324deg,  /* 8. Солодощі 🍬 */
+        #a855f7 324deg 360deg   /* 9. Сюрприз 🎁 */
     );
 }
 
@@ -296,4 +297,21 @@ header {
     padding: 15px 10px;
     word-break: break-word; /* Якщо слово дуже довге, воно перенесеться */
     line-height: 1.2;
+}
+/* --- СЯЙВО ДЛЯ ЗОЛОТОГО КУПОНА --- */
+.inv-item.golden {
+    border: 3px solid #fbbf24 !important;
+    background: linear-gradient(145deg, #fffbeb, #fef3c7) !important;
+    box-shadow: 0 10px 20px rgba(251, 191, 36, 0.3) !important;
+    animation: goldenGlow 2s infinite alternate;
+}
+
+@keyframes goldenGlow {
+    0% { box-shadow: 0 0 5px rgba(251, 191, 36, 0.4); }
+    100% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.8); }
+}
+
+.inv-item.golden .shop-title {
+    color: #b45309 !important;
+    font-weight: 900 !important;
 }
