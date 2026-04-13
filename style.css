@@ -271,3 +271,22 @@ header {
 #easter-egg { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(253, 242, 248, 0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;}
 .dark #easter-egg { background: rgba(15, 23, 42, 0.98); }
 .ee-photo { width: 80%; max-width: 300px; border-radius: 24px; border: 5px solid white; box-shadow: 0 10px 25px rgba(236, 72, 153, 0.5); margin-bottom: 20px;}
+
+/* СТИЛІ ДЛЯ СЕЙФУ (WORDLE) */
+.wordle-grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 6px; margin: 0 auto 20px auto; width: 100%; max-width: 280px; }
+.wordle-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.wordle-cell { aspect-ratio: 1; border: 2px solid #cbd5e1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; text-transform: uppercase; color: var(--text-main); transition: 0.3s; }
+.dark .wordle-cell { border-color: #475569; }
+.wordle-cell.filled { border-color: var(--text-muted); animation: popIn 0.1s; }
+.wordle-cell.green { background: var(--correct); color: white; border-color: var(--correct); }
+.wordle-cell.yellow { background: var(--warning); color: white; border-color: var(--warning); }
+.wordle-cell.gray { background: #94a3b8; color: white; border-color: #94a3b8; }
+.dark .wordle-cell.gray { background: #334155; border-color: #334155; }
+@keyframes popIn { 0% { transform: scale(0.8); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+/* СТИЛІ ДЛЯ МЕТЕОРИТІВ */
+#meteor-area { position: relative; flex: 1; overflow: hidden; background: linear-gradient(to bottom, #0f172a, #1e1b4b); border-radius: 20px; margin-bottom: 15px; border: 2px solid #334155; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+.meteor-word { position: absolute; top: -50px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #ef4444, #f59e0b); color: white; padding: 10px 20px; border-radius: 20px; font-weight: 900; font-size: 1.4rem; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.6); white-space: nowrap; z-index: 5; text-transform: uppercase; }
+.meteor-word::after { content: '🔥'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; z-index: -1; opacity: 0.8; }
+.meteor-cat { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 3.5rem; transition: 0.1s; z-index: 10; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+.meteor-cat.hit { animation: shake 0.3s; filter: hue-rotate(90deg) drop-shadow(0 0 10px red); }
