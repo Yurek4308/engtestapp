@@ -491,7 +491,11 @@ function showSection(id) {
     clearInterval(sprintTimerInterval); 
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
     document.getElementById(id).classList.add('active'); 
-    
+
+    // 🔥 ЖОРСТКИЙ ФІКС: Примусово ховаємо вікно Боса, щоб воно не зависало
+    const bossRes = document.getElementById('boss-result');
+    if (bossRes) bossRes.style.display = 'none';
+
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings') {
         document.querySelector(`.nav-item[onclick="showSection('${id}')"]`).classList.add('active');
@@ -512,7 +516,7 @@ function showSection(id) {
             cat.style.display = 'block';
         } else {
             cat.style.display = 'none';
-            document.getElementById('cat-bubble').classList.remove('show');
+            if(document.getElementById('cat-bubble')) document.getElementById('cat-bubble').classList.remove('show');
         }
     }
 
@@ -1435,6 +1439,7 @@ function spawnMeteor() {
         }
     }, 30);
 }
+
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
 function exportProgress() { const d = { totalXP, lifetimeXP, currentStreak, bestSprint, dailyProg, mistakeWords, inventory, achievs, usedCodes, lastLogin, dailyGoals, userStats, lastWheelDate }; const s = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); navigator.clipboard.writeText(s).then(()=>alert("Код скопійовано! Надішли Юрі 📩")).catch(()=>prompt("Скопіюй вручну:", s)); }
 function importProgress() { const s = prompt("Встав код прогресу сюди:"); if(!s) return; try { const d = JSON.parse(decodeURIComponent(escape(atob(s)))); if(d.totalXP !== undefined) { localStorage.setItem('totalXP', d.totalXP); if(d.lifetimeXP !== undefined) localStorage.setItem('lifetimeXP', d.lifetimeXP); localStorage.setItem('streak', d.currentStreak); localStorage.setItem('sprintRecord', d.bestSprint); localStorage.setItem('dailyProg', JSON.stringify(d.dailyProg)); localStorage.setItem('userMistakes', JSON.stringify(d.mistakeWords)); localStorage.setItem('userInventory', JSON.stringify(d.inventory)); localStorage.setItem('achievs', JSON.stringify(d.achievs)); localStorage.setItem('usedCodes', JSON.stringify(d.usedCodes)); localStorage.setItem('lastLogin', d.lastLogin); if(d.dailyGoals) localStorage.setItem('dailyGoals', JSON.stringify(d.dailyGoals)); if(d.userStats) localStorage.setItem('userStats', JSON.stringify(d.userStats)); if(d.lastWheelDate) localStorage.setItem('lastWheelDate', d.lastWheelDate); alert("Прогрес відновлено!"); location.reload(); } } catch(e){alert("Помилка коду!");} }
