@@ -515,18 +515,17 @@ function showSection(id) {
     // МАГІЯ ДЛЯ КИЦІ: Ховаємо її під час ігор!
     const cat = document.querySelector('.cat-assistant');
     if(cat) {
-        // Киця сидить тільки на цих мирних вкладках:
         if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings' || id === 'profile' || id === 'inventory' || id === 'achievements') {
             cat.style.display = 'block';
         } else {
-            // У всіх інших випадках (ігри, рулетка, бос) — ховаємо!
             cat.style.display = 'none';
-            // Також ховаємо її хмарку з текстом, якщо вона якраз щось говорила
             document.getElementById('cat-bubble').classList.remove('show');
         }
     }
-}
 
+    // 🔥 ОСТАННІЙ ШТРИХ: Оновлюємо рубильник пікантності, коли заходимо в Опції
+    if(id === 'settings' && typeof updateSpicyToggle === 'function') updateSpicyToggle();
+}
 function renderProfile() {
     try {
         const startDate = new Date(2025, 4, 16); 
