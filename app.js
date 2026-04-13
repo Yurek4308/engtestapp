@@ -68,7 +68,7 @@ const baseVocabulary = [
     { en: "Hold my wrists", uk: "Тримай мої зап'ястя", c: "spicy" },
     { en: "Pull my hair", uk: "Потягни мене за волосся", c: "spicy" },
     { en: "I'm in control now", uk: "Тепер я тут головний", c: "spicy" },
-    { en: "Swallow", uk: "Ковтай", c: "spicy" }
+    { en: "Swallow", uk: "Ковтай", c: "spicy" },
 // --- ПІКАНТНІ ФРАЗИ: ДРАЖНІННЯ В ПОВІДОМЛЕННЯХ ТА ОЧІКУВАННЯ 📱🔥 ---
     { en: "I have a dirty secret", uk: "У мене є брудний секрет", c: "spicy" },
     { en: "I can't wait to get you home", uk: "Не можу дочекатися, коли привезу тебе додому", c: "spicy" },
