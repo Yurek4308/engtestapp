@@ -433,7 +433,25 @@ function updateBossUI() {
         desc.textContent = "Тільки в неділю!"; desc.style.color = "#cbd5e1";
     }
 }
+// ==========================================
+function checkAchiev(id){ 
+    if(!achievs[id]){ 
+        achievs[id]=true; 
+        localStorage.setItem('achievs', JSON.stringify(achievs)); 
+        showToast("Нове досягнення!"); 
+        renderAchievs(); 
+    } 
+}
 
+function renderAchievs() { 
+    const c = document.getElementById('achiev-list'); if(!c) return;
+    c.innerHTML = ''; 
+    Object.keys(achievList).forEach(k => { 
+        const a = achievList[k]; const unl = achievs[k] ? 'unlocked' : ''; 
+        if(a.secret && !unl) c.innerHTML += `<div class="achiev-card"><div class="achiev-icon" style="font-size:2.5rem; margin-right:15px;">❓</div><div><div class="achiev-title">Секретне досягнення</div><div class="achiev-desc">Виконай особливі умови, щоб відкрити.</div></div></div>`;
+        else c.innerHTML += `<div class="achiev-card ${unl}"><div class="achiev-icon" style="font-size:2.5rem; margin-right:15px;">${a.icon}</div><div><div class="achiev-title">${a.title}</div><div class="achiev-desc">${a.desc}</div></div></div>`; 
+    }); 
+}
 function initGamification() {
     const d = new Date(); const today = d.toDateString(); const hour = d.getHours();
     const compText = document.getElementById('compliment-text');
