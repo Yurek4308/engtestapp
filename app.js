@@ -717,15 +717,26 @@ function renderInventory() {
     
     inventory.forEach(i => { 
         const isGolden = i.id === 'golden_coupon' || (i.name && i.name.toLowerCase().includes('золотий'));
+        
+        // 🔥 ВИЗНАЧАЄМО ВІЧНІ ПРЕДМЕТИ (VIP та Титули)
+        const isUnique = i.name && (i.name.includes('VIP') || i.name.includes('Титул'));
+        
         const goldenClass = isGolden ? 'golden' : '';
-        const btnStyle = isGolden ? 'background: #fbbf24; color: #78350f; font-weight: 800;' : '';
+        let btnStyle = isGolden ? 'background: #fbbf24; color: #78350f; font-weight: 800;' : '';
+        let btnText = isGolden ? '✨ ВИКОРИСТАТИ ДЖОКЕР' : 'Використати купон';
+
+        // 🔥 ЯКЩО ЦЕ ВІЧНИЙ ПРЕДМЕТ — міняємо вигляд кнопки і блокуємо її
+        if (isUnique) {
+            btnStyle = 'background: #10b981; color: white; opacity: 0.9; cursor: default;';
+            btnText = 'Активно ✅';
+        }
 
         c.innerHTML += `
             <div class="inv-item ${goldenClass}">
                 <div style="font-size:3rem; ${isGolden ? 'filter: drop-shadow(0 0 5px #fbbf24);' : ''}">${i.icon}</div>
                 <div class="shop-title">${i.name}</div>
-                <button class="inv-btn" style="${btnStyle}" onclick="openCoupon('${i.uid}')">
-                    ${isGolden ? '✨ ВИКОРИСТАТИ ДЖОКЕР' : 'Використати купон'}
+                <button class="inv-btn" style="${btnStyle}" ${isUnique ? 'disabled' : `onclick="openCoupon('${i.uid}')"`}>
+                    ${btnText}
                 </button>
             </div>`; 
     }); 
