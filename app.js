@@ -1020,7 +1020,6 @@ function loadBoss() {
     if (currentPhase === 1) {
         qBox.innerHTML = `<div style="font-size:3.5rem;margin-bottom:10px;">${w.em}</div>${w.uk}`; 
         optsGrid.style.display = 'grid'; typingArea.style.display = 'none';
-        // 🔥 ЗАХИЩЕНО ТУТ 🔥
         const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); 
         optsGrid.innerHTML = ''; 
         opts.forEach(o => { 
@@ -1040,7 +1039,6 @@ function loadBoss() {
     else if (currentPhase === 3) {
         qBox.innerHTML = `<div style="font-size:5rem; margin-bottom:10px; animation: pulse 1s infinite;">🔊</div><span style="font-size:1rem; color:var(--text-muted);">Слухай уважно!</span>`; 
         optsGrid.style.display = 'grid'; typingArea.style.display = 'none'; speak(w.en, 'us', null); 
-        // 🔥 ЗАХИЩЕНО ТУТ 🔥
         const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); 
         optsGrid.innerHTML = ''; 
         opts.forEach(o => { 
@@ -1052,27 +1050,7 @@ function loadBoss() {
             }; optsGrid.appendChild(b); 
         });
     }
-    startBossTimer();
-}
-    else if (currentPhase === 2) {
-        qBox.innerHTML = `<div style="font-size:3.5rem;margin-bottom:10px;">${w.em}</div>${w.uk}`; 
-        optsGrid.style.display = 'none'; typingArea.style.display = 'flex';
-        const input = document.getElementById('boss-input'); input.value = ''; setTimeout(() => input.focus(), 100); 
-    } 
-    else if (currentPhase === 3) {
-        qBox.innerHTML = `<div style="font-size:5rem; margin-bottom:10px; animation: pulse 1s infinite;">🔊</div><span style="font-size:1rem; color:var(--text-muted);">Слухай уважно!</span>`; 
-        optsGrid.style.display = 'grid'; typingArea.style.display = 'none'; speak(w.en, 'us', null); 
-        const opts = shuffleArray([w, ...shuffleArray(baseVocabulary.filter(x=>x.en!==w.en)).slice(0,3)]); 
-        optsGrid.innerHTML = ''; 
-        opts.forEach(o => { 
-            const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.uk; 
-            b.onclick = (e) => { 
-                if(bLock) return; bLock = true; clearInterval(bossInterval); const isCorrect = o.en === w.en; fireParticles(e.clientX, e.clientY, isCorrect); 
-                if(isCorrect) { b.classList.add('correct'); dealDamage(); setTimeout(()=>{ bIdx++; if(bIdx < 50) loadBoss(); else finishBoss(true); }, 400); } 
-                else { b.classList.add('wrong'); if(!takeDamage()) setTimeout(()=>{ bIdx++; if(bIdx < 50) loadBoss(); else finishBoss(true); }, 500); } 
-            }; optsGrid.appendChild(b); 
-        });
-    }
+    
     startBossTimer();
 }
 
