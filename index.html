@@ -51,8 +51,8 @@
         <div class="stat-badge" title="Дні підряд">🔥 <span id="streak-count">0</span></div>
         <div class="stat-badge" title="Зірочки">🌟 <span id="xp-count">0</span></div>
         <div class="stat-badge" title="Твій Рівень" style="background: linear-gradient(135deg, #fce7f3, #e0e7ff); border: 1px solid #c7d2fe; cursor: pointer;" onclick="showSection('profile')">
-    <span id="user-level-icon">🐾</span> <span id="user-level-name" style="color:var(--text-main);">Кошеня</span>
-</div>
+            <span id="user-level-icon">🐾</span> <span id="user-level-name" style="color:var(--text-main);">Кошеня</span>
+        </div>
     </div>
 
     <div class="main-content">
@@ -94,7 +94,12 @@
                 <div class="menu-card" onclick="startHangman()"><div class="icon-box bg-red">❤️‍🩹</div><div class="menu-title">Сердечко</div></div>
                 <div class="menu-card" onclick="startListening()"><div class="icon-box bg-blue">🎧</div><div class="menu-title">На слух</div></div>
                 
-                <div class="menu-card wide" onclick="startSprint()"><div class="icon-box bg-red" style="background-color: #fecaca;">⏱️</div><div class="menu-text"><div class="menu-title">Спринт на час <span class="menu-badge" id="sprint-badge" style="top:-15px; right:-15px;">0</span></div></div></div>
+                <div class="menu-card wide" onclick="startSprint()">
+                    <div class="icon-box bg-red" style="background-color: #fecaca;">⏱️</div>
+                    <div class="menu-text">
+                        <div class="menu-title">Спринт на час <span class="menu-badge" id="sprint-badge" style="top:-15px; right:-15px;">0</span></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -111,72 +116,73 @@
         <div id="shop" class="section"><h1 class="welcome-title">Магазин 🛍️</h1><p class="welcome-subtitle" style="text-align:center; margin-bottom:15px;">Обмінюй 🌟 на подарунки!</p><div id="shop-list" class="shop-list"></div></div>
         
         <div id="settings" class="section">
-    <h1 class="welcome-title">Опції ⚙️</h1>
-    
-    <div class="question-box">
-        <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Маєш секретний код? Вводь!</p>
-        <button class="btn btn-primary" onclick="enterPromo()">🎁 Ввести код</button>
-    </div>
-    
-    <div class="question-box">
-        <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Статистика та Профіль</p>
-        <button class="btn btn-primary" onclick="showSection('profile')">📊 Статистика Киці</button>
-    </div>
-
-    <div class="question-box">
-        <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Збереження прогресу</p>
-        <button class="btn" style="border:2px solid var(--primary); margin-bottom:10px;" onclick="exportProgress()">💾 Скопіювати прогрес</button>
-        <button class="btn" onclick="importProgress()">📂 Відновити прогрес</button>
-    </div>
-</div>
-
-<div id="profile" class="section">
-    <h1 class="welcome-title">Профіль 📊</h1>
-    
-    <div style="background: linear-gradient(135deg, #ec4899, #f472b6); padding: 20px; border-radius: 24px; box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2); text-align: center; margin-bottom: 20px; color: white;">
-        <div style="font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 5px;">Ми разом вже</div>
-        <div style="font-size: 3.5rem; font-weight: 900; line-height: 1;" id="together-days">0</div>
-        <div style="font-size: 1.1rem; font-weight: 700; margin-top: 5px;">щасливих днів ❤️</div>
-    </div>
-
-    <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); text-align: center; margin-bottom: 15px;">
-        <div style="font-size: 4rem; margin-bottom: 10px;" id="prof-icon">🐾</div>
-        <h2 style="color: var(--text-main); margin-bottom: 5px;" id="prof-name">Кошеня</h2>
-        <p style="color: var(--primary); font-weight: 700; margin-bottom: 15px;">Зароблено за весь час: <span id="prof-xp">0</span> 🌟</p>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
-            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Серія днів</div>
-                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🔥 <span id="prof-streak">0</span></div>
+            <h1 class="welcome-title">Опції ⚙️</h1>
+            
+            <div class="question-box">
+                <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Маєш секретний код? Вводь!</p>
+                <button class="btn btn-primary" onclick="enterPromo()">🎁 Ввести код</button>
             </div>
-            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Рекорд Спринту</div>
-                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">⚡ <span id="prof-sprint">0</span></div>
+            
+            <div class="question-box">
+                <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Статистика та Профіль</p>
+                <button class="btn btn-primary" onclick="showSection('profile')">📊 Статистика Киці</button>
             </div>
-            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Усього ігор</div>
-                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🎮 <span id="prof-games">0</span></div>
-            </div>
-            <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Покупки</div>
-                <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🛍️ <span id="prof-purchases">0</span></div>
+
+            <div class="question-box">
+                <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Збереження прогресу</p>
+                <button class="btn" style="border:2px solid var(--primary); margin-bottom:10px;" onclick="exportProgress()">💾 Скопіювати прогрес</button>
+                <button class="btn" onclick="importProgress()">📂 Відновити прогрес</button>
             </div>
         </div>
-    </div>
 
-    <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 15px;">
-        <h3 style="color: var(--text-main); margin-bottom: 15px; font-size: 0.9rem; text-align: center; font-weight: 800;">ПРОГРЕС ДО НАСТУПНОГО ЗВАННЯ</h3>
-        <div style="width: 100%; height: 12px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 8px;">
-            <div id="prof-lvl-bar" style="height: 100%; background: var(--correct); width: 0%; transition: width 1s ease-out;"></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">
-            <span id="prof-lvl-curr">Поточний</span>
-            <span id="prof-lvl-next">Наступний</span>
-        </div>
-    </div>
+        <div id="profile" class="section">
+            <h1 class="welcome-title">Профіль 📊</h1>
+            
+            <div style="background: linear-gradient(135deg, #ec4899, #f472b6); padding: 20px; border-radius: 24px; box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2); text-align: center; margin-bottom: 20px; color: white;">
+                <div style="font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 5px;">Ми разом вже</div>
+                <div style="font-size: 3.5rem; font-weight: 900; line-height: 1;" id="together-days">0</div>
+                <div style="font-size: 1.1rem; font-weight: 700; margin-top: 5px;">щасливих днів ❤️</div>
+            </div>
 
-    <button class="btn" style="margin-top:auto; width:100%;" onclick="showSection('settings')">Назад в Опції</button>
-</div>
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); text-align: center; margin-bottom: 15px;">
+                <div style="font-size: 4rem; margin-bottom: 10px;" id="prof-icon">🐾</div>
+                <h2 style="color: var(--text-main); margin-bottom: 5px;" id="prof-name">Кошеня</h2>
+                <p style="color: var(--primary); font-weight: 700; margin-bottom: 15px;">Зароблено за весь час: <span id="prof-xp">0</span> 🌟</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
+                    <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Серія днів</div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🔥 <span id="prof-streak">0</span></div>
+                    </div>
+                    <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Рекорд Спринту</div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">⚡ <span id="prof-sprint">0</span></div>
+                    </div>
+                    <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Усього ігор</div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🎮 <span id="prof-games">0</span></div>
+                    </div>
+                    <div style="background: var(--bg); padding: 10px; border-radius: 12px;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Покупки</div>
+                        <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">🛍️ <span id="prof-purchases">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 15px;">
+                <h3 style="color: var(--text-main); margin-bottom: 15px; font-size: 0.9rem; text-align: center; font-weight: 800;">ПРОГРЕС ДО НАСТУПНОГО ЗВАННЯ</h3>
+                <div style="width: 100%; height: 12px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-bottom: 8px;">
+                    <div id="prof-lvl-bar" style="height: 100%; background: var(--correct); width: 0%; transition: width 1s ease-out;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">
+                    <span id="prof-lvl-curr">Поточний</span>
+                    <span id="prof-lvl-next">Наступний</span>
+                </div>
+            </div>
+
+            <button class="btn" style="margin-top:auto; width:100%;" onclick="showSection('settings')">Назад в Опції</button>
+        </div>
+
         <div id="inventory" class="section"><h1 class="welcome-title">Купони 🎁</h1><div id="inv-list" class="shop-list"></div></div>
         <div id="achievements" class="section"><h1 class="welcome-title">Досягнення 🏆</h1><div id="achiev-list" class="achiev-list"></div></div>
 
@@ -187,17 +193,17 @@
                 <div class="wheel-pointer"></div>
                 <div class="wheel-container">
                    <div class="wheel" id="spin-wheel">
-    <div class="wheel-item jackpot" style="transform: rotate(18deg);">500</div>
-    <div class="wheel-item" style="transform: rotate(54deg);">20</div>
-    <div class="wheel-item" style="transform: rotate(90deg);">0</div>
-    <div class="wheel-item" style="transform: rotate(126deg);">20</div>
-    <div class="wheel-item" style="transform: rotate(162deg);">0</div>
-    <div class="wheel-item" style="transform: rotate(198deg);">20</div>
-    <div class="wheel-item" style="transform: rotate(234deg);">50</div>
-    <div class="wheel-item" style="transform: rotate(270deg);">100</div>
-    <div class="wheel-item" style="transform: rotate(306deg); font-size:1rem;">🍫🍬</div>
-    <div class="wheel-item" style="transform: rotate(342deg);">🎁</div>
-</div>
+                        <div class="wheel-item jackpot" style="transform: rotate(18deg);">500</div>
+                        <div class="wheel-item" style="transform: rotate(54deg);">20</div>
+                        <div class="wheel-item" style="transform: rotate(90deg);">0</div>
+                        <div class="wheel-item" style="transform: rotate(126deg);">20</div>
+                        <div class="wheel-item" style="transform: rotate(162deg);">0</div>
+                        <div class="wheel-item" style="transform: rotate(198deg);">20</div>
+                        <div class="wheel-item" style="transform: rotate(234deg);">50</div>
+                        <div class="wheel-item" style="transform: rotate(270deg);">100</div>
+                        <div class="wheel-item" style="transform: rotate(306deg); font-size:1rem;">🍫🍬</div>
+                        <div class="wheel-item" style="transform: rotate(342deg);">🎁</div>
+                    </div>
                     <div class="wheel-center-cap">🌟</div>
                 </div>
             </div>
@@ -227,51 +233,54 @@
         <div id="hangman" class="section"><div id="hm-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="hm-counter"></span><span id="hm-lives-text" style="color:var(--wrong);"></span></div><div class="question-box" id="hm-question"></div><div style="display:flex; justify-content:center; gap:6px; margin-bottom:20px; flex-wrap:wrap;" id="hm-slots"></div><div style="display:flex; justify-content:center; gap:6px; margin-top:auto; flex-wrap:wrap;" id="hm-keyboard"></div></div><div class="result-screen" id="hm-result"><h2 id="hm-result-title"></h2><div class="result-score" id="hm-final-word"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
         <div id="flashcards" class="section"><div class="status-bar"><span id="fc-counter"></span></div><div style="flex:1; display:flex; align-items:center; justify-content:center; perspective:1000px;" onclick="flipCard()"><div id="flashcard" style="width:100%; max-width:300px; height:350px; position:relative; transition:transform 0.4s; transform-style:preserve-3d; cursor:pointer;"><div id="fc-front" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--card-bg); border-radius:24px; font-weight:800; font-size:1.8rem; box-shadow:0 10px 30px rgba(0,0,0,0.08); color:var(--text-main);"></div><div id="fc-back" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg); border:2px solid var(--primary); border-radius:24px; font-weight:800; font-size:1.8rem; color:var(--primary); transform:rotateY(180deg);"></div></div></div><div style="display:flex; gap:10px;"><button class="btn" onclick="prevCard()">Назад</button><button class="btn btn-primary" onclick="nextCard()">Далі</button></div></div>
 
-   <div id="boss" class="section">
-        <div class="boss-header" style="background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold;">
-                <span>😈 Бос</span>
-                <span id="boss-hp-text" style="color: #ef4444;">1000 / 1000 HP</span>
-            </div>
-            <div style="width: 100%; height: 15px; background: #fee2e2; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ef4444;">
-                <div id="boss-hp-bar" style="height: 100%; background: linear-gradient(90deg, #ef4444, #b91c1c); width: 100%; transition: width 0.3s;"></div>
+        <div id="boss" class="section">
+            <div class="boss-header" style="background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold;">
+                    <span>😈 Бос</span>
+                    <span id="boss-hp-text" style="color: #ef4444;">1000 / 1000 HP</span>
+                </div>
+                <div style="width: 100%; height: 15px; background: #fee2e2; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ef4444;">
+                    <div id="boss-hp-bar" style="height: 100%; background: linear-gradient(90deg, #ef4444, #b91c1c); width: 100%; transition: width 0.3s;"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div id="olya-hearts" style="font-size: 1.5rem; letter-spacing: 5px;">❤️❤️❤️</div>
+                    <div style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">⏱ <span id="boss-timer-text">6</span>с</div>
+                </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div id="olya-hearts" style="font-size: 1.5rem; letter-spacing: 5px;">❤️❤️❤️</div>
-                <div style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">⏱ <span id="boss-timer-text">6</span>с</div>
+            <div id="boss-active" style="display: flex; flex-direction: column;">
+                <div id="boss-phase-alert" style="text-align: center; color: var(--primary); font-weight: 900; margin-bottom: 10px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;">ФАЗА 1: РОЗМИНКА</div>
+                
+                <div id="boss-question-box" style="width: 100%; background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; font-size: 1.5rem; font-weight: 800; min-height: 120px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                </div>
+                
+                <div id="boss-options" class="options-grid"></div>
+                
+                <div id="boss-typing-area" style="display: none; flex-direction: column; gap: 10px; margin-top: 20px;">
+                    <input type="text" id="boss-input" placeholder="Введи англійське слово..." style="padding: 15px; border-radius: 12px; border: 2px solid var(--primary); font-size: 1.2rem; text-align: center; font-family: inherit;" autocomplete="off" autocorrect="off" autocapitalize="none">
+                    <button class="btn btn-primary" onclick="checkBossTyping()">💥 Атакувати!</button>
+                </div>
             </div>
-        </div>
 
-        <div id="boss-active" style="display: flex; flex-direction: column;">
-            <div id="boss-phase-alert" style="text-align: center; color: var(--primary); font-weight: 900; margin-bottom: 10px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;">ФАЗА 1: РОЗМИНКА</div>
-            
-            <div id="boss-question-box" style="width: 100%; background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; font-size: 1.5rem; font-weight: 800; min-height: 120px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <div id="boss-result" style="display:none; background: var(--card-bg); border: 4px solid #ef4444; border-radius: 20px; padding: 20px; flex-direction: column; align-items: center; text-align: center;">
+                <div id="boss-final" style="font-size: 5rem; margin-bottom: 10px;">🏆</div>
+                <h2 id="boss-result-title" style="color: var(--text-main); font-size: 2rem; margin-bottom: 10px;"></h2>
+                <p id="boss-result-desc" style="color: var(--text-muted); margin-bottom: 20px; font-size: 1.1rem; line-height: 1.5;"></p>
+                <button class="btn btn-primary" style="width: 100%;" onclick="showSection('home')">ПОВЕРНУТИСЯ</button>
             </div>
-            
-            <div id="boss-options" class="options-grid"></div>
-            
-            <div id="boss-typing-area" style="display: none; flex-direction: column; gap: 10px; margin-top: 20px;">
-                <input type="text" id="boss-input" placeholder="Введи англійське слово..." style="padding: 15px; border-radius: 12px; border: 2px solid var(--primary); font-size: 1.2rem; text-align: center; font-family: inherit;" autocomplete="off" autocorrect="off" autocapitalize="none">
-                <button class="btn btn-primary" onclick="checkBossTyping()">💥 Атакувати!</button>
-            </div>
-        </div>
+        </div> 
+        
+        <div style="height: 110px; width: 100%; flex-shrink: 0;"></div>
 
-       <div id="boss-result" style="display:none; background: var(--card-bg); border: 4px solid #ef4444; border-radius: 20px; padding: 20px; flex-direction: column; align-items: center; text-align: center;">
-            <div id="boss-final" style="font-size: 5rem; margin-bottom: 10px;">🏆</div>
-            <h2 id="boss-result-title" style="color: var(--text-main); font-size: 2rem; margin-bottom: 10px;"></h2>
-            <p id="boss-result-desc" style="color: var(--text-muted); margin-bottom: 20px; font-size: 1.1rem; line-height: 1.5;"></p>
-            <button class="btn btn-primary" style="width: 100%;" onclick="showSection('home')">ПОВЕРНУТИСЯ</button>
-        </div>
-    </div> 
-    </div> </div> <nav class="bottom-nav" style="position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000; background: var(--card-bg); box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
-    <div class="nav-item active" onclick="showSection('home')"><div class="nav-icon">🏠</div><span>Головна</span></div>
-    <div class="nav-item" onclick="showSection('dictionary')"><div class="nav-icon">📖</div><span>Словник</span></div>
-    <div class="nav-item" onclick="showSection('shop')"><div class="nav-icon">🛍️</div><span>Магазин</span></div>
-    <div class="nav-item" onclick="showSection('settings')"><div class="nav-icon">⚙️</div><span>Опції</span></div>
-</nav>
+    </div> <nav class="bottom-nav">
+        <div class="nav-item active" onclick="showSection('home')"><div class="nav-icon">🏠</div><span>Головна</span></div>
+        <div class="nav-item" onclick="showSection('dictionary')"><div class="nav-icon">📖</div><span>Словник</span></div>
+        <div class="nav-item" onclick="showSection('shop')"><div class="nav-icon">🛍️</div><span>Магазин</span></div>
+        <div class="nav-item" onclick="showSection('settings')"><div class="nav-icon">⚙️</div><span>Опції</span></div>
+    </nav>
 
-<script src="data.js"></script>
+</div> <script src="data.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
