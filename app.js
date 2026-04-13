@@ -723,31 +723,54 @@ function renderDictionary() {
     const grid = document.getElementById('dict-grid'); if(!grid) return; grid.innerHTML = ''; 
     const searchInput = document.getElementById('dict-search'); const q = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
     
-    if(q === 'love' || q === 'кохаю' || q === 'люблю') { document.getElementById('easter-egg').style.display='flex'; checkAchiev('love'); if(searchInput) searchInput.value=''; return; } 
+    if(q === 'love' || q === 'кохаю' || q === 'люблю') { 
+        const egg = document.getElementById('easter-egg');
+        if(egg) egg.style.display='flex'; 
+        if(typeof checkAchiev === 'function') checkAchiev('love'); 
+        if(searchInput) searchInput.value=''; 
+        return; 
+    } 
     
-    let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
+    // БРОНЬОВАНИЙ ЗАХИСТ ІНВЕНТАРЮ: якщо він ще не завантажився, вважаємо його пустим масивом
+    const safeInventory = Array.isArray(inventory) ? inventory : [];
+    const hasSpicyCard = safeInventory.includes('VIP: Пікантні фрази 🌶️');
     
-    // --- 1. ПЕРЕВІРКА ІНВЕНТАРЮ ---
-    const hasSpicyCard = inventory.includes('VIP: Пікантні фрази 🌶️');
+    // БРОНЬОВАНИЙ ФІЛЬТР ПОШУКУ
+    let list = baseVocabulary.filter(w => {
+        const enText = w.en ? w.en.toLowerCase() : '';
+        const ukText = w.uk ? w.uk.toLowerCase() : '';
+        return enText.includes(q) || ukText.includes(q);
+    });
     
-    // --- 2. МАГІЯ ПРИХОВУВАННЯ ---
-    // Залишаємо слово в списку ТІЛЬКИ якщо воно не 'spicy', АБО якщо у неї є карта
+    // ПРИХОВУВАННЯ ПІКАНТНИХ СЛІВ
     list = list.filter(w => {
         if (w.c === 'spicy' && !hasSpicyCard) return false;
         return true;
     });
     
-    if(currentCat !== 'all') { list = list.filter(w => w.c === currentCat); }
+    // ФІЛЬТР КАТЕГОРІЙ (із захистом від помилок)
+    if(typeof currentCat !== 'undefined' && currentCat !== 'all') { 
+        list = list.filter(w => w.c === currentCat); 
+    }
 
-    list.sort((a,b) => a.en.localeCompare(b.en)).forEach(w => { 
-        const c = document.createElement('div'); c.className = 'dict-card'; const f = document.createElement('div'); f.className = 'dict-face'; const b = document.createElement('div'); b.className = 'dict-face dict-back'; 
+    list.sort((a,b) => (a.en || '').localeCompare(b.en || '')).forEach(w => { 
+        const c = document.createElement('div'); c.className = 'dict-card'; 
+        const f = document.createElement('div'); f.className = 'dict-face'; 
+        const b = document.createElement('div'); b.className = 'dict-face dict-back'; 
         
-        // Маленький бонус: якщо у слова немає власного емодзі, ставимо перчинку 🌶️
-        const emoji = w.em || '🌶️';
+        // Захист емодзі
+        const emoji = w.em ? w.em : (w.c === 'spicy' ? '🌶️' : '✨');
 
         const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; }; 
         if(dictMode === 'en-uk') { buildEn(f); b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.uk}</div>`; } else { f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.uk}</div>`; buildEn(b); } 
-        c.innerHTML = `<div class="dict-card-inner"></div>`; c.firstChild.appendChild(f); c.firstChild.appendChild(b); c.onclick = () => { c.classList.toggle('flipped'); dailyProg.flash++; checkGoals(); recordCardFlip(); }; grid.appendChild(c); 
+        c.innerHTML = `<div class="dict-card-inner"></div>`; c.firstChild.appendChild(f); c.firstChild.appendChild(b); 
+        c.onclick = () => { 
+            c.classList.toggle('flipped'); 
+            if(typeof dailyProg !== 'undefined' && dailyProg.flash !== undefined) dailyProg.flash++; 
+            if(typeof checkGoals === 'function') checkGoals(); 
+            if(typeof recordCardFlip === 'function') recordCardFlip(); 
+        }; 
+        grid.appendChild(c); 
     }); 
 }
 
