@@ -803,7 +803,190 @@ function finishBoss(win) {
     } else { document.getElementById('boss-result-desc').textContent = `Ти пройшла ${bIdx} з 50 питань. Сердечка скінчилися, або час вийшов. Бос сміється з тебе. Повертайся за реваншем!`; } 
     renderInventory(); updateUI(); 
 }
+// --- 1. СЛОВО-ШПИГУН (ODD ONE OUT) ---
+let spyQ = [], spyI = 0, spyS = 0, spyLock = false;
+function startSpy() {
+    showSection('spy'); document.getElementById('spy-result').style.display='none'; document.getElementById('spy-active').style.display='flex';
+    spyQ = []; spyI = 0; spyS = 0;
+    // Генеруємо 10 рівнів
+    const categories = [...new Set(baseVocabulary.map(w => w.c))];
+    for(let i=0; i<10; i++) {
+        let validCats = categories.filter(c => baseVocabulary.filter(w => w.c === c).length >= 3);
+        if(validCats.length < 2) break;
+        let mainCat = validCats[Math.floor(Math.random() * validCats.length)];
+        let oddCat = categories.filter(c => c !== mainCat)[Math.floor(Math.random() * (categories.length - 1))];
+        let mainWords = shuffleArray(baseVocabulary.filter(w => w.c === mainCat)).slice(0, 3);
+        let oddWord = shuffleArray(baseVocabulary.filter(w => w.c === oddCat))[0];
+        spyQ.push({ words: shuffleArray([...mainWords, oddWord]), odd: oddWord });
+    }
+    loadSpy();
+}
+function loadSpy() {
+    spyLock = false; document.getElementById('btn-next-spy').style.display = 'none';
+    document.getElementById('spy-counter').textContent = `${spyI+1}/${spyQ.length}`;
+    document.getElementById('spy-score').textContent = spyS;
+    const g = document.getElementById('spy-options'); g.innerHTML = '';
+    spyQ[spyI].words.forEach(w => {
+        const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = w.uk;
+        b.onclick = (e) => {
+            if(spyLock) return; spyLock = true;
+            const isCorrect = w.en === spyQ[spyI].odd.en;
+            fireParticles(e.clientX, e.clientY, isCorrect);
+            document.querySelectorAll('#spy-options .option-btn').forEach(btn => {
+                btn.disabled = true;
+                if(btn.textContent === spyQ[spyI].odd.uk) btn.classList.add('correct');
+                else if(btn === b && !isCorrect) btn.classList.add('wrong');
+            });
+            if(isCorrect) { spyS++; addXP(2); } else trackMistake(spyQ[spyI].odd);
+            document.getElementById('btn-next-spy').style.display = 'block';
+        };
+        g.appendChild(b);
+    });
+}
+function nextSpy() {
+    spyI++; if(spyI < spyQ.length) loadSpy();
+    else { document.getElementById('spy-active').style.display='none'; document.getElementById('spy-result').style.display='flex'; document.getElementById('spy-final-score').textContent = `${spyS}/${spyQ.length}`; gameFinished(spyS === spyQ.length, 'spy', 1); }
+}
 
+// --- 2. СЕЙФ (WORDLE) ---
+let wdlWord = "", wdlAttempts = 0, wdlGrid = [], wdlObj = null;
+function startWordle() {
+    const validWords = getVocab().filter(w => w.en.length === 5 && /^[a-zA-Z]+$/.test(w.en));
+    if(validWords.length === 0) { alert("Немає слів з 5 літер у словнику!"); return; }
+    showSection('wordle'); document.getElementById('wordle-result').style.display='none'; document.getElementById('wordle-active').style.display='flex';
+    wdlObj = validWords[Math.floor(Math.random() * validWords.length)];
+    wdlWord = wdlObj.en.toUpperCase(); wdlAttempts = 0; wdlGrid = Array.from({length: 6}, () => Array(5).fill(""));
+    drawWordleGrid(); drawWordleKeyboard(); document.getElementById('wordle-attempts').textContent = `Спроби: 0/6`;
+}
+function drawWordleGrid() {
+    const g = document.getElementById('wordle-grid'); g.innerHTML = '';
+    for(let r=0; r<6; r++) {
+        let row = document.createElement('div'); row.className = 'wordle-row';
+        for(let c=0; c<5; c++) {
+            let cell = document.createElement('div'); cell.className = 'wordle-cell';
+            cell.id = `wcell-${r}-${c}`; cell.textContent = wdlGrid[r][c];
+            if(wdlGrid[r][c]) cell.classList.add('filled');
+            row.appendChild(cell);
+        }
+        g.appendChild(row);
+    }
+}
+function drawWordleKeyboard() {
+    const keys = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
+    const g = document.getElementById('wordle-keyboard'); g.innerHTML = '';
+    keys.forEach(rowStr => {
+        let row = document.createElement('div'); row.style.display = 'flex'; row.style.justifyContent = 'center'; row.style.gap = '4px'; row.style.width = '100%';
+        rowStr.split('').forEach(l => {
+            let b = document.createElement('button'); b.className = 'hm-key'; b.textContent = l; b.id = `wkey-${l}`;
+            b.onclick = () => handleWordleKey(l); row.appendChild(b);
+        });
+        if(rowStr === "ZXCVBNM") {
+            let ent = document.createElement('button'); ent.className = 'hm-key'; ent.textContent = "ВВІД"; ent.style.width = '60px'; ent.onclick = checkWordleRow;
+            let del = document.createElement('button'); del.className = 'hm-key'; del.textContent = "⌫"; del.style.width = '45px'; del.onclick = () => handleWordleKey('DEL');
+            row.prepend(ent); row.appendChild(del);
+        }
+        g.appendChild(row);
+    });
+}
+function handleWordleKey(k) {
+    if(wdlAttempts >= 6) return;
+    let col = wdlGrid[wdlAttempts].findIndex(x => x === "");
+    if(k === 'DEL') {
+        let delCol = col === -1 ? 4 : col - 1;
+        if(delCol >= 0) { wdlGrid[wdlAttempts][delCol] = ""; drawWordleGrid(); }
+    } else if(col !== -1) {
+        wdlGrid[wdlAttempts][col] = k; drawWordleGrid();
+    }
+}
+function checkWordleRow() {
+    if(wdlAttempts >= 6 || wdlGrid[wdlAttempts].includes("")) return;
+    let guess = wdlGrid[wdlAttempts].join(''); let target = wdlWord.split(''); let gArr = guess.split('');
+    let status = Array(5).fill('gray');
+    
+    // Check greens
+    for(let i=0; i<5; i++) { if(gArr[i] === target[i]) { status[i] = 'green'; target[i] = null; } }
+    // Check yellows
+    for(let i=0; i<5; i++) {
+        if(status[i] !== 'green' && target.includes(gArr[i])) { status[i] = 'yellow'; target[target.indexOf(gArr[i])] = null; }
+    }
+    
+    // Animate row
+    for(let i=0; i<5; i++) {
+        setTimeout(() => {
+            let cell = document.getElementById(`wcell-${wdlAttempts}-${i}`); cell.classList.add(status[i]); cell.style.color = 'white'; cell.style.borderColor = 'transparent';
+            let key = document.getElementById(`wkey-${gArr[i]}`);
+            if(!key.classList.contains('correct')) {
+                if(status[i] === 'green') { key.style.background = 'var(--correct)'; key.style.color = 'white'; key.classList.add('correct'); }
+                else if(status[i] === 'yellow' && key.style.background !== 'var(--correct)') { key.style.background = 'var(--warning)'; key.style.color = 'white'; }
+                else if(key.style.background === '') { key.style.background = '#475569'; key.style.color = 'white'; }
+            }
+        }, i * 300);
+    }
+    
+    setTimeout(() => {
+        wdlAttempts++; document.getElementById('wordle-attempts').textContent = `Спроби: ${wdlAttempts}/6`;
+        if(guess === wdlWord) {
+            document.getElementById('wordle-active').style.display='none'; document.getElementById('wordle-result').style.display='flex';
+            document.getElementById('wordle-result-title').textContent = "Зламано! 🔓"; document.getElementById('wordle-final-word').textContent = wdlWord;
+            document.getElementById('wordle-uk-translation').textContent = wdlObj.uk;
+            addXP(10); fireParticles(window.innerWidth/2, window.innerHeight/2, true); gameFinished(true, 'wordle', 1);
+        } else if(wdlAttempts >= 6) {
+            document.getElementById('wordle-active').style.display='none'; document.getElementById('wordle-result').style.display='flex';
+            document.getElementById('wordle-result-title').textContent = "Сейф заблоковано 🔒"; document.getElementById('wordle-final-word').textContent = wdlWord;
+            document.getElementById('wordle-uk-translation').textContent = wdlObj.uk; trackMistake(wdlObj); gameFinished(false, 'wordle', 0);
+        }
+    }, 1500);
+}
+
+// --- 3. МЕТЕОРИТНИЙ ДОЩ ---
+let metTimer, metPos = -50, metSpeed = 1, metScore = 0, metWordObj = null;
+function startMeteor() {
+    showSection('meteor'); document.getElementById('meteor-result').style.display='none'; document.getElementById('meteor-active').style.display='flex';
+    metScore = 0; metSpeed = 1; document.getElementById('meteor-cat').classList.remove('hit');
+    spawnMeteor();
+}
+function spawnMeteor() {
+    metPos = -50; metSpeed = 1.5 + (metScore * 0.2); // Кожен бал збільшує швидкість
+    document.getElementById('meteor-speed').textContent = metSpeed.toFixed(1) + "x";
+    document.getElementById('meteor-score').textContent = `Рахунок: ${metScore}`;
+    
+    metWordObj = baseVocabulary[Math.floor(Math.random() * baseVocabulary.length)];
+    const el = document.getElementById('meteor-word');
+    el.textContent = metWordObj.en; el.style.top = metPos + 'px';
+    
+    const opts = shuffleArray([metWordObj, ...shuffleArray(baseVocabulary.filter(x => x.en !== metWordObj.en)).slice(0,2)]);
+    const g = document.getElementById('meteor-options'); g.innerHTML = '';
+    opts.forEach(o => {
+        const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.uk; b.style.padding = '12px'; b.style.fontSize = '1rem';
+        b.onclick = (e) => {
+            if(o.en === metWordObj.en) {
+                clearInterval(metTimer); fireParticles(e.clientX, e.clientY, true);
+                metScore++; addXP(1); spawnMeteor();
+            } else {
+                b.classList.add('wrong'); setTimeout(() => b.classList.remove('wrong'), 300);
+            }
+        };
+        g.appendChild(b);
+    });
+
+    const areaHeight = document.getElementById('meteor-area').clientHeight;
+    clearInterval(metTimer);
+    metTimer = setInterval(() => {
+        metPos += metSpeed;
+        el.style.top = metPos + 'px';
+        if(metPos > areaHeight - 80) { // Метеорит впав на кота
+            clearInterval(metTimer);
+            document.getElementById('meteor-cat').classList.add('hit');
+            playSFX(false); trackMistake(metWordObj);
+            setTimeout(() => {
+                document.getElementById('meteor-active').style.display = 'none';
+                document.getElementById('meteor-result').style.display = 'flex';
+                document.getElementById('meteor-final-score').textContent = metScore;
+                gameFinished(false, 'meteor', metScore);
+            }, 1000);
+        }
+    }, 30);
+}
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
 function exportProgress() { const d = { totalXP, lifetimeXP, currentStreak, bestSprint, dailyProg, mistakeWords, inventory, achievs, usedCodes, lastLogin, dailyGoals, userStats, lastWheelDate }; const s = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); navigator.clipboard.writeText(s).then(()=>alert("Код скопійовано! Надішли Юрі 📩")).catch(()=>prompt("Скопіюй вручну:", s)); }
 function importProgress() { const s = prompt("Встав код прогресу сюди:"); if(!s) return; try { const d = JSON.parse(decodeURIComponent(escape(atob(s)))); if(d.totalXP !== undefined) { localStorage.setItem('totalXP', d.totalXP); if(d.lifetimeXP !== undefined) localStorage.setItem('lifetimeXP', d.lifetimeXP); localStorage.setItem('streak', d.currentStreak); localStorage.setItem('sprintRecord', d.bestSprint); localStorage.setItem('dailyProg', JSON.stringify(d.dailyProg)); localStorage.setItem('userMistakes', JSON.stringify(d.mistakeWords)); localStorage.setItem('userInventory', JSON.stringify(d.inventory)); localStorage.setItem('achievs', JSON.stringify(d.achievs)); localStorage.setItem('usedCodes', JSON.stringify(d.usedCodes)); localStorage.setItem('lastLogin', d.lastLogin); if(d.dailyGoals) localStorage.setItem('dailyGoals', JSON.stringify(d.dailyGoals)); if(d.userStats) localStorage.setItem('userStats', JSON.stringify(d.userStats)); if(d.lastWheelDate) localStorage.setItem('lastWheelDate', d.lastWheelDate); alert("Прогрес відновлено!"); location.reload(); } } catch(e){alert("Помилка коду!");} }
