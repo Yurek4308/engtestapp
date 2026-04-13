@@ -810,6 +810,7 @@ function finishBoss(win) {
 }
 // --- 1. СЛОВО-ШПИГУН (ODD ONE OUT) ---
 let spyQ = [], spyI = 0, spyS = 0, spyLock = false;
+
 function startSpy() {
     showSection('spy'); document.getElementById('spy-result').style.display='none'; document.getElementById('spy-active').style.display='flex';
     spyQ = []; spyI = 0; spyS = 0;
@@ -826,6 +827,7 @@ function startSpy() {
     }
     loadSpy();
 }
+
 function loadSpy() {
     spyLock = false; document.getElementById('btn-next-spy').style.display = 'none';
     document.getElementById('spy-counter').textContent = `${spyI+1}/${spyQ.length}`;
@@ -846,9 +848,9 @@ function loadSpy() {
         b.style.gap = '5px';
         b.style.lineHeight = '1.1';
         
-        // Показуємо англійське слово, а український переклад ховаємо (висота 0, прозорість 0)
+        // Показуємо англійське слово, а український переклад ховаємо
         b.innerHTML = `
-            <span style="font-weight: 800;">${w.en}</span>
+            <span class="spy-en-word" style="font-weight: 800;">${w.en}</span>
             <span class="spy-uk-hint" style="font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 600; opacity: 0; height: 0; overflow: hidden; transition: 0.3s;">${w.uk}</span>
         `;
         
@@ -860,7 +862,7 @@ function loadSpy() {
             document.querySelectorAll('#spy-options .option-btn').forEach(btn => {
                 btn.disabled = true;
                 
-                // МАГІЯ: Відкриваємо переклад для всіх слів, коли гравець зробив вибір!
+                // МАГІЯ: Відкриваємо переклад для всіх слів
                 const hint = btn.querySelector('.spy-uk-hint');
                 if(hint) { 
                     hint.style.opacity = '1'; 
@@ -868,7 +870,8 @@ function loadSpy() {
                     hint.style.marginTop = '5px';
                 }
                 
-                if(btn.querySelector('span').textContent === spyQ[spyI].odd.en) {
+                // Надійна перевірка через клас .spy-en-word
+                if(btn.querySelector('.spy-en-word').textContent === spyQ[spyI].odd.en) {
                     btn.classList.add('correct');
                 }
                 else if(btn === b && !isCorrect) {
@@ -881,6 +884,19 @@ function loadSpy() {
         };
         g.appendChild(b);
     });
+}
+
+// ОСЬ ЦЯ ФУНКЦІЯ БУЛА ВТРАЧЕНА! ТЕПЕР КНОПКА "ДАЛІ" ПРАЦЮВАТИМЕ
+function nextSpy() {
+    spyI++; 
+    if(spyI < spyQ.length) {
+        loadSpy();
+    } else { 
+        document.getElementById('spy-active').style.display = 'none'; 
+        document.getElementById('spy-result').style.display = 'flex'; 
+        document.getElementById('spy-final-score').textContent = `${spyS}/${spyQ.length}`; 
+        gameFinished(spyS === spyQ.length, 'spy', 1); 
+    }
 }
 // --- 2. СЕЙФ (WORDLE) ---
 let wdlWord = "", wdlAttempts = 0, wdlGrid = [], wdlObj = null, wdlLen = 5;
