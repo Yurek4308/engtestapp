@@ -608,36 +608,78 @@ function isBlackMarketOpen() {
 function renderShop() { 
     const c = document.getElementById('shop-list'); if(!c) return;
     const bmStatus = isBlackMarketOpen();
+    
+    // Очищуємо список і додаємо плашку Чорного Ринку
     c.innerHTML = bmStatus ? `<div style="background:#0f172a; color:#10b981; padding:10px; border-radius:12px; margin-bottom:15px; text-align:center; font-weight:800; border:2px solid #10b981;">🕶️ ЧОРНИЙ РИНОК ВІДКРИТО!</div>` : ''; 
     
-    let currentItems = [...shopItems]; // ВИПРАВЛЕНО ТУТ
+    let currentItems = [...shopItems]; 
     
+    // Логіка Чорного Ринку (знижки та ексклюзиви)
     if (bmStatus) {
         currentItems = currentItems.map(i => i.id === 'dinner' ? { ...i, price: Math.floor(i.price * 0.85) } : i);
         if (bmStatus === 'ALL') currentItems.push(...bmItems);
-        else { const d = new Date(); const seed = d.getFullYear() + d.getMonth() + d.getDate(); currentItems.push(bmItems[seed % bmItems.length], bmItems[(seed + 1) % bmItems.length]); }
+        else { 
+            const d = new Date(); 
+            const seed = d.getFullYear() + d.getMonth() + d.getDate(); 
+            currentItems.push(bmItems[seed % bmItems.length], bmItems[(seed + 1) % bmItems.length]); 
+        }
     }
+
     currentItems.forEach(i => { 
-        const isErr = i.price === 'ERROR'; const can = !isErr && totalXP >= i.price;
+        // 1. ПЕРЕВІРЯЄМО, ЧИ ЦЕ УНІКАЛЬНИЙ ПРЕДМЕТ (VIP або Титул)
+        const isUnique = i.name.includes('VIP') || i.name.includes('Титул');
+        const isOwned = inventory.some(item => item.id === i.id);
         
-        const originalPrice = shopItems.find(x => x.id === i.id)?.price; // ВИПРАВЛЕНО ТУТ
+        const isErr = i.price === 'ERROR'; 
         
+        // 2. ЛОГІКА КНОПКИ: 
+        // Не можна купити, якщо: ERROR, мало зірок АБО (це VIP і він вже є)
+        const can = !isErr && totalXP >= i.price && (!isUnique || !isOwned);
+        
+        const originalPrice = shopItems.find(x => x.id === i.id)?.price;
         const discountLabel = (bmStatus && i.id === 'dinner') ? `<s style="color:var(--text-muted);font-size:0.7rem;">${originalPrice}</s>` : '';
-        c.innerHTML += `<div class="shop-item"><div class="shop-info"><div style="font-size:2rem;">${i.icon}</div><div><div class="shop-title">${i.name}</div><div class="shop-price" style="${isErr?'color:var(--wrong)':(bmStatus && i.id==='dinner'?'color:#10b981':'')}">${isErr?'':'🌟 '}${i.price} ${discountLabel}</div></div></div><button class="buy-btn" ${can?'':'disabled'} onclick="buyItem('${i.id}')">${isErr?'Неможливо':(can?'Купити':'Бракує')}</button></div>`;
+        
+        // 3. ТЕКСТ ТА СТИЛЬ КНОПКИ
+        let btnText = isErr ? 'Неможливо' : (isOwned && isUnique ? 'Вже є ✅' : (can ? 'Купити' : 'Бракує'));
+        let btnStyle = (isOwned && isUnique) ? 'background: #10b981 !important; color: white;' : '';
+
+        c.innerHTML += `
+            <div class="shop-item" style="${isOwned && isUnique ? 'opacity: 0.8;' : ''}">
+                <div class="shop-info">
+                    <div style="font-size:2rem;">${i.icon}</div>
+                    <div>
+                        <div class="shop-title">${i.name}</div>
+                        <div class="shop-price" style="${isErr ? 'color:var(--wrong)' : (bmStatus && i.id==='dinner' ? 'color:#10b981' : '')}">
+                            ${isOwned && isUnique ? 'Придбано' : (isErr ? '' : '🌟 ') + (isErr ? '' : i.price)} ${discountLabel}
+                        </div>
+                    </div>
+                </div>
+                <button class="buy-btn" ${can ? '' : 'disabled'} onclick="buyItem('${i.id}')" style="${btnStyle}">
+                    ${btnText}
+                </button>
+            </div>`;
     }); 
 }
 function buyItem(id) { 
     const bmStatus = isBlackMarketOpen(); 
     
-    let currentItems = [...shopItems]; // ВИПРАВЛЕНО ТУТ
+    let currentItems = [...shopItems];
     
     if (bmStatus) {
         currentItems = currentItems.map(i => i.id === 'dinner' ? { ...i, price: Math.floor(i.price * 0.85) } : i);
         if (bmStatus === 'ALL') currentItems.push(...bmItems);
         else { const d = new Date(); const seed = d.getFullYear() + d.getMonth() + d.getDate(); currentItems.push(bmItems[seed % bmItems.length], bmItems[(seed + 1) % bmItems.length]); }
     }
+    
     const i = currentItems.find(x => x.id === id); 
     if(!i || i.price === 'ERROR') return;
+
+    // 🔥 УНІВЕРСАЛЬНА ПЕРЕВІРКА НА VIP/ТИТУЛ
+    const isUnique = i.name.includes('VIP') || i.name.includes('Титул');
+    if (isUnique && inventory.some(owned => owned.id === i.id)) {
+        showToast("Це в тебе вже є! ❤️");
+        return;
+    }
 
     if(totalXP >= i.price) { 
         addXP(-i.price); 
@@ -654,9 +696,8 @@ function buyItem(id) {
         renderShop(); 
         updateUI();
 
-        // 🔥 МАГІЯ СЮРПРИЗУ ДЛЯ ПІКАНТНОЇ КАРТКИ 🔥
+        // МАГІЯ СЮРПРИЗУ (тільки для пікантної картки)
         if (i.name && i.name.includes('Пікантні фрази')) {
-            // Генератор червоного конфетті (50 частинок)
             for(let k=0; k<50; k++) {
                 setTimeout(() => {
                     let p = document.createElement('div');
@@ -665,25 +706,20 @@ function buyItem(id) {
                     p.style.top = '-20px';
                     p.style.width = (Math.random() * 8 + 5) + 'px';
                     p.style.height = (Math.random() * 15 + 10) + 'px';
-                    // Червоні та бордові кольори
                     p.style.backgroundColor = Math.random() > 0.5 ? '#ff0000' : '#8b0000'; 
                     p.style.zIndex = '9999';
-                    p.style.pointerEvents = 'none'; // щоб не заважали клікати
+                    p.style.pointerEvents = 'none';
                     p.style.transition = 'top 2s linear, opacity 1.5s linear, transform 2s ease-in-out';
                     p.style.transform = `rotate(${Math.random() * 360}deg)`;
                     document.body.appendChild(p);
-                    
                     setTimeout(() => {
                         p.style.top = window.innerHeight + 'px';
                         p.style.opacity = '0';
                         p.style.transform = `rotate(${Math.random() * 720}deg)`;
                     }, 50);
-                    
                     setTimeout(() => p.remove(), 2000);
                 }, k * 40);
             }
-            
-            // Секретне повідомлення через півсекунди
             setTimeout(() => {
                 alert("🔥 Увага! Доступ до пікантного словника відкрито! Чекаю тебе ввечері... 😏");
             }, 600);
