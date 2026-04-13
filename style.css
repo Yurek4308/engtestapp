@@ -58,21 +58,21 @@ header {
 
 /* ЦЕ ЄДИНЕ МІСЦЕ, ЯКЕ СКРОЛИТЬСЯ В ДОДАТКУ */
 .main-content { 
-    flex: 1; 
-    overflow-y: auto; 
+    flex: 1; /* Займає рівно той простір, що лишився між шапкою і меню */
+    overflow-y: auto; /* Скролиться тільки ця частина */
     display: flex; 
     flex-direction: column; 
-    position: relative;
+    padding-bottom: 20px; /* Невеликий відступ для краси */
     -webkit-overflow-scrolling: touch;
 }
 
 .section { 
     display: none; 
     flex-direction: column; 
-    min-height: 100%; 
     padding: 20px; 
     animation: fadeIn 0.2s ease-out; 
     box-sizing: border-box; 
+    width: 100%;
 }
 
 .section.active { 
@@ -82,12 +82,11 @@ header {
 
 /* НИЖНЄ МЕНЮ */
 .bottom-nav { 
-    display: flex; 
-    position: absolute; /* Ідеально для app-container */
-    bottom: 0;
-    left: 0;
+    display: flex !important; 
+    position: relative !important; /* МАГІЯ ТУТ: воно більше не плаває поверх усього */
+    flex-shrink: 0; /* МАГІЯ 2: забороняємо меню сплющуватися */
     width: 100%;
-    z-index: 1000; 
+    z-index: 9999 !important; 
     background: var(--card-bg); 
     justify-content: space-around; 
     align-items: center; 
