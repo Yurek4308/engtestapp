@@ -12,6 +12,98 @@ const baseVocabulary = [
     { en: "Love", uk: "Любити", em: "❤️", c:"f" }, { en: "Kiss", uk: "Цілувати", em: "💋", c:"f" }, { en: "Smile", uk: "Посмішка", em: "😊", c:"f" }, { en: "Want", uk: "Хотіти", em: "🥺", c:"f" }, { en: "Need", uk: "Потребувати", em: "🆘", c:"f" }, { en: "Like", uk: "Подобатися", em: "❤️", c:"f" }, { en: "Miss", uk: "Сумувати", em: "😢", c:"f" }, { en: "Care", uk: "Піклуватися", em: "🫶", c:"f" }, { en: "Trust", uk: "Довіряти", em: "🤞", c:"f" }, { en: "Feel", uk: "Відчувати", em: "💓", c:"f" }, { en: "Touch", uk: "Торкатися", em: "👆", c:"f" }, { en: "Hold", uk: "Тримати", em: "🤝", c:"f" },
     { en: "Eyes", uk: "Очі", em: "👀", c:"h" }, { en: "Salt", uk: "Сіль", em: "🧂", c:"h" }, { en: "Small", uk: "Маленький", em: "🤏", c:"h" }, { en: "Big", uk: "Великий", em: "🐘", c:"h" }, { en: "Cool", uk: "Крутий", em: "😎", c:"h" }, { en: "Good", uk: "Хороший", em: "👍", c:"h" }, { en: "Kind", uk: "Добрий", em: "😇", c:"h" }, { en: "Cold", uk: "Холодний", em: "❄️", c:"h" }, { en: "Hot", uk: "Гарячий", em: "🔥", c:"h" }, { en: "Children", uk: "Діти", em: "👶", c:"h" }, { en: "Family", uk: "Сім'я", em: "🏡", c:"h" }, { en: "Mirror", uk: "Дзеркало", em: "🪞", c:"h" }, { en: "Error", uk: "Помилка", em: "❌", c:"h" }, { en: "Phone", uk: "Телефон", em: "📱", c:"h" }, { en: "House", uk: "Будинок", em: "🏠", c:"h" }, { en: "Flat", uk: "Квартира", em: "🏢", c:"h" }, { en: "Bed", uk: "Ліжко", em: "🛏️", c:"h" }, { en: "Bad", uk: "Поганий", em: "👎", c:"h" }, { en: "Bedroom", uk: "Спальня", em: "🛌", c:"h" }, { en: "Sweet", uk: "Солодкий", em: "🍬", c:"h" },
     { en: "Let's", uk: "Давай", em: "🤝", c:"p" }, { en: "About", uk: "Про", em: "ℹ️", c:"p" }, { en: "Something", uk: "Щось", em: "📦", c:"p" }, { en: "I am", uk: "Я (є)", em: "🙋‍♀️", c:"p" }, { en: "We are", uk: "Ми (є)", em: "👫", c:"p" }, { en: "You are", uk: "Ти (є)", em: "🫵", c:"p" }, { en: "They are", uk: "Вони (є)", em: "👨‍👩‍👦", c:"p" }, { en: "He is", uk: "Він (є)", em: "👨", c:"p" }, { en: "She is", uk: "Вона (є)", em: "👩", c:"p" }, { en: "It is", uk: "Воно (є)", em: "🤖", c:"p" }, { en: "Close", uk: "Близько", em: "🤏", c:"p" }, { en: "Together", uk: "Разом", em: "💞", c:"p" }, { en: "Forever", uk: "Назавжди", em: "♾️", c:"p" }, { en: "Beautiful", uk: "Красива", em: "😍", c:"p" }
+
+    // --- ПІКАНТНІ ФРАЗИ: ЛЕГКИЙ ФЛІРТ ТА НАСТРІЙ 🌶️ ---
+    { en: "You look so damn sexy", uk: "Ти виглядаєш біса сексуально", c: "spicy" },
+    { en: "I can't stop thinking about your body", uk: "Я не можу перестати думати про твоє тіло", c: "spicy" },
+    { en: "Wear something revealing", uk: "Одягни щось відверте", c: "spicy" },
+    { en: "Take it off slowly", uk: "Зніми це повільно", c: "spicy" },
+    { en: "Leave your panties at home", uk: "Залиш свої трусики вдома", c: "spicy" },
+    { en: "You are my addiction", uk: "Ти моя залежність", c: "spicy" },
+    { en: "I want to ruin your lipstick", uk: "Я хочу зіпсувати твою помаду", c: "spicy" },
+    { en: "Let's do it in the car", uk: "Давай займемося цим в машині", c: "spicy" },
+    { en: "I love the way you taste", uk: "Мені подобається твій смак", c: "spicy" },
+    
+    // --- ПІКАНТНІ ФРАЗИ: ЧУТТЄВІСТЬ ТА ДОТИКИ 🔥 ---
+    { en: "Kiss my neck", uk: "Поцілуй мене в шию", c: "spicy" },
+    { en: "Whisper in my ear", uk: "Пошепки мені на вушко", c: "spicy" },
+    { en: "Touch me right there", uk: "Торкнися мене прямо там", c: "spicy" },
+    { en: "I want to feel your skin", uk: "Я хочу відчувати твою шкіру", c: "spicy" },
+    { en: "Bite your lip", uk: "Прикуси губу", c: "spicy" },
+    { en: "Scratch my back", uk: "Поряпай мені спину", c: "spicy" },
+    { en: "I want you so bad", uk: "Я так сильно тебе хочу", c: "spicy" },
+    { en: "Make love to me", uk: "Кохайся зі мною", c: "spicy" },
+    { en: "I am completely yours", uk: "Я повністю твоя (твій)", c: "spicy" },
+    { en: "Take me to bed", uk: "Відведи мене в ліжко", c: "spicy" },
+    
+    // --- ПІКАНТНІ ФРАЗИ: В ПРОЦЕСІ 💦 ---
+    { en: "Faster", uk: "Швидше", c: "spicy" },
+    { en: "Deeper", uk: "Глибше", c: "spicy" },
+    { en: "Harder", uk: "Сильніше / Жорсткіше", c: "spicy" },
+    { en: "Don't you dare stop", uk: "Не смій зупинятися", c: "spicy" },
+    { en: "I'm so turned on", uk: "Я так сильно збуджена (збуджений)", c: "spicy" },
+    { en: "Say my name", uk: "Скажи моє ім'я", c: "spicy" },
+    { en: "Look me in the eyes", uk: "Дивись мені в очі", c: "spicy" },
+    { en: "I am close", uk: "Я вже близько", c: "spicy" },
+    { en: "Come for me", uk: "Кінчи для мене", c: "spicy" },
+    { en: "Let me taste you", uk: "Дай мені спробувати тебе", c: "spicy" },
+
+    // --- ПІКАНТНІ ФРАЗИ: ВАЖКА АРТИЛЕРІЯ (ДОМІНУВАННЯ ТА КОМАНДИ) ⛓️ ---
+    { en: "I want you right now", uk: "Я хочу тебе прямо зараз", c: "spicy" },
+    { en: "Take off your clothes", uk: "Зніми з себе одяг", c: "spicy" },
+    { en: "Tie me up", uk: "Зв'яжи мене", c: "spicy" },
+    { en: "On your knees", uk: "На коліна", c: "spicy" },
+    { en: "Spank me", uk: "Відшльопай мене", c: "spicy" },
+    { en: "Tell me what you want", uk: "Скажи мені, чого ти хочеш", c: "spicy" },
+    { en: "You belong to me", uk: "Ти належиш мені", c: "spicy" },
+    { en: "Make me moan", uk: "Змусь мене стогнати", c: "spicy" },
+    { en: "Good girl", uk: "Хороша дівчинка", c: "spicy" },
+    { en: "Punish me", uk: "Покарай мене", c: "spicy" },
+    { en: "Arch your back", uk: "Вигни спинку", c: "spicy" },
+    { en: "Spread your legs", uk: "Розсунь ноги", c: "spicy" },
+    { en: "Beg for it", uk: "Попроси мене про це", c: "spicy" },
+    { en: "You are my toy tonight", uk: "Ти моя іграшка на цю ніч", c: "spicy" },
+    { en: "Don't make a sound", uk: "Не видавай ні звуку", c: "spicy" },
+    { en: "Look at me when I do this to you", uk: "Дивись на мене, коли я роблю це з тобою", c: "spicy" },
+    { en: "Hold my wrists", uk: "Тримай мої зап'ястя", c: "spicy" },
+    { en: "Pull my hair", uk: "Потягни мене за волосся", c: "spicy" },
+    { en: "I'm in control now", uk: "Тепер я тут головний", c: "spicy" },
+    { en: "Swallow", uk: "Ковтай", c: "spicy" }
+// --- ПІКАНТНІ ФРАЗИ: ДРАЖНІННЯ В ПОВІДОМЛЕННЯХ ТА ОЧІКУВАННЯ 📱🔥 ---
+    { en: "I have a dirty secret", uk: "У мене є брудний секрет", c: "spicy" },
+    { en: "I can't wait to get you home", uk: "Не можу дочекатися, коли привезу тебе додому", c: "spicy" },
+    { en: "What would you do to me?", uk: "Що б ти зі мною зробив?", c: "spicy" },
+    { en: "I am not wearing any underwear", uk: "На мені немає білизни", c: "spicy" },
+    { en: "You are making me crazy", uk: "Ти зводиш мене з розуму", c: "spicy" },
+    { en: "I want you to ruin me", uk: "Я хочу, щоб ти мене зіпсував", c: "spicy" },
+    { en: "Tease me", uk: "Подражни мене", c: "spicy" },
+    { en: "I've been thinking about this all day", uk: "Я думала про це весь день", c: "spicy" },
+    { en: "Show me what you can do", uk: "Покажи, на що ти здатний", c: "spicy" },
+    { en: "Let's take a shower together", uk: "Давай приймемо душ разом", c: "spicy" },
+
+    // --- ПІКАНТНІ ФРАЗИ: ПРИСТРАСТЬ ТА ЛЕГКА ГРУБІСТЬ 🖤 ---
+    { en: "Pin me to the wall", uk: "Притисни мене до стіни", c: "spicy" },
+    { en: "Hold my neck", uk: "Тримай мене за шию", c: "spicy" },
+    { en: "Leave marks on me", uk: "Залиш на мені сліди", c: "spicy" },
+    { en: "Bite me", uk: "Вкуси мене", c: "spicy" },
+    { en: "Be rough with me", uk: "Будь зі мною грубим", c: "spicy" },
+    { en: "Take control", uk: "Візьми все під контроль", c: "spicy" },
+    { en: "Don't be gentle", uk: "Не будь ніжним", c: "spicy" },
+    { en: "Rip my clothes off", uk: "Зірви з мене одяг", c: "spicy" },
+    { en: "Make me yours", uk: "Зроби мене своєю", c: "spicy" },
+    { en: "Shut up and kiss me", uk: "Замовкни і поцілуй мене", c: "spicy" },
+
+    // --- ПІКАНТНІ ФРАЗИ: БРУДНІ РОЗМОВИ В ПРОЦЕСІ 🔞 ---
+    { en: "You feel amazing", uk: "Ти відчуваєшся неймовірно", c: "spicy" },
+    { en: "Kiss me everywhere", uk: "Цілуй мене скрізь", c: "spicy" },
+    { en: "I want to feel your hands on me", uk: "Хочу відчувати твої руки на собі", c: "spicy" },
+    { en: "Do whatever you want with me", uk: "Роби зі мною все, що хочеш", c: "spicy" },
+    { en: "You are so fucking hot", uk: "Ти біса гарячий", c: "spicy" },
+    { en: "I want to be your slave tonight", uk: "Я хочу бути твоєю рабинею цієї ночі", c: "spicy" },
+    { en: "Make me scream", uk: "Змусь мене кричати", c: "spicy" },
+    { en: "I need you inside me", uk: "Ти потрібен мені всередині", c: "spicy" },
+    { en: "Don't pull out", uk: "Не витягуй", c: "spicy" },
+    { en: "Taste me", uk: "Спробуй мене на смак", c: "spicy" }
 ];
 
 const sentences = [
@@ -632,13 +724,29 @@ function renderDictionary() {
     const searchInput = document.getElementById('dict-search'); const q = searchInput ? searchInput.value.toLowerCase().trim() : ''; 
     
     if(q === 'love' || q === 'кохаю' || q === 'люблю') { document.getElementById('easter-egg').style.display='flex'; checkAchiev('love'); if(searchInput) searchInput.value=''; return; } 
+    
     let list = baseVocabulary.filter(w => w.en.toLowerCase().includes(q) || w.uk.toLowerCase().includes(q)); 
+    
+    // --- 1. ПЕРЕВІРКА ІНВЕНТАРЮ ---
+    const hasSpicyCard = inventory.includes('VIP: Пікантні фрази 🌶️');
+    
+    // --- 2. МАГІЯ ПРИХОВУВАННЯ ---
+    // Залишаємо слово в списку ТІЛЬКИ якщо воно не 'spicy', АБО якщо у неї є карта
+    list = list.filter(w => {
+        if (w.c === 'spicy' && !hasSpicyCard) return false;
+        return true;
+    });
+    
     if(currentCat !== 'all') { list = list.filter(w => w.c === currentCat); }
 
     list.sort((a,b) => a.en.localeCompare(b.en)).forEach(w => { 
         const c = document.createElement('div'); c.className = 'dict-card'; const f = document.createElement('div'); f.className = 'dict-face'; const b = document.createElement('div'); b.className = 'dict-face dict-back'; 
-        const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${w.em}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; }; 
-        if(dictMode === 'en-uk') { buildEn(f); b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${w.em}</div><div>${w.uk}</div>`; } else { f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${w.em}</div><div>${w.uk}</div>`; buildEn(b); } 
+        
+        // Маленький бонус: якщо у слова немає власного емодзі, ставимо перчинку 🌶️
+        const emoji = w.em || '🌶️';
+
+        const buildEn = (el) => { el.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.en}</div><div style="margin-top:auto; display:flex; gap:10px; width:100%;"><button class="dict-audio-btn" onclick="speak('${w.en}', 'us', event)">🔊 US</button><button class="dict-audio-btn" onclick="speak('${w.en}', 'uk', event)">🔊 UK</button></div>`; }; 
+        if(dictMode === 'en-uk') { buildEn(f); b.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.uk}</div>`; } else { f.innerHTML = `<div style="font-size:1.8rem; margin-bottom:2px;">${emoji}</div><div>${w.uk}</div>`; buildEn(b); } 
         c.innerHTML = `<div class="dict-card-inner"></div>`; c.firstChild.appendChild(f); c.firstChild.appendChild(b); c.onclick = () => { c.classList.toggle('flipped'); dailyProg.flash++; checkGoals(); recordCardFlip(); }; grid.appendChild(c); 
     }); 
 }
