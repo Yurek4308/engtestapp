@@ -579,7 +579,6 @@ function renderShop() {
         c.innerHTML += `<div class="shop-item"><div class="shop-info"><div style="font-size:2rem;">${i.icon}</div><div><div class="shop-title">${i.name}</div><div class="shop-price" style="${isErr?'color:var(--wrong)':(bmStatus && i.id==='dinner'?'color:#10b981':'')}">${isErr?'':'🌟 '}${i.price} ${discountLabel}</div></div></div><button class="buy-btn" ${can?'':'disabled'} onclick="buyItem('${i.id}')">${isErr?'Неможливо':(can?'Купити':'Бракує')}</button></div>`;
     }); 
 }
-
 function buyItem(id) { 
     const bmStatus = isBlackMarketOpen(); 
     
@@ -594,11 +593,54 @@ function buyItem(id) {
     if(!i || i.price === 'ERROR') return;
 
     if(totalXP >= i.price) { 
-        addXP(-i.price); inventory.push({ ...i, uid: Date.now() }); localStorage.setItem('userInventory', JSON.stringify(inventory)); 
+        addXP(-i.price); 
+        inventory.push({ ...i, uid: Date.now() }); 
+        localStorage.setItem('userInventory', JSON.stringify(inventory)); 
+        
         userStats.purchases = (userStats.purchases || 0) + 1;
         if(id === 'hug') { userStats.hugPurchases = (userStats.hugPurchases || 0) + 1; if(userStats.hugPurchases >= 3) checkAchiev('hug_addict'); }
-        saveStats(); if(userStats.purchases >= 3) checkAchiev('shopaholic');
-        showToast("Куплено: " + i.name); renderInventory(); renderShop(); updateUI();
+        saveStats(); 
+        if(userStats.purchases >= 3) checkAchiev('shopaholic');
+        
+        showToast("Куплено: " + i.name); 
+        renderInventory(); 
+        renderShop(); 
+        updateUI();
+
+        // 🔥 МАГІЯ СЮРПРИЗУ ДЛЯ ПІКАНТНОЇ КАРТКИ 🔥
+        if (i.name && i.name.includes('Пікантні фрази')) {
+            // Генератор червоного конфетті (50 частинок)
+            for(let k=0; k<50; k++) {
+                setTimeout(() => {
+                    let p = document.createElement('div');
+                    p.style.position = 'fixed';
+                    p.style.left = Math.random() * window.innerWidth + 'px';
+                    p.style.top = '-20px';
+                    p.style.width = (Math.random() * 8 + 5) + 'px';
+                    p.style.height = (Math.random() * 15 + 10) + 'px';
+                    // Червоні та бордові кольори
+                    p.style.backgroundColor = Math.random() > 0.5 ? '#ff0000' : '#8b0000'; 
+                    p.style.zIndex = '9999';
+                    p.style.pointerEvents = 'none'; // щоб не заважали клікати
+                    p.style.transition = 'top 2s linear, opacity 1.5s linear, transform 2s ease-in-out';
+                    p.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(p);
+                    
+                    setTimeout(() => {
+                        p.style.top = window.innerHeight + 'px';
+                        p.style.opacity = '0';
+                        p.style.transform = `rotate(${Math.random() * 720}deg)`;
+                    }, 50);
+                    
+                    setTimeout(() => p.remove(), 2000);
+                }, k * 40);
+            }
+            
+            // Секретне повідомлення через півсекунди
+            setTimeout(() => {
+                alert("🔥 Увага! Доступ до пікантного словника відкрито! Чекаю тебе ввечері... 😏");
+            }, 600);
+        }
     } 
 }
 function renderInventory() { 
