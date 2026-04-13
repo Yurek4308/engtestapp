@@ -183,6 +183,16 @@
         <div id="settings" class="section">
             <h1 class="welcome-title">Опції ⚙️</h1>
             
+            <div id="spicy-toggle-container" style="display: none; margin-bottom: 15px; padding: 15px; background: rgba(236, 72, 153, 0.1); border: 2px solid var(--primary); border-radius: 15px;">
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; cursor: pointer; margin: 0; font-weight: 700; color: var(--text-main);">
+                    <input type="checkbox" id="spicy-games-toggle" onchange="toggleSpicyGames(this)" style="width: 24px; height: 24px; accent-color: var(--primary);">
+                    🌶️ Додавати ці слова в ігри
+                </label>
+            </div>
+            <div class="question-box">
+                <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Маєш секретний код? Вводь!</p>
+                <button class="btn btn-primary" onclick="enterPromo()">🎁 Ввести код</button>
+            </div>
             <div class="question-box">
                 <p style="font-size: 1rem; color:var(--text-muted); font-weight: 700; margin-bottom:10px;">Маєш секретний код? Вводь!</p>
                 <button class="btn btn-primary" onclick="enterPromo()">🎁 Ввести код</button>
