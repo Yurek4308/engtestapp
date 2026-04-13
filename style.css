@@ -290,3 +290,10 @@ header {
 .meteor-word::after { content: '🔥'; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; z-index: -1; opacity: 0.8; }
 .meteor-cat { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 3.5rem; transition: 0.1s; z-index: 10; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
 .meteor-cat.hit { animation: shake 0.3s; filter: hue-rotate(90deg) drop-shadow(0 0 10px red); }
+/* Виправляємо гігантський текст у Шпигуні */
+#spy-options .option-btn {
+    font-size: 1.2rem; /* Нормальний розмір для слів */
+    padding: 15px 10px;
+    word-break: break-word; /* Якщо слово дуже довге, воно перенесеться */
+    line-height: 1.2;
+}
