@@ -2,19 +2,46 @@
 // 1. БАЗА ДАНИХ (Словник, налаштування)
 // ==========================================
 const baseVocabulary = [
+    // --- 😍 Компліменти (co) ---
     { en: "Gorgeous", uk: "Розкішна", em: "😻", c: "co" }, { en: "Smart", uk: "Розумна", em: "🧠", c: "co" }, { en: "Funny", uk: "Смішна", em: "😂", c: "co" }, { en: "Cute", uk: "Мила", em: "🥺", c: "co" }, { en: "Perfect", uk: "Ідеальна", em: "✨", c: "co" }, { en: "Stunning", uk: "Приголомшлива", em: "🤩", c: "co" },
-    { en: "Shirt", uk: "Сорочка", em: "👕", c: "cl" }, { en: "Dress", uk: "Сукня", em: "👗", c: "cl" }, { en: "Hat", uk: "Шапка", em: "👒", c: "cl" }, { en: "Socks", uk: "Шкарпетки", em: "🧦", c: "cl" }, { en: "Pants", uk: "Штани", em: "👖", c: "cl" }, { en: "Jacket", uk: "Куртка", em: "🧥", c: "cl" }, { en: "Skirt", uk: "Спідниця", em: "👗", c: "cl" }, { en: "Shoes", uk: "Взуття", em: "👟", c: "cl" }, { en: "Coat", uk: "Пальто", em: "🧥", c: "cl" }, { en: "Scarf", uk: "Шарф", em: "🧣", c: "cl" },
-    { en: "Because", uk: "Тому що", em: "❓", c: "p" }, { en: "But", uk: "Але", em: "☝️", c: "p" }, { en: "Or", uk: "Або", em: "🔁", c: "p" }, { en: "With", uk: "З", em: "➕", c: "p" }, { en: "For", uk: "Для", em: "🎁", c: "p" }, { en: "In", uk: "В", em: "📥", c: "p" }, { en: "On", uk: "На", em: "🔝", c: "p" }, { en: "Under", uk: "Під", em: "👇", c: "p" }, { en: "Today", uk: "Сьогодні", em: "📅", c: "p" }, { en: "Tomorrow", uk: "Завтра", em: "⏭️", c: "p" }, { en: "Always", uk: "Завжди", em: "♾️", c: "p" }, { en: "Never", uk: "Ніколи", em: "🚫", c: "p" }, { en: "Fast", uk: "Швидко", em: "⚡", c: "p" }, { en: "Slow", uk: "Повільно", em: "🐢", c: "p" }, { en: "Very", uk: "Дуже", em: "‼️", c: "p" },
-    { en: "Cake", uk: "Торт", em: "🍰", c: "fo" }, { en: "Chocolate", uk: "Шоколад", em: "🍫", c: "fo" }, { en: "Ice cream", uk: "Морозиво", em: "🍦", c: "fo" }, { en: "Coffee", uk: "Кава", em: "☕", c: "fo" }, { en: "Candy", uk: "Цукерка", em: "🍬", c: "fo" }, { en: "Sweets", uk: "Солодощі", em: "🍭", c: "fo" },
-    { en: "Lips", uk: "Губи", em: "👄", c: "bh" }, { en: "Hands", uk: "Руки", em: "🤲", c: "bh" }, { en: "Hair", uk: "Волосся", em: "💇‍♀️", c: "bh" }, { en: "Hug", uk: "Обійми", em: "🫂", c: "bh" },
-    { en: "Grass", uk: "Трава", em: "🌿", c:"n" }, { en: "Tree", uk: "Дерево", em: "🌳", c:"n" }, { en: "Flower", uk: "Квітка", em: "🌸", c:"n" }, { en: "Stick", uk: "Палиця", em: "🪵", c:"n" }, { en: "Sun", uk: "Сонце", em: "☀️", c:"n" }, { en: "Moon", uk: "Місяць", em: "🌙", c:"n" }, { en: "Star", uk: "Зірка", em: "⭐", c:"n" }, { en: "Cloud", uk: "Хмара", em: "☁️", c:"n" }, { en: "Sky", uk: "Небо", em: "🌌", c:"n" },
-    { en: "Talk", uk: "Розмовляти", em: "🗣️", c:"a" }, { en: "Speak", uk: "Говорити", em: "🎙️", c:"a" }, { en: "Tell", uk: "Розповідати", em: "💬", c:"a" }, { en: "Eat", uk: "Їсти", em: "🍽️", c:"a" }, { en: "Drink", uk: "Пити", em: "🥤", c:"a" }, { en: "Go", uk: "Йти", em: "🚶‍♀️", c:"a" }, { en: "Come", uk: "Приходити", em: "🏃‍♀️", c:"a" }, { en: "Make", uk: "Робити", em: "🛠️", c:"a" }, { en: "Take", uk: "Брати", em: "🤲", c:"a" }, { en: "Give", uk: "Давати", em: "🎁", c:"a" }, { en: "See", uk: "Бачити", em: "👁️", c:"a" }, { en: "Watch", uk: "Спостерігати", em: "📺", c:"a" }, { en: "Look", uk: "Дивитися", em: "🔭", c:"a" }, { en: "Buy", uk: "Купувати", em: "🛍️", c:"a" }, { en: "Sell", uk: "Продавати", em: "💵", c:"a" }, { en: "Sold", uk: "Продано", em: "✅", c:"a" }, { en: "Sink", uk: "Тонути", em: "⚓", c:"a" }, { en: "Think", uk: "Думати", em: "🤔", c:"a" },
-    { en: "Love", uk: "Любити", em: "❤️", c:"f" }, { en: "Kiss", uk: "Цілувати", em: "💋", c:"f" }, { en: "Smile", uk: "Посмішка", em: "😊", c:"f" }, { en: "Want", uk: "Хотіти", em: "🥺", c:"f" }, { en: "Need", uk: "Потребувати", em: "🆘", c:"f" }, { en: "Like", uk: "Подобатися", em: "❤️", c:"f" }, { en: "Miss", uk: "Сумувати", em: "😢", c:"f" }, { en: "Care", uk: "Піклуватися", em: "🫶", c:"f" }, { en: "Trust", uk: "Довіряти", em: "🤞", c:"f" }, { en: "Feel", uk: "Відчувати", em: "💓", c:"f" }, { en: "Touch", uk: "Торкатися", em: "👆", c:"f" }, { en: "Hold", uk: "Тримати", em: "🤝", c:"f" },
-    { en: "Eyes", uk: "Очі", em: "👀", c:"h" }, { en: "Salt", uk: "Сіль", em: "🧂", c:"h" }, { en: "Small", uk: "Маленький", em: "🤏", c:"h" }, { en: "Big", uk: "Великий", em: "🐘", c:"h" }, { en: "Cool", uk: "Крутий", em: "😎", c:"h" }, { en: "Good", uk: "Хороший", em: "👍", c:"h" }, { en: "Kind", uk: "Добрий", em: "😇", c:"h" }, { en: "Cold", uk: "Холодний", em: "❄️", c:"h" }, { en: "Hot", uk: "Гарячий", em: "🔥", c:"h" }, { en: "Children", uk: "Діти", em: "👶", c:"h" }, { en: "Family", uk: "Сім'я", em: "🏡", c:"h" }, { en: "Mirror", uk: "Дзеркало", em: "🪞", c:"h" }, { en: "Error", uk: "Помилка", em: "❌", c:"h" }, { en: "Phone", uk: "Телефон", em: "📱", c:"h" }, { en: "House", uk: "Будинок", em: "🏠", c:"h" }, { en: "Flat", uk: "Квартира", em: "🏢", c:"h" }, { en: "Bed", uk: "Ліжко", em: "🛏️", c:"h" }, { en: "Bad", uk: "Поганий", em: "👎", c:"h" }, { en: "Bedroom", uk: "Спальня", em: "🛌", c:"h" }, { en: "Sweet", uk: "Солодкий", em: "🍬", c:"h" },
-    { en: "Let's", uk: "Давай", em: "🤝", c:"p" }, { en: "About", uk: "Про", em: "ℹ️", c:"p" }, { en: "Something", uk: "Щось", em: "📦", c:"p" }, { en: "I am", uk: "Я (є)", em: "🙋‍♀️", c:"p" }, { en: "We are", uk: "Ми (є)", em: "👫", c:"p" }, { en: "You are", uk: "Ти (є)", em: "🫵", c:"p" }, { en: "They are", uk: "Вони (є)", em: "👨‍👩‍👦", c:"p" }, { en: "He is", uk: "Він (є)", em: "👨", c:"p" }, { en: "She is", uk: "Вона (є)", em: "👩", c:"p" }, { en: "It is", uk: "Воно (є)", em: "🤖", c:"p" }, { en: "Close", uk: "Близько", em: "🤏", c:"p" }, { en: "Together", uk: "Разом", em: "💞", c:"p" }, { en: "Forever", uk: "Назавжди", em: "♾️", c:"p" }, { en: "Beautiful", uk: "Красива", em: "😍", c:"p" },
+    { en: "Amazing", uk: "Дивовижна", em: "✨", c: "co" }, { en: "Wonderful", uk: "Чудова", em: "🌸", c: "co" }, { en: "Charming", uk: "Чарівна", em: "🧚‍♀️", c: "co" }, { en: "Angel", uk: "Янгол", em: "👼", c: "co" }, { en: "Princess", uk: "Принцеса", em: "👸", c: "co" }, { en: "Sunshine", uk: "Сонечко", em: "🌞", c: "co" }, { en: "Precious", uk: "Дорогоцінна", em: "💎", c: "co" }, { en: "Breathtaking", uk: "Захоплююча", em: "😮", c: "co" },
 
-    // --- ПІКАНТНІ ФРАЗИ: ЛЕГКИЙ ФЛІРТ ТА НАСТРІЙ 🌶️ ---
-    { en: "You look so damn sexy", uk: "Ти виглядаєш біса сексуально", c: "spicy" },
+    // --- 👗 Одяг (cl) ---
+    { en: "Shirt", uk: "Сорочка", em: "👕", c: "cl" }, { en: "Dress", uk: "Сукня", em: "👗", c: "cl" }, { en: "Hat", uk: "Шапка", em: "👒", c: "cl" }, { en: "Socks", uk: "Шкарпетки", em: "🧦", c: "cl" }, { en: "Pants", uk: "Штани", em: "👖", c: "cl" }, { en: "Jacket", uk: "Куртка", em: "🧥", c: "cl" }, { en: "Skirt", uk: "Спідниця", em: "👗", c: "cl" }, { en: "Shoes", uk: "Взуття", em: "👟", c: "cl" }, { en: "Coat", uk: "Пальто", em: "🧥", c: "cl" }, { en: "Scarf", uk: "Шарф", em: "🧣", c: "cl" },
+    { en: "T-shirt", uk: "Футболка", em: "👕", c: "cl" }, { en: "Sweater", uk: "Светр", em: "🧶", c: "cl" }, { en: "Jeans", uk: "Джинси", em: "👖", c: "cl" }, { en: "Shorts", uk: "Шорти", em: "🩳", c: "cl" }, { en: "Underwear", uk: "Білизна", em: "👙", c: "cl" }, { en: "Boots", uk: "Чоботи", em: "👢", c: "cl" }, { en: "Gloves", uk: "Рукавички", em: "🧤", c: "cl" },
+
+    // --- 🍩 Смаколики (fo) ---
+    { en: "Cake", uk: "Торт", em: "🍰", c: "fo" }, { en: "Chocolate", uk: "Шоколад", em: "🍫", c: "fo" }, { en: "Ice cream", uk: "Морозиво", em: "🍦", c: "fo" }, { en: "Coffee", uk: "Кава", em: "☕", c: "fo" }, { en: "Candy", uk: "Цукерка", em: "🍬", c: "fo" }, { en: "Sweets", uk: "Солодощі", em: "🍭", c: "fo" },
+    { en: "Tea", uk: "Чай", em: "🍵", c: "fo" }, { en: "Juice", uk: "Сік", em: "🧃", c: "fo" }, { en: "Apple", uk: "Яблуко", em: "🍎", c: "fo" }, { en: "Banana", uk: "Банан", em: "🍌", c: "fo" }, { en: "Pizza", uk: "Піца", em: "🍕", c: "fo" }, { en: "Burger", uk: "Бургер", em: "🍔", c: "fo" }, { en: "Cookie", uk: "Печиво", em: "🍪", c: "fo" }, { en: "Honey", uk: "Мед", em: "🍯", c: "fo" },
+
+    // --- 🩺 Тіло (bh) - Було дуже мало, додав багато! ---
+    { en: "Lips", uk: "Губи", em: "👄", c: "bh" }, { en: "Hands", uk: "Руки", em: "🤲", c: "bh" }, { en: "Hair", uk: "Волосся", em: "💇‍♀️", c: "bh" }, { en: "Hug", uk: "Обійми", em: "🫂", c: "bh" },
+    { en: "Face", uk: "Обличчя", em: "👩", c: "bh" }, { en: "Nose", uk: "Ніс", em: "👃", c: "bh" }, { en: "Cheek", uk: "Щока", em: "😊", c: "bh" }, { en: "Ear", uk: "Вухо", em: "👂", c: "bh" }, { en: "Neck", uk: "Шия", em: "🦒", c: "bh" }, { en: "Shoulders", uk: "Плечі", em: "🤷‍♀️", c: "bh" }, { en: "Back", uk: "Спина", em: "🚶‍♀️", c: "bh" }, { en: "Legs", uk: "Ноги", em: "🦵", c: "bh" }, { en: "Fingers", uk: "Пальці", em: "🖐️", c: "bh" }, { en: "Heart", uk: "Серце", em: "🫀", c: "bh" }, { en: "Skin", uk: "Шкіра", em: "🧴", c: "bh" }, { en: "Voice", uk: "Голос", em: "🗣️", c: "bh" },
+
+    // --- 🌿 Природа (n) ---
+    { en: "Grass", uk: "Трава", em: "🌿", c:"n" }, { en: "Tree", uk: "Дерево", em: "🌳", c:"n" }, { en: "Flower", uk: "Квітка", em: "🌸", c:"n" }, { en: "Stick", uk: "Палиця", em: "🪵", c:"n" }, { en: "Sun", uk: "Сонце", em: "☀️", c:"n" }, { en: "Moon", uk: "Місяць", em: "🌙", c:"n" }, { en: "Star", uk: "Зірка", em: "⭐", c:"n" }, { en: "Cloud", uk: "Хмара", em: "☁️", c:"n" }, { en: "Sky", uk: "Небо", em: "🌌", c:"n" },
+    { en: "Rain", uk: "Дощ", em: "🌧️", c: "n" }, { en: "Snow", uk: "Сніг", em: "❄️", c: "n" }, { en: "Wind", uk: "Вітер", em: "🌬️", c: "n" }, { en: "River", uk: "Річка", em: "🏞️", c: "n" }, { en: "Sea", uk: "Море", em: "🌊", c: "n" }, { en: "Mountain", uk: "Гора", em: "⛰️", c: "n" }, { en: "Forest", uk: "Ліс", em: "🌲", c: "n" }, { en: "Fire", uk: "Вогонь", em: "🔥", c: "n" },
+
+    // --- 🏃‍♀️ Дії (a) ---
+    { en: "Talk", uk: "Розмовляти", em: "🗣️", c:"a" }, { en: "Speak", uk: "Говорити", em: "🎙️", c:"a" }, { en: "Tell", uk: "Розповідати", em: "💬", c:"a" }, { en: "Eat", uk: "Їсти", em: "🍽️", c:"a" }, { en: "Drink", uk: "Пити", em: "🥤", c:"a" }, { en: "Go", uk: "Йти", em: "🚶‍♀️", c:"a" }, { en: "Come", uk: "Приходити", em: "🏃‍♀️", c:"a" }, { en: "Make", uk: "Робити", em: "🛠️", c:"a" }, { en: "Take", uk: "Брати", em: "🤲", c:"a" }, { en: "Give", uk: "Давати", em: "🎁", c:"a" }, { en: "See", uk: "Бачити", em: "👁️", c:"a" }, { en: "Watch", uk: "Спостерігати", em: "📺", c:"a" }, { en: "Look", uk: "Дивитися", em: "🔭", c:"a" }, { en: "Buy", uk: "Купувати", em: "🛍️", c:"a" }, { en: "Sell", uk: "Продавати", em: "💵", c:"a" }, { en: "Sold", uk: "Продано", em: "✅", c:"a" }, { en: "Sink", uk: "Тонути", em: "⚓", c:"a" }, { en: "Think", uk: "Думати", em: "🤔", c:"a" },
+    { en: "Run", uk: "Бігти", em: "🏃", c: "a" }, { en: "Walk", uk: "Гуляти", em: "🚶", c: "a" }, { en: "Sleep", uk: "Спати", em: "💤", c: "a" }, { en: "Wake up", uk: "Прокидатися", em: "🥱", c: "a" }, { en: "Read", uk: "Читати", em: "📖", c: "a" }, { en: "Write", uk: "Писати", em: "✍️", c: "a" }, { en: "Listen", uk: "Слухати", em: "👂", c: "a" }, { en: "Play", uk: "Грати", em: "🎮", c: "a" },
+
+    // --- ❤️ Почуття (f) ---
+    { en: "Love", uk: "Любити", em: "❤️", c:"f" }, { en: "Kiss", uk: "Цілувати", em: "💋", c:"f" }, { en: "Smile", uk: "Посмішка", em: "😊", c:"f" }, { en: "Want", uk: "Хотіти", em: "🥺", c:"f" }, { en: "Need", uk: "Потребувати", em: "🆘", c:"f" }, { en: "Like", uk: "Подобатися", em: "❤️", c:"f" }, { en: "Miss", uk: "Сумувати", em: "😢", c:"f" }, { en: "Care", uk: "Піклуватися", em: "🫶", c:"f" }, { en: "Trust", uk: "Довіряти", em: "🤞", c:"f" }, { en: "Feel", uk: "Відчувати", em: "💓", c:"f" }, { en: "Touch", uk: "Торкатися", em: "👆", c:"f" }, { en: "Hold", uk: "Тримати", em: "🤝", c:"f" },
+    { en: "Happy", uk: "Щаслива", em: "🥰", c: "f" }, { en: "Sad", uk: "Сумна", em: "😔", c: "f" }, { en: "Angry", uk: "Зла", em: "😠", c: "f" }, { en: "Tired", uk: "Втомлена", em: "😫", c: "f" }, { en: "Excited", uk: "Захоплена", em: "🤩", c: "f" }, { en: "Calm", uk: "Спокійна", em: "😌", c: "f" }, { en: "Scared", uk: "Налякана", em: "😨", c: "f" }, { en: "Proud", uk: "Горда", em: "🦚", c: "f" },
+
+    // --- 🏠 Дім / Характеристики (h) ---
+    { en: "Eyes", uk: "Очі", em: "👀", c:"h" }, { en: "Salt", uk: "Сіль", em: "🧂", c:"h" }, { en: "Small", uk: "Маленький", em: "🤏", c:"h" }, { en: "Big", uk: "Великий", em: "🐘", c:"h" }, { en: "Cool", uk: "Крутий", em: "😎", c:"h" }, { en: "Good", uk: "Хороший", em: "👍", c:"h" }, { en: "Kind", uk: "Добрий", em: "😇", c:"h" }, { en: "Cold", uk: "Холодний", em: "❄️", c:"h" }, { en: "Hot", uk: "Гарячий", em: "🔥", c:"h" }, { en: "Children", uk: "Діти", em: "👶", c:"h" }, { en: "Family", uk: "Сім'я", em: "🏡", c:"h" }, { en: "Mirror", uk: "Дзеркало", em: "🪞", c:"h" }, { en: "Error", uk: "Помилка", em: "❌", c:"h" }, { en: "Phone", uk: "Телефон", em: "📱", c:"h" }, { en: "House", uk: "Будинок", em: "🏠", c:"h" }, { en: "Flat", uk: "Квартира", em: "🏢", c:"h" }, { en: "Bed", uk: "Ліжко", em: "🛏️", c:"h" }, { en: "Bad", uk: "Поганий", em: "👎", c:"h" }, { en: "Bedroom", uk: "Спальня", em: "🛌", c:"h" }, { en: "Sweet", uk: "Солодкий", em: "🍬", c:"h" },
+    { en: "Door", uk: "Двері", em: "🚪", c: "h" }, { en: "Window", uk: "Вікно", em: "🪟", c: "h" }, { en: "Table", uk: "Стіл", em: "🪑", c: "h" }, { en: "Chair", uk: "Стілець", em: "🪑", c: "h" }, { en: "Room", uk: "Кімната", em: "🛋️", c: "h" }, { en: "Kitchen", uk: "Кухня", em: "🍳", c: "h" }, { en: "Bathroom", uk: "Ванна", em: "🛁", c: "h" }, { en: "Clean", uk: "Чистий", em: "✨", c: "h" },
+
+    // --- 💬 Фрази / Різне (p) ---
+    { en: "Because", uk: "Тому що", em: "❓", c: "p" }, { en: "But", uk: "Але", em: "☝️", c: "p" }, { en: "Or", uk: "Або", em: "🔁", c: "p" }, { en: "With", uk: "З", em: "➕", c: "p" }, { en: "For", uk: "Для", em: "🎁", c: "p" }, { en: "In", uk: "В", em: "📥", c: "p" }, { en: "On", uk: "На", em: "🔝", c: "p" }, { en: "Under", uk: "Під", em: "👇", c: "p" }, { en: "Today", uk: "Сьогодні", em: "📅", c: "p" }, { en: "Tomorrow", uk: "Завтра", em: "⏭️", c: "p" }, { en: "Always", uk: "Завжди", em: "♾️", c: "p" }, { en: "Never", uk: "Ніколи", em: "🚫", c: "p" }, { en: "Fast", uk: "Швидко", em: "⚡", c: "p" }, { en: "Slow", uk: "Повільно", em: "🐢", c: "p" }, { en: "Very", uk: "Дуже", em: "‼️", c: "p" }, { en: "Let's", uk: "Давай", em: "🤝", c:"p" }, { en: "About", uk: "Про", em: "ℹ️", c:"p" }, { en: "Something", uk: "Щось", em: "📦", c:"p" }, { en: "I am", uk: "Я (є)", em: "🙋‍♀️", c:"p" }, { en: "We are", uk: "Ми (є)", em: "👫", c:"p" }, { en: "You are", uk: "Ти (є)", em: "🫵", c:"p" }, { en: "They are", uk: "Вони (є)", em: "👨‍👩‍👦", c:"p" }, { en: "He is", uk: "Він (є)", em: "👨", c:"p" }, { en: "She is", uk: "Вона (є)", em: "👩", c:"p" }, { en: "It is", uk: "Воно (є)", em: "🤖", c:"p" }, { en: "Close", uk: "Близько", em: "🤏", c:"p" }, { en: "Together", uk: "Разом", em: "💞", c:"p" }, { en: "Forever", uk: "Назавжди", em: "♾️", c:"p" }, { en: "Beautiful", uk: "Красива", em: "😍", c:"p" },
+    { en: "Here", uk: "Тут", em: "📍", c: "p" }, { en: "There", uk: "Там", em: "👉", c: "p" }, { en: "Now", uk: "Зараз", em: "⏳", c: "p" }, { en: "Later", uk: "Пізніше", em: "🔜", c: "p" }, { en: "Why", uk: "Чому", em: "🤷", c: "p" }, { en: "How", uk: "Як", em: "🤔", c: "p" }, { en: "What", uk: "Що", em: "❔", c: "p" }, { en: "Who", uk: "Хто", em: "👤", c: "p" },
+
+    // ======================================================================
+    // 🌶️🌶️🌶️ ПІКАНТНІ ФРАЗИ (spicy) - ЗАЛИШЕНО БЕЗ ЗМІН 🌶️🌶️🌶️
+    // ======================================================================
+    { en: "You look so damn sexy", uk: "Ти виглядаєш до біса сексуально", c: "spicy" },
     { en: "I can't stop thinking about your body", uk: "Я не можу перестати думати про твоє тіло", c: "spicy" },
     { en: "Wear something revealing", uk: "Одягни щось відверте", c: "spicy" },
     { en: "Take it off slowly", uk: "Зніми це повільно", c: "spicy" },
@@ -24,7 +51,6 @@ const baseVocabulary = [
     { en: "Let's do it in the car", uk: "Давай займемося цим в машині", c: "spicy" },
     { en: "I love the way you taste", uk: "Мені подобається твій смак", c: "spicy" },
     
-    // --- ПІКАНТНІ ФРАЗИ: ЧУТТЄВІСТЬ ТА ДОТИКИ 🔥 ---
     { en: "Kiss my neck", uk: "Поцілуй мене в шию", c: "spicy" },
     { en: "Whisper in my ear", uk: "Пошепки мені на вушко", c: "spicy" },
     { en: "Touch me right there", uk: "Торкнися мене прямо там", c: "spicy" },
@@ -36,7 +62,6 @@ const baseVocabulary = [
     { en: "I am completely yours", uk: "Я повністю твоя (твій)", c: "spicy" },
     { en: "Take me to bed", uk: "Відведи мене в ліжко", c: "spicy" },
     
-    // --- ПІКАНТНІ ФРАЗИ: В ПРОЦЕСІ 💦 ---
     { en: "Faster", uk: "Швидше", c: "spicy" },
     { en: "Deeper", uk: "Глибше", c: "spicy" },
     { en: "Harder", uk: "Сильніше / Жорсткіше", c: "spicy" },
@@ -48,7 +73,6 @@ const baseVocabulary = [
     { en: "Come for me", uk: "Кінчи для мене", c: "spicy" },
     { en: "Let me taste you", uk: "Дай мені спробувати тебе", c: "spicy" },
 
-    // --- ПІКАНТНІ ФРАЗИ: ВАЖКА АРТИЛЕРІЯ (ДОМІНУВАННЯ ТА КОМАНДИ) ⛓️ ---
     { en: "I want you right now", uk: "Я хочу тебе прямо зараз", c: "spicy" },
     { en: "Take off your clothes", uk: "Зніми з себе одяг", c: "spicy" },
     { en: "Tie me up", uk: "Зв'яжи мене", c: "spicy" },
@@ -69,7 +93,7 @@ const baseVocabulary = [
     { en: "Pull my hair", uk: "Потягни мене за волосся", c: "spicy" },
     { en: "I'm in control now", uk: "Тепер я тут головний", c: "spicy" },
     { en: "Swallow", uk: "Ковтай", c: "spicy" },
-    // --- ПІКАНТНІ ФРАЗИ: ДРАЖНІННЯ В ПОВІДОМЛЕННЯХ ТА ОЧІКУВАННЯ 📱🔥 ---
+
     { en: "I have a dirty secret", uk: "У мене є брудний секрет", c: "spicy" },
     { en: "I can't wait to get you home", uk: "Не можу дочекатися, коли привезу тебе додому", c: "spicy" },
     { en: "What would you do to me?", uk: "Що б ти зі мною зробив?", c: "spicy" },
@@ -81,7 +105,6 @@ const baseVocabulary = [
     { en: "Show me what you can do", uk: "Покажи, на що ти здатний", c: "spicy" },
     { en: "Let's take a shower together", uk: "Давай приймемо душ разом", c: "spicy" },
 
-    // --- ПІКАНТНІ ФРАЗИ: ПРИСТРАСТЬ ТА ЛЕГКА ГРУБІСТЬ 🖤 ---
     { en: "Pin me to the wall", uk: "Притисни мене до стіни", c: "spicy" },
     { en: "Hold my neck", uk: "Тримай мене за шию", c: "spicy" },
     { en: "Leave marks on me", uk: "Залиш на мені сліди", c: "spicy" },
@@ -93,7 +116,6 @@ const baseVocabulary = [
     { en: "Make me yours", uk: "Зроби мене своєю", c: "spicy" },
     { en: "Shut up and kiss me", uk: "Замовкни і поцілуй мене", c: "spicy" },
 
-    // --- ПІКАНТНІ ФРАЗИ: БРУДНІ РОЗМОВИ В ПРОЦЕСІ 🔞 ---
     { en: "You feel amazing", uk: "Ти відчуваєшся неймовірно", c: "spicy" },
     { en: "Kiss me everywhere", uk: "Цілуй мене скрізь", c: "spicy" },
     { en: "I want to feel your hands on me", uk: "Хочу відчувати твої руки на собі", c: "spicy" },
@@ -105,7 +127,6 @@ const baseVocabulary = [
     { en: "Don't pull out", uk: "Не витягуй", c: "spicy" },
     { en: "Taste me", uk: "Спробуй мене на смак", c: "spicy" }
 ];
-
 const sentences = [
     { en: "I love you forever", uk: "Я кохаю тебе назавжди" }, { en: "We are together", uk: "Ми разом" }, { en: "You are beautiful", uk: "Ти красива" }, { en: "Give me a kiss", uk: "Дай мені поцілунок" }, { en: "Look at the stars", uk: "Подивись на зірки" }, { en: "I miss you", uk: "Я сумую за тобою" }, { en: "Hold me close", uk: "Тримай мене міцно" }, { en: "You make me smile", uk: "Ти змушуєш мене посміхатися" }, { en: "I want to hug you", uk: "Я хочу обійняти тебе" }, { en: "You are my everything", uk: "Ти моє все" }, { en: "Let's drink some coffee", uk: "Давай вип'ємо трохи кави" }, { en: "I need you today", uk: "Ти потрібна мені сьогодні" }, { en: "You are so smart", uk: "Ти така розумна" }, { en: "We can go tomorrow", uk: "Ми можемо піти завтра" }, { en: "Always think about you", uk: "Завжди думаю про тебе" }, { en: "You have beautiful eyes", uk: "У тебе красиві очі" }, { en: "I like this sweet cake", uk: "Мені подобається цей солодкий торт" }, { en: "Let's watch a cool movie", uk: "Давай подивимось крутий фільм" }, { en: "You are a perfect girl", uk: "Ти ідеальна дівчина" }, { en: "I feel so good with you", uk: "Мені так добре з тобою" }
 ];
