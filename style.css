@@ -350,3 +350,118 @@ header {
 .dark #boss-result {
     background: rgba(15, 23, 42, 0.98) !important;
 }
+/* =========================================
+   🌌 НОВИЙ ЗОРЯНИЙ ТЕМНИЙ РЕЖИМ (Заміна стандартного)
+   ========================================= */
+
+body.dark {
+    background-color: #020617; 
+}
+
+.app-container.dark {
+    background: linear-gradient(to bottom, #020617 0%, #0f172a 60%, #1e1b4b 100%);
+    color: #f1f5f9;
+    position: relative;
+    overflow: hidden; 
+}
+
+.app-container.dark::before,
+.app-container.dark::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0; 
+    pointer-events: none; 
+    background-repeat: repeat;
+}
+
+/* ШАР 1: Далекі зірки (різні відтінки) */
+.app-container.dark::before {
+    background-size: 350px 350px; 
+    background-image: 
+        radial-gradient(1px 1px at 25px 50px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 75px 180px, #e0f2fe, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 150px 10px, #fce7f3, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 220px 290px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 310px 120px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 50px 330px, #e0f2fe, rgba(0,0,0,0));
+    opacity: 0.5; 
+    animation: starDriftMain 150s linear infinite; 
+}
+
+/* ШАР 2: Ближчі зірки та мерехтіння */
+.app-container.dark::after {
+    background-size: 450px 450px; 
+    background-image: 
+        radial-gradient(2px 2px at 100px 100px, #ffffff 100%, rgba(0,0,0,0)),
+        radial-gradient(2.5px 2.5px at 200px 350px, rgba(255,255,255,0.7) 100%, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 350px 220px, #fef08a 100%, rgba(0,0,0,0));
+    animation: 
+        starDriftSlow 200s linear infinite,
+        starTwinkle 5s ease-in-out infinite; 
+    opacity: 0.8;
+}
+
+@keyframes starDriftMain {
+    from { transform: translateY(0); }
+    to { transform: translateY(-350px); } 
+}
+
+@keyframes starDriftSlow {
+    from { transform: translateY(0); }
+    to { transform: translateY(-450px); } 
+}
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.95); } 
+}
+
+@keyframes titlePulseBlue {
+    0%, 100% { text-shadow: 0 0 10px rgba(56, 189, 248, 0.6); }
+    50% { text-shadow: 0 0 20px rgba(56, 189, 248, 0.9), 0 0 30px rgba(56, 189, 248, 0.4); }
+}
+
+.dark .welcome-title {
+    color: #f1f5f9;
+    animation: titlePulseBlue 4s infinite; 
+}
+
+.dark .welcome-subtitle { color: #94a3b8; }
+
+.dark .menu-card:not(#boss-btn):not([onclick="showSection('wheel')"]) {
+    background: rgba(15, 23, 42, 0.6); 
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); 
+    backdrop-filter: blur(6px); 
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.dark .menu-card .menu-title {
+    color: #f8fafc;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.dark .daily-goal {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dark .bottom-nav {
+    background: rgba(7, 10, 20, 0.98); 
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+}
+
+.dark .nav-item span { color: #475569; }
+.dark .nav-item.active span {
+    color: var(--primary); 
+    text-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+}
+
+.dark header,
+.dark .user-stats,
+.dark .main-content {
+    position: relative;
+    z-index: 1; 
+}
