@@ -328,7 +328,7 @@ let isDark = localStorage.getItem('theme') === 'dark';
         document.body.classList.add('dark'); // 🔥 Додали цей рядок
         document.getElementById('theme-icon').textContent = '☀️';
     }
-    }
+    
     const cmBtn = document.getElementById('cm-btn');
     if (cmBtn) {
         cmBtn.onclick = () => { 
