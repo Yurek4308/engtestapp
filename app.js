@@ -500,7 +500,7 @@ function showSection(id) {
         document.querySelector(`.nav-item[onclick="showSection('${id}')"]`).classList.add('active');
     }
 
-    window.scrollTo(0,0); 
+    document.querySelector('.main-content').scrollTop = 0;
     if(id === 'home') document.getElementById('user-stats').style.display = 'flex'; 
     else document.getElementById('user-stats').style.display = 'none'; 
     
@@ -1054,7 +1054,7 @@ function startBoss() {
         showToast("🛡️ Щит активовано! (+1 ❤️)");
     }
 
-    showSection('boss'); document.getElementById('boss-result').style.display = 'none'; document.getElementById('boss-active').style.display = 'block'; 
+  showSection('boss'); document.getElementById('boss-result').style.display = 'none'; document.getElementById('boss-active').style.display = 'flex';
     updateBossHpBar(); updateOlyaHp(); loadBoss(); 
 }
 
