@@ -528,10 +528,11 @@ function showSection(id) {
     if(id === 'home') document.getElementById('user-stats').style.display = 'flex'; 
     else document.getElementById('user-stats').style.display = 'none'; 
     
-    if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
+   if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
     if(id === 'inventory') { renderInventory(); } 
     if(id === 'shop') { renderShop(); } 
     if(id === 'wheel') { checkWheelCooldown(); } 
+    if(id === 'profile') { renderProfile(); } // 🔥 ДОДАЛИ ЦЕЙ РЯДОК
 
     const cat = document.querySelector('.cat-assistant');
     if(cat) {
