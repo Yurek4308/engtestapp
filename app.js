@@ -301,10 +301,12 @@ let curCuid = null;
 // 3. ІНІЦІАЛІЗАЦІЯ ТА ЗВУК
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-    let isDark = localStorage.getItem('theme') === 'dark'; 
+let isDark = localStorage.getItem('theme') === 'dark'; 
     if(isDark) {
         document.getElementById('app-container').classList.add('dark'); 
+        document.body.classList.add('dark'); // 🔥 Додали цей рядок
         document.getElementById('theme-icon').textContent = '☀️';
+    }
     }
     const cmBtn = document.getElementById('cm-btn');
     if (cmBtn) {
@@ -330,6 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function toggleTheme() { 
     let isDark = document.getElementById('app-container').classList.toggle('dark'); 
+    document.body.classList.toggle('dark', isDark); // 🔥 Додали цей рядок
     document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙'; 
     localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
 }
