@@ -492,10 +492,9 @@ function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); 
     document.getElementById(id).classList.add('active'); 
 
-    // 🔥 ЖОРСТКИЙ ФІКС: Примусово ховаємо вікно Боса, щоб воно не зависало
-    const bossRes = document.getElementById('boss-result');
-    if (bossRes) bossRes.style.display = 'none';
-
+   // 🔥 ЖОРСТКИЙ ФІКС: Примусово ховаємо вікно Боса (всі його копії)
+    document.querySelectorAll('#boss-result').forEach(el => el.style.display = 'none');
+    
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if(id === 'home' || id === 'dictionary' || id === 'shop' || id === 'settings') {
         document.querySelector(`.nav-item[onclick="showSection('${id}')"]`).classList.add('active');
