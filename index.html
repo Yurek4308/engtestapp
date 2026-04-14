@@ -7,11 +7,11 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ec4899">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
     
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <style>
         /* ІДЕАЛЬНА FLEXBOX СТРУКТУРА ЗІ СТАРОЇ ВЕРСІЇ */
         html, body {
@@ -156,9 +156,7 @@
                 
                 <div class="menu-card wide" onclick="startSprint()"><div class="icon-box bg-red" style="background-color: #fecaca;">⏱️</div><div class="menu-text"><div class="menu-title">Спринт на час <span class="menu-badge" id="sprint-badge" style="top:-15px; right:-15px;">0</span></div></div></div>
             </div>
-        </div>
-
-        <div id="dictionary" class="section">
+        </div> <div id="dictionary" class="section">
             <h1 class="welcome-title">Словник 📖</h1>
             <div class="category-scroll" id="cat-filters">
                 <div class="cat-chip active" onclick="setCat('all', this)">Усі слова</div>
@@ -385,7 +383,7 @@
                 <button class="btn btn-primary" style="width: 100%;" onclick="showSection('home')">ПОВЕРНУТИСЯ</button>
             </div>
         </div> 
-        
+
     </div> <nav class="bottom-nav">
         <div class="nav-item active" onclick="showSection('home')"><div class="nav-icon">🏠</div><span>Головна</span></div>
         <div class="nav-item" onclick="showSection('dictionary')"><div class="nav-icon">📖</div><span>Словник</span></div>
@@ -395,7 +393,6 @@
 
 </div> 
 
-<script src="data.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
