@@ -252,7 +252,8 @@ const shopItems = [
     { id: 'day_off', name: 'День без рішень 🧘‍♀️', price: 500, icon: '🧘‍♀️' },
     { id: 'movie_veto', name: 'Право вето на фільм 🍿', price: 300, icon: '🚫' },
     { id: 'coffee_bed', name: 'Кава/Чай у ліжко ☕', price: 200, icon: '☕' },
-    { id: 'culinary', name: 'Кулінарний експеримент 👨‍🍳', price: 500, icon: '🍲' }
+    { id: 'culinary', name: 'Кулінарний експеримент 👨‍🍳', price: 500, icon: '🍲' },
+    { id: 'unlimit_kisses', name: 'Безліміт палких цьомчиків на день', price: 200, icon: '💋' } // 🔥 НОВА КАРТКА
 ];
 
 const bmItems = [
