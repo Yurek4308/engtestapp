@@ -994,7 +994,7 @@ let emoQ=[], eIdx=0, eScore=0, eAns=false;
 function startEmojiQuiz() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} emoQ = shuffleArray(voc).slice(0, 15); eIdx=0; eScore=0; showSection('emoji-quiz'); document.getElementById('emoji-result').style.display='none'; document.getElementById('emoji-active').style.display='flex'; loadEmo(); }
 function loadEmo() { 
     // 🔍 1. Показуємо кнопку підказки (якщо лупа є в інвентарі)
-    toggleHintButton(true); 
+   toggleHintButton(true); // 🔥 ДОДАТИ ЦЕ
 
     eAns = false; 
     document.getElementById('btn-next-emoji').style.display = 'none'; 
@@ -1392,12 +1392,11 @@ function startSpy() {
 }
 
 function loadSpy() {
+    // 🔍 1. Вмикаємо кнопку підказки (якщо є в інвентарі)
+    toggleHintButton(true); 
     spyLock = false; 
     document.getElementById('btn-next-spy').style.display = 'none';
     
-    // 🔍 1. Вмикаємо кнопку підказки (якщо є в інвентарі)
-    toggleHintButton(true); 
-
     document.getElementById('spy-counter').textContent = `${spyI+1}/${spyQ.length}`;
     document.getElementById('spy-score').textContent = spyS;
     
