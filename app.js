@@ -287,6 +287,7 @@ const levelSystem = [
 ];
 
 // ==========================================
+// ==========================================
 // 2. ГЛОБАЛЬНИЙ СТАН ТА НАЛАШТУВАННЯ
 // ==========================================
 let totalXP = parseInt(localStorage.getItem('totalXP')) || 0;
@@ -312,6 +313,9 @@ let spinLock = false;
 let lastWheelDate = localStorage.getItem('lastWheelDate') || 0;
 let curCuid = null; 
 
+// 🔥 НОВІ ЗМІННІ ДЛЯ ФІКСІВ
+let metGameOver = false; 
+let spicyInGames = localStorage.getItem('spicyInGames') === 'true';
 // ==========================================
 // 3. ІНІЦІАЛІЗАЦІЯ ТА ЗВУК
 // ==========================================
@@ -1003,7 +1007,69 @@ function startQuiz(t) { const voc = getVocab(); if(voc.length<4){alert("Зама
 function restartQuiz() { if(isMist) startMistakesMode(); else startQuiz(qType); }
 function loadQuiz() { document.getElementById('btn-next-quiz').style.display='none'; let w=quizQ[qIdx]; document.getElementById('quiz-counter').textContent=`${qIdx+1}/${quizQ.length}`; document.getElementById('quiz-score').textContent=qScore; document.getElementById('quiz-question').innerHTML=`<div style="font-size:3rem;margin-bottom:10px;">${w.em}</div>`+(qType==='uk-en'?w.uk:w.en); const opts=shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const g=document.getElementById('quiz-options'); g.innerHTML=''; opts.forEach(o=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=qType==='uk-en'?o.en:o.uk; b.onclick=(e)=>{ const c=o.en===w.en; fireParticles(e.clientX, e.clientY, c); if(c){b.classList.add('correct'); qScore++; addXP(1); if(isMist)removeMistake(w);}else{b.classList.add('wrong'); trackMistake(w); document.querySelectorAll('.option-btn').forEach(btn=>{if(btn.textContent===(qType==='uk-en'?w.en:w.uk))btn.classList.add('correct');});} document.querySelectorAll('.option-btn').forEach(btn=>btn.disabled=true); document.getElementById('btn-next-quiz').style.display='block'; }; g.appendChild(b); }); }
 function nextQuizQuestion() { qIdx++; if(qIdx<quizQ.length) loadQuiz(); else{ document.getElementById('quiz-active').style.display='none'; document.getElementById('quiz-result').style.display='flex'; document.getElementById('final-score').textContent=qScore+"/"+quizQ.length; gameFinished(qScore===quizQ.length && !isMist, 'quiz_score', qScore); } }
+// 1. Функція для кнопки "Продовжити" у Квізі
+function restartQuiz() {
+    if (isMist) {
+        startMistakesMode(); // Якщо вчили помилки, запускаємо їх знову
+    } else {
+        startQuiz(qType); // Якщо звичайний квіз - нові 20 слів
+    }
+}
 
+// 2. Логіка Лупи Шерлока (видаляє 2 неправильні відповіді)
+function useSherlockHint() {
+    // Перевіряємо, чи є лупа в інвентарі
+    const hintIdx = inventory.findIndex(i => i.id === 'hint');
+    if (hintIdx === -1) {
+        alert("У тебе немає Лупи Шерлока! Купи її в магазині 🛍️");
+        return;
+    }
+
+    // Шукаємо активні кнопки варіантів у поточному режимі
+    const activeSection = document.querySelector('.section.active');
+    const options = Array.from(activeSection.querySelectorAll('.option-btn:not(.correct):not(.wrong)'));
+    
+    if (options.length < 2) return;
+
+    // Визначаємо правильне слово залежно від гри
+    let correctEn = "";
+    if (activeSection.id === 'quiz') correctEn = quizQ[qIdx].en;
+    else if (activeSection.id === 'emoji-quiz') correctEn = emoQ[eIdx].en;
+    else if (activeSection.id === 'spy') correctEn = spyQ[spyI].odd.en;
+    else if (activeSection.id === 'meteor') correctEn = metWordObj.en;
+
+    // Прибираємо 2 неправильні варіанти
+    let removed = 0;
+    for (let opt of options) {
+        // Якщо текст на кнопці не збігається з правильною відповіддю (враховуючи переклад)
+        const isCorrectBtn = (opt.textContent === correctEn || 
+                             baseVocabulary.find(v => v.en === correctEn)?.uk === opt.textContent);
+        
+        if (!isCorrectBtn && removed < 2) {
+            opt.style.opacity = "0.2";
+            opt.style.pointerEvents = "none";
+            removed++;
+        }
+    }
+
+    // Витрачаємо лупу
+    inventory.splice(hintIdx, 1);
+    localStorage.setItem('userInventory', JSON.stringify(inventory));
+    renderInventory();
+    updateUI();
+    showToast("🔍 Шерлок допоміг!");
+}
+
+// 3. Функція показу кнопки підказки (викликай її в loadQuiz, loadEmo тощо)
+function toggleHintButton(show) {
+    const activeId = document.querySelector('.section.active').id;
+    const btn = document.getElementById(`hint-btn-${activeId}`);
+    if (btn) {
+        // Показуємо кнопку, якщо гра це дозволяє і в Олі є хоча б одна лупа
+        const hasHint = inventory.some(i => i.id === 'hint');
+        btn.style.display = (show && hasHint) ? 'flex' : 'none';
+    }
+}
 let mFound=0, mErr=0, mSel=null, mLock=false;
 function startMatchGame() { const voc = getVocab(); if(voc.length<6){alert("Замало слів!"); return;} showSection('match'); mFound=0; mErr=0; document.getElementById('match-result').style.display='none'; document.getElementById('match-columns').style.display='flex'; updM(); let words=shuffleArray(voc).slice(0,6); const cUk=document.getElementById('match-col-uk'), cEn=document.getElementById('match-col-en'); cUk.innerHTML=''; cEn.innerHTML=''; shuffleArray(words.map((w,i)=>({t:w.uk,id:i,l:'uk',w}))).forEach(c=>createMB(c,cUk)); shuffleArray(words.map((w,i)=>({t:w.en,id:i,l:'en',w}))).forEach(c=>createMB(c,cEn)); }
 function createMB(c, p) { const b=document.createElement('button'); b.className='match-btn'; b.textContent=c.t; b.onclick=(e)=>{ if(mLock||b.classList.contains('correct'))return; if(b===mSel){b.classList.remove('selected'); mSel=null; return;} if(!mSel){b.classList.add('selected'); mSel=b; b.dataset.id=c.id; b.dataset.lang=c.l; b.word=c.w;} else if(mSel.dataset.lang===c.l){mSel.classList.remove('selected'); b.classList.add('selected'); mSel=b; b.dataset.id=c.id; b.dataset.lang=c.l; b.word=c.w;} else{ mLock=true; b.classList.add('selected'); const cor=mSel.dataset.id==c.id; fireParticles(e.clientX, e.clientY, cor); if(cor){b.classList.add('correct'); mSel.classList.add('correct'); mFound++; addXP(1); updM(); mSel=null; mLock=false; if(mFound===6)setTimeout(()=>{document.getElementById('match-columns').style.display='none'; document.getElementById('match-result').style.display='flex'; document.getElementById('match-final-score').textContent=mErr+" помилок"; gameFinished(mErr===0, 'pairs', mFound);},400);} else{b.classList.add('wrong'); mSel.classList.add('wrong'); mErr++; trackMistake(c.w); updM(); let s1=b,s2=mSel; mSel=null; setTimeout(()=>{s1.classList.remove('wrong','selected'); s2.classList.remove('wrong','selected'); mLock=false;},300);} } }; p.appendChild(b); }
@@ -1407,55 +1473,6 @@ function checkWordleRow() {
             document.getElementById('wordle-uk-translation').textContent = wdlObj.uk; trackMistake(wdlObj); gameFinished(false, 'wordle', 0);
         }
     }, wdlLen * 300 + 300);
-}
-// --- 3. МЕТЕОРИТНИЙ ДОЩ ---
-let metTimer, metPos = -50, metSpeed = 1, metScore = 0, metWordObj = null;
-function startMeteor() {
-    showSection('meteor'); document.getElementById('meteor-result').style.display='none'; document.getElementById('meteor-active').style.display='flex';
-    metScore = 0; metSpeed = 1; document.getElementById('meteor-cat').classList.remove('hit');
-    spawnMeteor();
-}
-function spawnMeteor() {
-    metPos = -50; metSpeed = 1.5 + (metScore * 0.2); 
-    document.getElementById('meteor-speed').textContent = metSpeed.toFixed(1) + "x";
-    document.getElementById('meteor-score').textContent = `Рахунок: ${metScore}`;
-    
-    metWordObj = getGameWords()[Math.floor(Math.random() * getGameWords().length)];
-    const el = document.getElementById('meteor-word');
-    el.textContent = metWordObj.en; el.style.top = metPos + 'px';
-    
-    const opts = shuffleArray([metWordObj, ...shuffleArray(getGameWords().filter(x => x.en !== metWordObj.en)).slice(0,2)]);
-    const g = document.getElementById('meteor-options'); g.innerHTML = '';
-    opts.forEach(o => {
-        const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.uk; b.style.padding = '12px'; b.style.fontSize = '1rem';
-        b.onclick = (e) => {
-            if(o.en === metWordObj.en) {
-                clearInterval(metTimer); fireParticles(e.clientX, e.clientY, true);
-                metScore++; addXP(1); spawnMeteor();
-            } else {
-                b.classList.add('wrong'); setTimeout(() => b.classList.remove('wrong'), 300);
-            }
-        };
-        g.appendChild(b);
-    });
-
-    const areaHeight = document.getElementById('meteor-area').clientHeight;
-    clearInterval(metTimer);
-    metTimer = setInterval(() => {
-        metPos += metSpeed;
-        el.style.top = metPos + 'px';
-        if(metPos > areaHeight - 80) { 
-            clearInterval(metTimer);
-            document.getElementById('meteor-cat').classList.add('hit');
-            playSFX(false); trackMistake(metWordObj);
-            setTimeout(() => {
-                document.getElementById('meteor-active').style.display = 'none';
-                document.getElementById('meteor-result').style.display = 'flex';
-                document.getElementById('meteor-final-score').textContent = metScore;
-                gameFinished(false, 'meteor', metScore);
-            }, 1000);
-        }
-    }, 30);
 }
 
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
