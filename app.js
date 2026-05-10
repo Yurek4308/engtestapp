@@ -986,7 +986,57 @@ function renderDictionary() {
 // ==========================================
 let emoQ=[], eIdx=0, eScore=0, eAns=false;
 function startEmojiQuiz() { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} emoQ = shuffleArray(voc).slice(0, 15); eIdx=0; eScore=0; showSection('emoji-quiz'); document.getElementById('emoji-result').style.display='none'; document.getElementById('emoji-active').style.display='flex'; loadEmo(); }
-function loadEmo() { eAns = false; document.getElementById('btn-next-emoji').style.display='none'; let w = emoQ[eIdx]; document.getElementById('emoji-counter').textContent=`${eIdx+1}/${emoQ.length}`; document.getElementById('emoji-score').textContent=eScore; document.getElementById('emoji-question').innerHTML=`<div style="font-size: 4.5rem; line-height: 1;">${w.em}</div><div style="font-size: 1.2rem; color: var(--text-muted); font-weight: 700;">${w.uk}</div>`; const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const g = document.getElementById('emoji-options'); g.innerHTML=''; opts.forEach(o => { const b = document.createElement('button'); b.className='option-btn'; b.textContent=o.en; b.onclick = (e) => { if(eAns) return; eAns=true; const c = o.en===w.en; fireParticles(e.clientX, e.clientY, c); document.querySelectorAll('#emoji-options .option-btn').forEach(btn => { btn.disabled=true; if(btn.textContent===w.en) btn.classList.add('correct'); else if(btn===b && !c) btn.classList.add('wrong'); }); if(c) { eScore++; addXP(1); } else trackMistake(w); document.getElementById('emoji-score').textContent=eScore; document.getElementById('btn-next-emoji').style.display='block'; }; g.appendChild(b); }); }
+function loadEmo() { 
+    // 🔍 1. Показуємо кнопку підказки (якщо лупа є в інвентарі)
+    toggleHintButton(true); 
+
+    eAns = false; 
+    document.getElementById('btn-next-emoji').style.display = 'none'; 
+    let w = emoQ[eIdx]; 
+    document.getElementById('emoji-counter').textContent = `${eIdx + 1}/${emoQ.length}`; 
+    document.getElementById('emoji-score').textContent = eScore; 
+    document.getElementById('emoji-question').innerHTML = `
+        <div style="font-size: 4.5rem; line-height: 1;">${w.em}</div>
+        <div style="font-size: 1.2rem; color: var(--text-muted); font-weight: 700;">${w.uk}</div>`; 
+
+    const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x => x.en !== w.en)).slice(0, 3)]); 
+    const g = document.getElementById('emoji-options'); 
+    g.innerHTML = ''; 
+
+    opts.forEach(o => { 
+        const b = document.createElement('button'); 
+        b.className = 'option-btn'; 
+        b.textContent = o.en; 
+        
+        b.onclick = (e) => { 
+            if (eAns) return; 
+            
+            // 🔍 2. Ховаємо підказку після кліку
+            toggleHintButton(false); 
+            
+            eAns = true; 
+            const c = o.en === w.en; 
+            fireParticles(e.clientX, e.clientY, c); 
+
+            document.querySelectorAll('#emoji-options .option-btn').forEach(btn => { 
+                btn.disabled = true; 
+                if (btn.textContent === w.en) btn.classList.add('correct'); 
+                else if (btn === b && !c) btn.classList.add('wrong'); 
+            }); 
+
+            if (c) { 
+                eScore++; 
+                addXP(1); 
+            } else {
+                trackMistake(w);
+            }
+
+            document.getElementById('emoji-score').textContent = eScore; 
+            document.getElementById('btn-next-emoji').style.display = 'block'; 
+        }; 
+        g.appendChild(b); 
+    }); 
+}
 function nextEmoji() { eIdx++; if(eIdx<emoQ.length) loadEmo(); else { document.getElementById('emoji-active').style.display='none'; document.getElementById('emoji-result').style.display='flex'; document.getElementById('emoji-final').textContent=eScore+"/"+emoQ.length; gameFinished(eScore===emoQ.length, 'emoji', eScore); } }
 
 let constQ=[], cIdx=0, cScore=0, cAns=[], constLock=false, constErrors=0;
@@ -1005,7 +1055,53 @@ let quizQ=[], qIdx=0, qScore=0, qType='uk-en', isMist=false;
 function startMistakesMode() { if(mistakeWords.length===0){ showToast("Помилок немає! ❤️"); return; } qType='uk-en'; isMist=true; quizQ=shuffleArray(mistakeWords); qIdx=0; qScore=0; showSection('quiz'); document.getElementById('quiz-result').style.display='none'; document.getElementById('quiz-active').style.display='flex'; loadQuiz(); }
 function startQuiz(t) { const voc = getVocab(); if(voc.length<4){alert("Замало слів!"); return;} qType=t; isMist=false; quizQ=shuffleArray(voc).slice(0,20); qIdx=0; qScore=0; showSection('quiz'); document.getElementById('quiz-result').style.display='none'; document.getElementById('quiz-active').style.display='flex'; loadQuiz(); }
 function restartQuiz() { if(isMist) startMistakesMode(); else startQuiz(qType); }
-function loadQuiz() { document.getElementById('btn-next-quiz').style.display='none'; let w=quizQ[qIdx]; document.getElementById('quiz-counter').textContent=`${qIdx+1}/${quizQ.length}`; document.getElementById('quiz-score').textContent=qScore; document.getElementById('quiz-question').innerHTML=`<div style="font-size:3rem;margin-bottom:10px;">${w.em}</div>`+(qType==='uk-en'?w.uk:w.en); const opts=shuffleArray([w, ...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const g=document.getElementById('quiz-options'); g.innerHTML=''; opts.forEach(o=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=qType==='uk-en'?o.en:o.uk; b.onclick=(e)=>{ const c=o.en===w.en; fireParticles(e.clientX, e.clientY, c); if(c){b.classList.add('correct'); qScore++; addXP(1); if(isMist)removeMistake(w);}else{b.classList.add('wrong'); trackMistake(w); document.querySelectorAll('.option-btn').forEach(btn=>{if(btn.textContent===(qType==='uk-en'?w.en:w.uk))btn.classList.add('correct');});} document.querySelectorAll('.option-btn').forEach(btn=>btn.disabled=true); document.getElementById('btn-next-quiz').style.display='block'; }; g.appendChild(b); }); }
+function loadQuiz() {
+    // 🔍 1. Вмикаємо кнопку підказки, якщо вона є в інвентарі
+    toggleHintButton(true); 
+
+    document.getElementById('btn-next-quiz').style.display = 'none';
+    let w = quizQ[qIdx];
+    document.getElementById('quiz-counter').textContent = `${qIdx + 1}/${quizQ.length}`;
+    document.getElementById('quiz-score').textContent = qScore;
+    document.getElementById('quiz-question').innerHTML = `<div style="font-size:3rem;margin-bottom:10px;">${w.em}</div>` + (qType === 'uk-en' ? w.uk : w.en);
+    
+    const opts = shuffleArray([w, ...shuffleArray(getGameWords().filter(x => x.en !== w.en)).slice(0, 3)]);
+    const g = document.getElementById('quiz-options');
+    g.innerHTML = '';
+
+    opts.forEach(o => {
+        const b = document.createElement('button');
+        b.className = 'option-btn';
+        b.textContent = qType === 'uk-en' ? o.en : o.uk;
+        
+        b.onclick = (e) => {
+            // 🔍 2. Ховаємо лупу, бо відповідь вже надана
+            toggleHintButton(false); 
+
+            const c = o.en === w.en;
+            fireParticles(e.clientX, e.clientY, c);
+            
+            if (c) {
+                b.classList.add('correct');
+                qScore++;
+                addXP(1);
+                if (isMist) removeMistake(w);
+            } else {
+                b.classList.add('wrong');
+                trackMistake(w);
+                // Підсвічуємо правильну відповідь, щоб Оля запам'ятала
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    if (btn.textContent === (qType === 'uk-en' ? w.en : w.uk)) btn.classList.add('correct');
+                });
+            }
+            
+            // Блокуємо всі кнопки після вибору
+            document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+            document.getElementById('btn-next-quiz').style.display = 'block';
+        };
+        g.appendChild(b);
+    });
+}
 function nextQuizQuestion() { qIdx++; if(qIdx<quizQ.length) loadQuiz(); else{ document.getElementById('quiz-active').style.display='none'; document.getElementById('quiz-result').style.display='flex'; document.getElementById('final-score').textContent=qScore+"/"+quizQ.length; gameFinished(qScore===quizQ.length && !isMist, 'quiz_score', qScore); } }
 // 1. Функція для кнопки "Продовжити" у Квізі
 function restartQuiz() {
@@ -1259,38 +1355,57 @@ function finishBoss(win) {
 let spyQ = [], spyI = 0, spyS = 0, spyLock = false;
 
 function startSpy() {
-    showSection('spy'); document.getElementById('spy-result').style.display='none'; document.getElementById('spy-active').style.display='flex';
+    showSection('spy'); 
+    document.getElementById('spy-result').style.display='none'; 
+    document.getElementById('spy-active').style.display='flex';
+    
     spyQ = []; spyI = 0; spyS = 0;
     
-    const categories = [...new Set(getGameWords().map(w => w.c))];
+    // Отримуємо актуальний список слів (з урахуванням VIP-налаштувань)
+    const allWords = getGameWords();
+    const categories = [...new Set(allWords.map(w => w.c))];
+
     for(let i=0; i<10; i++) {
-        let validCats = categories.filter(c => getGameWords().filter(w => w.c === c).length >= 3);
+        // Шукаємо категорії, де є хоча б 3 слова
+        let validCats = categories.filter(c => allWords.filter(w => w.c === c).length >= 3);
         if(validCats.length < 2) break;
+
         let mainCat = validCats[Math.floor(Math.random() * validCats.length)];
+        let mainWords = shuffleArray(allWords.filter(w => w.c === mainCat)).slice(0, 3);
+        
+        // Вибираємо "шпигуна" з будь-якої ІНШОЇ категорії
         let oddCat = categories.filter(c => c !== mainCat)[Math.floor(Math.random() * (categories.length - 1))];
-        let mainWords = shuffleArray(getGameWords().filter(w => w.c === mainCat)).slice(0, 3);
-        let oddWord = shuffleArray(getGameWords().filter(w => w.c === oddCat))[0];
-        spyQ.push({ words: shuffleArray([...mainWords, oddWord]), odd: oddWord });
+        let oddWord = shuffleArray(allWords.filter(w => w.c === oddCat))[0];
+
+        if(mainWords.length === 3 && oddWord) {
+            spyQ.push({ words: shuffleArray([...mainWords, oddWord]), odd: oddWord });
+        }
     }
     loadSpy();
 }
+
 function loadSpy() {
-    spyLock = false; document.getElementById('btn-next-spy').style.display = 'none';
+    spyLock = false; 
+    document.getElementById('btn-next-spy').style.display = 'none';
+    
+    // 🔍 1. Вмикаємо кнопку підказки (якщо є в інвентарі)
+    toggleHintButton(true); 
+
     document.getElementById('spy-counter').textContent = `${spyI+1}/${spyQ.length}`;
     document.getElementById('spy-score').textContent = spyS;
-    const g = document.getElementById('spy-options'); g.innerHTML = '';
+    
+    const g = document.getElementById('spy-options'); 
+    g.innerHTML = '';
     
     spyQ[spyI].words.forEach(w => {
         const b = document.createElement('button'); 
         b.className = 'option-btn'; 
         b.style.fontSize = '1.3rem';
         b.style.padding = '15px 10px';
-        b.style.wordBreak = 'break-word';
         b.style.display = 'flex';
         b.style.flexDirection = 'column';
         b.style.alignItems = 'center';
         b.style.gap = '5px';
-        b.style.lineHeight = '1.1';
         
         b.innerHTML = `
             <span class="spy-en-word" style="font-weight: 800;">${w.en}</span>
@@ -1298,27 +1413,41 @@ function loadSpy() {
         `;
         
         b.onclick = (e) => {
-            if(spyLock) return; spyLock = true;
+            if(spyLock) return; 
+            
+            // 🔍 2. Ховаємо підказку після вибору
+            toggleHintButton(false); 
+            
+            spyLock = true;
             const isCorrect = w.en === spyQ[spyI].odd.en;
             fireParticles(e.clientX, e.clientY, isCorrect);
             
             document.querySelectorAll('#spy-options .option-btn').forEach(btn => {
                 btn.disabled = true;
+                // Показуємо всі переклади після відповіді
                 const hint = btn.querySelector('.spy-uk-hint');
                 if(hint) { 
                     hint.style.opacity = '1'; 
                     hint.style.height = 'auto';
                     hint.style.marginTop = '5px';
                 }
-                if(btn.querySelector('.spy-en-word').textContent === spyQ[spyI].odd.en) {
+                
+                // Підсвічуємо правильний і неправильний вибір
+                const btnEn = btn.querySelector('.spy-en-word').textContent;
+                if(btnEn === spyQ[spyI].odd.en) {
                     btn.classList.add('correct');
-                }
-                else if(btn === b && !isCorrect) {
+                } else if(btn === b && !isCorrect) {
                     btn.classList.add('wrong');
                 }
             });
             
-            if(isCorrect) { spyS++; addXP(2); } else trackMistake(spyQ[spyI].odd);
+            if(isCorrect) { 
+                spyS++; 
+                addXP(2); 
+            } else {
+                trackMistake(spyQ[spyI].odd);
+            }
+            
             document.getElementById('btn-next-spy').style.display = 'block';
         };
         g.appendChild(b);
@@ -1333,7 +1462,7 @@ function nextSpy() {
         document.getElementById('spy-active').style.display = 'none'; 
         document.getElementById('spy-result').style.display = 'flex'; 
         document.getElementById('spy-final-score').textContent = `${spyS}/${spyQ.length}`; 
-        gameFinished(spyS === spyQ.length, 'spy', 1); 
+        gameFinished(spyS === spyQ.length, 'spy', spyS); 
     }
 }
 // --- 2. СЕЙФ (WORDLE) ---
@@ -1474,7 +1603,72 @@ function checkWordleRow() {
         }
     }, wdlLen * 300 + 300);
 }
+// --- ☄️ МЕТЕОРИТНИЙ ДОЩ (З ФІКСОМ БАГУ) ---
+let metTimer, metPos = -50, metSpeed = 1, metScore = 0, metWordObj = null;
 
+function startMeteor() {
+    metGameOver = false; // Скидаємо стан програшу
+    showSection('meteor');
+    document.getElementById('meteor-result').style.display='none';
+    document.getElementById('meteor-active').style.display='flex';
+    metScore = 0; metSpeed = 1;
+    document.getElementById('meteor-cat').classList.remove('hit');
+    spawnMeteor();
+}
+
+function spawnMeteor() {
+    metGameOver = false;
+    metPos = -50; 
+    metSpeed = 1.5 + (metScore * 0.2); 
+    toggleHintButton(true); // Показуємо лупу, якщо вона є
+    
+    document.getElementById('meteor-speed').textContent = metSpeed.toFixed(1) + "x";
+    document.getElementById('meteor-score').textContent = `Рахунок: ${metScore}`;
+    
+    const words = getGameWords();
+    metWordObj = words[Math.floor(Math.random() * words.length)];
+    const el = document.getElementById('meteor-word');
+    el.textContent = metWordObj.en; el.style.top = metPos + 'px';
+    
+    const opts = shuffleArray([metWordObj, ...shuffleArray(words.filter(x => x.en !== metWordObj.en)).slice(0,2)]);
+    const g = document.getElementById('meteor-options'); g.innerHTML = '';
+    
+    opts.forEach(o => {
+        const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.uk;
+        b.onclick = (e) => {
+            if(metGameOver) return; // 🛑 ФІКС: якщо метеорит уже впав, кліки не працюють
+            if(o.en === metWordObj.en) {
+                clearInterval(metTimer);
+                toggleHintButton(false);
+                fireParticles(e.clientX, e.clientY, true);
+                metScore++; addXP(1); spawnMeteor();
+            } else {
+                b.classList.add('wrong'); setTimeout(() => b.classList.remove('wrong'), 300);
+            }
+        };
+        g.appendChild(b);
+    });
+
+    const areaHeight = document.getElementById('meteor-area').clientHeight;
+    clearInterval(metTimer);
+    metTimer = setInterval(() => {
+        metPos += metSpeed;
+        el.style.top = metPos + 'px';
+        if(metPos > areaHeight - 80) { 
+            clearInterval(metTimer);
+            metGameOver = true; // 🔥 ВСТАНОВЛЮЄМО ПРОГРАШ
+            toggleHintButton(false);
+            document.getElementById('meteor-cat').classList.add('hit');
+            playSFX(false); trackMistake(metWordObj);
+            setTimeout(() => {
+                document.getElementById('meteor-active').style.display = 'none';
+                document.getElementById('meteor-result').style.display = 'flex';
+                document.getElementById('meteor-final-score').textContent = metScore;
+                gameFinished(false, 'meteor', metScore);
+            }, 1000);
+        }
+    }, 30);
+}
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
 function exportProgress() { const d = { totalXP, lifetimeXP, currentStreak, bestSprint, dailyProg, mistakeWords, inventory, achievs, usedCodes, lastLogin, dailyGoals, userStats, lastWheelDate }; const s = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); navigator.clipboard.writeText(s).then(()=>alert("Код скопійовано! Надішли Юрі 📩")).catch(()=>prompt("Скопіюй вручну:", s)); }
 function importProgress() { const s = prompt("Встав код прогресу сюди:"); if(!s) return; try { const d = JSON.parse(decodeURIComponent(escape(atob(s)))); if(d.totalXP !== undefined) { localStorage.setItem('totalXP', d.totalXP); if(d.lifetimeXP !== undefined) localStorage.setItem('lifetimeXP', d.lifetimeXP); localStorage.setItem('streak', d.currentStreak); localStorage.setItem('sprintRecord', d.bestSprint); localStorage.setItem('dailyProg', JSON.stringify(d.dailyProg)); localStorage.setItem('userMistakes', JSON.stringify(d.mistakeWords)); localStorage.setItem('userInventory', JSON.stringify(d.inventory)); localStorage.setItem('achievs', JSON.stringify(d.achievs)); localStorage.setItem('usedCodes', JSON.stringify(d.usedCodes)); localStorage.setItem('lastLogin', d.lastLogin); if(d.dailyGoals) localStorage.setItem('dailyGoals', JSON.stringify(d.dailyGoals)); if(d.userStats) localStorage.setItem('userStats', JSON.stringify(d.userStats)); if(d.lastWheelDate) localStorage.setItem('lastWheelDate', d.lastWheelDate); alert("Прогрес відновлено!"); location.reload(); } } catch(e){alert("Помилка коду!");} }
