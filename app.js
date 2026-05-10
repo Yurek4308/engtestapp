@@ -315,10 +315,16 @@ let curCuid = null;
 
 // 🔥 НОВІ ЗМІННІ ДЛЯ ФІКСІВ
 let metGameOver = false; 
-let spicyInGames = localStorage.getItem('spicyInGames') === 'true';
 // ==========================================
 // 3. ІНІЦІАЛІЗАЦІЯ ТА ЗВУК
 // ==========================================
+function unlockAudio() { 
+    if(audioUnlocked) return; 
+    audioUnlocked = true; 
+    if (synth && synth.paused) synth.resume(); 
+    // Створюємо порожнє висловлювання, щоб "розбудити" синтезатор на iOS
+    synth.speak(new SpeechSynthesisUtterance("")); 
+}
 document.addEventListener("DOMContentLoaded", () => {
 let isDark = localStorage.getItem('theme') === 'dark'; 
     if(isDark) {
@@ -1057,7 +1063,7 @@ function startQuiz(t) { const voc = getVocab(); if(voc.length<4){alert("Зама
 function restartQuiz() { if(isMist) startMistakesMode(); else startQuiz(qType); }
 function loadQuiz() {
     // 🔍 1. Вмикаємо кнопку підказки, якщо вона є в інвентарі
-    toggleHintButton(true); 
+   toggleHintButton(true); // 🔥 ДОДАТИ ЦЕ (Показуємо лупу на початку питання)
 
     document.getElementById('btn-next-quiz').style.display = 'none';
     let w = quizQ[qIdx];
@@ -1074,7 +1080,8 @@ function loadQuiz() {
         b.className = 'option-btn';
         b.textContent = qType === 'uk-en' ? o.en : o.uk;
         
-        b.onclick = (e) => {
+       b.onclick=(e)=>{
+            toggleHintButton(false); // 🔥 ДОДАТИ ЦЕ (Ховаємо лупу після кліку)
             // 🔍 2. Ховаємо лупу, бо відповідь вже надана
             toggleHintButton(false); 
 
@@ -1603,7 +1610,7 @@ function checkWordleRow() {
         }
     }, wdlLen * 300 + 300);
 }
-// --- ☄️ МЕТЕОРИТНИЙ ДОЩ (З ФІКСОМ БАГУ) ---
+// --- ☄️ МЕТЕОРИТНИЙ ДОЩ (З ФІКСОМ БАГУ) ---// --- ☄️ МЕТЕОРИТНИЙ ДОЩ (ФІКС БАГУ) ---
 let metTimer, metPos = -50, metSpeed = 1, metScore = 0, metWordObj = null;
 
 function startMeteor() {
@@ -1618,9 +1625,8 @@ function startMeteor() {
 
 function spawnMeteor() {
     metGameOver = false;
-    metPos = -50; 
-    metSpeed = 1.5 + (metScore * 0.2); 
-    toggleHintButton(true); // Показуємо лупу, якщо вона є
+    metPos = -50; metSpeed = 1.5 + (metScore * 0.2); 
+    toggleHintButton(true); // Показуємо лупу
     
     document.getElementById('meteor-speed').textContent = metSpeed.toFixed(1) + "x";
     document.getElementById('meteor-score').textContent = `Рахунок: ${metScore}`;
@@ -1636,7 +1642,7 @@ function spawnMeteor() {
     opts.forEach(o => {
         const b = document.createElement('button'); b.className = 'option-btn'; b.textContent = o.uk;
         b.onclick = (e) => {
-            if(metGameOver) return; // 🛑 ФІКС: якщо метеорит уже впав, кліки не працюють
+            if(metGameOver) return; // 🔥 БЛОКУЄМО КЛІКИ ПІСЛЯ УДАРУ
             if(o.en === metWordObj.en) {
                 clearInterval(metTimer);
                 toggleHintButton(false);
@@ -1656,10 +1662,9 @@ function spawnMeteor() {
         el.style.top = metPos + 'px';
         if(metPos > areaHeight - 80) { 
             clearInterval(metTimer);
-            metGameOver = true; // 🔥 ВСТАНОВЛЮЄМО ПРОГРАШ
+            metGameOver = true; // 🔥 ФІКСУЄМО ПРОГРАШ
             toggleHintButton(false);
             document.getElementById('meteor-cat').classList.add('hit');
-            playSFX(false); trackMistake(metWordObj);
             setTimeout(() => {
                 document.getElementById('meteor-active').style.display = 'none';
                 document.getElementById('meteor-result').style.display = 'flex';
