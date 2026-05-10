@@ -160,6 +160,7 @@
             <h1 class="welcome-title">Словник 📖</h1>
             <div class="category-scroll" id="cat-filters">
                 <div class="cat-chip active" onclick="setCat('all', this)">Усі слова</div>
+                <div class="cat-chip" onclick="setCat('q', this)">❓ Питання</div>
                 <div class="cat-chip" onclick="setCat('co', this)">😍 Компліменти</div>
                 <div class="cat-chip" onclick="setCat('cl', this)">👗 Одяг</div>
                 <div class="cat-chip" onclick="setCat('fo', this)">🍩 Смаколики</div>
@@ -289,31 +290,210 @@
             <button class="btn btn-primary" id="spin-btn" style="margin-bottom:15px;" onclick="spinWheel()">Крутити (50 🌟)</button>
         </div>
 
-        <div id="quiz-menu" class="section"><h1 class="welcome-title">Квіз 🎯</h1><div class="menu-grid"><div class="menu-card" onclick="startQuiz('uk-en')"><div class="icon-box bg-blue">🇺🇦</div><div>Укр ➡️ Англ</div></div><div class="menu-card" onclick="startQuiz('en-uk')"><div class="icon-box bg-yellow">🇬🇧</div><div>Англ ➡️ Укр</div></div></div><button class="btn" style="margin-top:20px;" onclick="showSection('home')">Назад</button></div>
+     <div id="quiz-menu" class="section"><h1 class="welcome-title">Квіз 🎯</h1><div class="menu-grid"><div class="menu-card" onclick="startQuiz('uk-en')"><div class="icon-box bg-blue">🇺🇦</div><div>Укр ➡️ Англ</div></div><div class="menu-card" onclick="startQuiz('en-uk')"><div class="icon-box bg-yellow">🇬🇧</div><div>Англ ➡️ Укр</div></div></div><button class="btn" style="margin-top:20px;" onclick="showSection('home')">Назад</button></div>
         <div id="flashcards-menu" class="section"><h1 class="welcome-title">Картки 🗂️</h1><div class="menu-grid"><div class="menu-card" onclick="startFlashcards('en-uk')"><div class="icon-box bg-blue">🇬🇧</div><div>Англ ➡️ Укр</div></div><div class="menu-card" onclick="startFlashcards('uk-en')"><div class="icon-box bg-yellow">🇺🇦</div><div>Укр ➡️ Англ</div></div></div><button class="btn" style="margin-top:20px;" onclick="showSection('home')">Назад</button></div>
 
-        <div id="emoji-quiz" class="section"><div id="emoji-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="emoji-counter"></span><span id="emoji-score"></span></div><div class="question-box" id="emoji-question"></div><div class="options-grid grid-2" id="emoji-options"></div><button class="btn btn-primary" id="btn-next-emoji" style="display:none; margin-top:auto;" onclick="nextEmoji()">Далі</button></div><div class="result-screen" id="emoji-result"><h2>🤩 Готово!</h2><div class="result-score" id="emoji-final"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="constructor" class="section"><div id="const-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="const-counter"></span><span id="const-score"></span></div><div class="question-box" id="const-question"></div><div class="const-target" id="const-target"></div><div class="const-words" id="const-words"></div><button class="btn btn-primary" id="btn-next-const" style="display:none; margin-top:auto;" onclick="nextConst()">Далі</button></div><div class="result-screen" id="const-result"><h2>🧩 Геній!</h2><div class="result-score" id="const-final"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="truefalse" class="section"><div id="tf-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="tf-counter"></span><span id="tf-score"></span></div><div style="position:relative; flex:1; display:flex; align-items:center; justify-content:center;"><div style="position:absolute; top:-20px; color:var(--text-muted); font-weight:700;">👈 Брехня | Правда 👉</div><div class="tf-card" id="tf-card"></div></div><div style="display:flex; gap:10px; margin-top:auto;"><button class="btn" style="background:var(--wrong); color:white;" onclick="checkTfSwipe(false)">❌ Брехня</button><button class="btn" style="background:var(--correct); color:white;" onclick="checkTfSwipe(true)">✅ Правда</button></div></div><div class="result-screen" id="tf-result"><h2>⚖️ Готово!</h2><div class="result-score" id="tf-final-score"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="quiz" class="section"><div id="quiz-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="quiz-counter"></span><span id="quiz-score"></span></div><div class="question-box" id="quiz-question"></div><div class="options-grid" id="quiz-options"></div><button class="btn btn-primary" id="btn-next-quiz" style="display:none; margin-top:auto;" onclick="nextQuizQuestion()">Далі</button></div><div class="result-screen" id="quiz-result"><h2>🎯 Готово!</h2><div class="result-score" id="final-score"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="listening" class="section"><div id="listen-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="listen-counter"></span><span id="listen-score"></span></div><div class="question-box"><div style="margin-bottom:15px; color:var(--text-muted); font-size:1rem;">Слухай:</div><div style="display:flex; justify-content:center; gap:10px;"><button class="btn bg-blue" onclick="playWordAudio('us', event)">🇺🇸 US</button><button class="btn bg-yellow" onclick="playWordAudio('uk', event)">🇬🇧 UK</button></div></div><div class="options-grid" id="listen-options"></div><button class="btn btn-primary" id="btn-next-listen" style="display:none; margin-top:auto;" onclick="nextListenQuestion()">Далі</button></div><div class="result-screen" id="listen-result"><h2>🎧 Готово!</h2><div class="result-score" id="listen-final-score"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="match" class="section"><div class="status-bar"><span id="match-counter"></span></div><div id="match-columns" style="display:flex; gap:12px; flex:1;"><div style="flex:1; display:flex; flex-direction:column; gap:10px;" id="match-col-uk"></div><div style="flex:1; display:flex; flex-direction:column; gap:10px;" id="match-col-en"></div></div><div class="result-screen" id="match-result"><h2>🔗 Чудово!</h2><div class="result-score" id="match-final-score"></div><button class="btn btn-primary" style="margin-top:20px;" onclick="showSection('home')">В меню</button></div></div>
-        <div id="spelling" class="section"><div id="spell-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="spell-counter"></span><span id="spell-score"></span></div><div class="question-box" id="spell-question"></div><div style="display:flex; justify-content:center; gap:8px; margin-bottom:30px; flex-wrap:wrap;" id="spell-slots"></div><div style="display:flex; justify-content:center; gap:8px; margin-top:auto; flex-wrap:wrap;" id="spell-letters"></div></div><div class="result-screen" id="spell-result"><h2>🔠 Молодець!</h2><div class="result-score" id="spell-final-score"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="sprint" class="section"><div id="sprint-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span>⏱️ <span id="sprint-time-text"></span>с</span><span id="sprint-score-text"></span></div><div style="height:12px; background:var(--bg); border-radius:10px; margin-bottom:15px;"><div id="sprint-bar" style="height:100%; background:var(--correct); transition:width 1s linear;"></div></div><div class="question-box" id="sprint-question"></div><div class="options-grid" id="sprint-options"></div></div><div class="result-screen" id="sprint-result"><h2>⏱ Час вийшов!</h2><div class="result-score" id="sprint-final-score"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="hangman" class="section"><div id="hm-active" style="display:flex; flex-direction:column; height:100%;"><div class="status-bar"><span id="hm-counter"></span><span id="hm-lives-text" style="color:var(--wrong);"></span></div><div class="question-box" id="hm-question"></div><div style="display:flex; justify-content:center; gap:6px; margin-bottom:20px; flex-wrap:wrap;" id="hm-slots"></div><div style="display:flex; justify-content:center; gap:6px; margin-top:auto; flex-wrap:wrap;" id="hm-keyboard"></div></div><div class="result-screen" id="hm-result"><h2 id="hm-result-title"></h2><div class="result-score" id="hm-final-word"></div><button class="btn btn-primary" onclick="showSection('home')">В меню</button></div></div>
-        <div id="flashcards" class="section"><div class="status-bar"><span id="fc-counter"></span></div><div style="flex:1; display:flex; align-items:center; justify-content:center; perspective:1000px;" onclick="flipCard()"><div id="flashcard" style="width:100%; max-width:300px; height:350px; position:relative; transition:transform 0.4s; transform-style:preserve-3d; cursor:pointer;"><div id="fc-front" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--card-bg); border-radius:24px; font-weight:800; font-size:1.8rem; box-shadow:0 10px 30px rgba(0,0,0,0.08); color:var(--text-main);"></div><div id="fc-back" style="position:absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--bg); border:2px solid var(--primary); border-radius:24px; font-weight:800; font-size:1.8rem; color:var(--primary); transform:rotateY(180deg);"></div></div></div><div style="display:flex; gap:10px;"><button class="btn" onclick="prevCard()">Назад</button><button class="btn btn-primary" onclick="nextCard()">Далі</button></div></div>
+        <div id="emoji-quiz" class="section">
+            <div id="emoji-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar">
+                    <span id="emoji-counter"></span>
+                    <button class="header-btn" id="hint-btn-emoji-quiz" onclick="useSherlockHint()" style="background:var(--warning); width:45px; border-radius:10px; display:none; justify-content:center; align-items:center;">🔍</button>
+                    <span id="emoji-score"></span>
+                </div>
+                <div class="question-box" id="emoji-question"></div>
+                <div class="options-grid grid-2" id="emoji-options"></div>
+                <button class="btn btn-primary" id="btn-next-emoji" style="display:none; margin-top:auto;" onclick="nextEmoji()">Далі ➡️</button>
+            </div>
+            <div class="result-screen" id="emoji-result">
+                <h2>🤩 Готово!</h2>
+                <div class="result-score" id="emoji-final"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startEmojiQuiz()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="constructor" class="section">
+            <div id="const-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar"><span id="const-counter"></span><span id="const-score"></span></div>
+                <div class="question-box" id="const-question"></div>
+                <div class="const-target" id="const-target"></div>
+                <div class="const-words" id="const-words"></div>
+                <button class="btn btn-primary" id="btn-next-const" style="display:none; margin-top:auto;" onclick="nextConst()">Далі ➡️</button>
+            </div>
+            <div class="result-screen" id="const-result">
+                <h2>🧩 Геній!</h2>
+                <div class="result-score" id="const-final"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startConstructor()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="truefalse" class="section">
+            <div id="tf-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar"><span id="tf-counter"></span><span id="tf-score"></span></div>
+                <div style="position:relative; flex:1; display:flex; align-items:center; justify-content:center;">
+                    <div style="position:absolute; top:-20px; color:var(--text-muted); font-weight:700;">👈 Брехня | Правда 👉</div>
+                    <div class="tf-card" id="tf-card"></div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:auto;">
+                    <button class="btn" style="background:var(--wrong); color:white;" onclick="checkTfSwipe(false)">❌ Брехня</button>
+                    <button class="btn" style="background:var(--correct); color:white;" onclick="checkTfSwipe(true)">✅ Правда</button>
+                </div>
+            </div>
+            <div class="result-screen" id="tf-result">
+                <h2>⚖️ Готово!</h2>
+                <div class="result-score" id="tf-final-score"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startTrueFalse()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz" class="section">
+            <div id="quiz-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar">
+                    <span id="quiz-counter"></span>
+                    <button class="header-btn" id="hint-btn-quiz" onclick="useSherlockHint()" style="background:var(--warning); width:45px; border-radius:10px; display:none; justify-content:center; align-items:center;">🔍</button>
+                    <span id="quiz-score"></span>
+                </div>
+                <div class="question-box" id="quiz-question"></div>
+                <div class="options-grid" id="quiz-options"></div>
+                <button class="btn btn-primary" id="btn-next-quiz" style="display:none; margin-top:auto;" onclick="nextQuizQuestion()">Далі ➡️</button>
+            </div>
+            <div class="result-screen" id="quiz-result">
+                <h2>🎯 Готово!</h2>
+                <div class="result-score" id="final-score"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="restartQuiz()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="listening" class="section">
+            <div id="listen-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar"><span id="listen-counter"></span><span id="listen-score"></span></div>
+                <div class="question-box">
+                    <div style="margin-bottom:15px; color:var(--text-muted); font-size:1rem;">Слухай:</div>
+                    <div style="display:flex; justify-content:center; gap:10px;">
+                        <button class="btn bg-blue" onclick="playWordAudio('us', event)">🇺🇸 US</button>
+                        <button class="btn bg-yellow" onclick="playWordAudio('uk', event)">🇬🇧 UK</button>
+                    </div>
+                </div>
+                <div class="options-grid" id="listen-options"></div>
+                <button class="btn btn-primary" id="btn-next-listen" style="display:none; margin-top:auto;" onclick="nextListenQuestion()">Далі ➡️</button>
+            </div>
+            <div class="result-screen" id="listen-result">
+                <h2>🎧 Готово!</h2>
+                <div class="result-score" id="listen-final-score"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startListening()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="match" class="section">
+            <div class="status-bar"><span id="match-counter"></span></div>
+            <div id="match-columns" style="display:flex; gap:12px; flex:1;"><div style="flex:1; display:flex; flex-direction:column; gap:10px;" id="match-col-uk"></div><div style="flex:1; display:flex; flex-direction:column; gap:10px;" id="match-col-en"></div></div>
+            <div class="result-screen" id="match-result">
+                <h2>🔗 Чудово!</h2>
+                <div class="result-score" id="match-final-score"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startMatchGame()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="spelling" class="section">
+            <div id="spell-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar"><span id="spell-counter"></span><span id="spell-score"></span></div>
+                <div class="question-box" id="spell-question"></div>
+                <div style="display:flex; justify-content:center; gap:8px; margin-bottom:30px; flex-wrap:wrap;" id="spell-slots"></div>
+                <div style="display:flex; justify-content:center; gap:8px; margin-top:auto; flex-wrap:wrap;" id="spell-letters"></div>
+            </div>
+            <div class="result-screen" id="spell-result">
+                <h2>🔠 Молодець!</h2>
+                <div class="result-score" id="spell-final-score"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startSpelling()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="sprint" class="section">
+            <div id="sprint-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar"><span>⏱️ <span id="sprint-time-text"></span>с</span><span id="sprint-score-text"></span></div>
+                <div class="timer-container"><div class="timer-fill" id="sprint-bar"></div></div>
+                <div class="question-box" id="sprint-question"></div>
+                <div class="options-grid" id="sprint-options"></div>
+            </div>
+            <div class="result-screen" id="sprint-result">
+                <h2>⏱ Час вийшов!</h2>
+                <div class="result-score" id="sprint-final-score"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startSprint()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="hangman" class="section">
+            <div id="hm-active" style="display:flex; flex-direction:column; height:100%;">
+                <div class="status-bar"><span id="hm-counter"></span><span id="hm-lives-text" style="color:var(--wrong);"></span></div>
+                <div class="question-box" id="hm-question"></div>
+                <div class="hm-slots" id="hm-slots"></div>
+                <div class="hm-keyboard" id="hm-keyboard"></div>
+            </div>
+            <div class="result-screen" id="hm-result">
+                <h2 id="hm-result-title"></h2>
+                <div class="result-score" id="hm-final-word"></div>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startHangman()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="flashcards" class="section">
+            <div class="status-bar"><span id="fc-counter"></span></div>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; perspective:1000px;" onclick="flipCard()">
+                <div id="flashcard" style="width:100%; max-width:300px; height:350px; position:relative; transition:transform 0.4s; transform-style:preserve-3d; cursor:pointer;">
+                    <div id="fc-front"></div>
+                    <div id="fc-back"></div>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn" onclick="prevCard()">Назад</button>
+                <button class="btn btn-primary" onclick="nextCard()">Далі</button>
+            </div>
+        </div>
 
         <div id="spy" class="section">
             <div id="spy-active" style="display:flex; flex-direction:column; height:100%;">
-                <div class="status-bar"><span id="spy-counter"></span><span id="spy-score"></span></div>
+                <div class="status-bar">
+                    <span id="spy-counter"></span>
+                    <button class="header-btn" id="hint-btn-spy" onclick="useSherlockHint()" style="background:var(--warning); width:45px; border-radius:10px; display:none; justify-content:center; align-items:center;">🔍</button>
+                    <span id="spy-score"></span>
+                </div>
                 <div class="question-box" style="font-size: 1.2rem;">Знайди зайве слово! 🕵️‍♀️</div>
                 <div class="options-grid grid-2" id="spy-options"></div>
-                <button class="btn btn-primary" id="btn-next-spy" style="display:none; margin-top:auto;" onclick="nextSpy()">Далі</button>
+                <button class="btn btn-primary" id="btn-next-spy" style="display:none; margin-top:auto;" onclick="nextSpy()">Далі ➡️</button>
             </div>
             <div class="result-screen" id="spy-result">
                 <h2>🕵️‍♀️ Місія виконана!</h2>
                 <div class="result-score" id="spy-final-score"></div>
-                <button class="btn btn-primary" onclick="showSection('home')">В меню</button>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startSpy()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
             </div>
         </div>
 
@@ -327,13 +507,20 @@
                 <h2 id="wordle-result-title"></h2>
                 <div class="result-score" id="wordle-final-word" style="font-size: 2.5rem; letter-spacing: 5px;"></div>
                 <p id="wordle-uk-translation" style="margin-bottom: 20px; font-weight: 700; color: var(--text-muted);"></p>
-                <button class="btn btn-primary" onclick="showSection('home')">В меню</button>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startWordle()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
             </div>
         </div>
 
         <div id="meteor" class="section">
             <div id="meteor-active" style="display:flex; flex-direction:column; height:100%;">
-                <div class="status-bar"><span>☄️ Швидкість: <span id="meteor-speed">1x</span></span><span id="meteor-score"></span></div>
+                <div class="status-bar">
+                    <span>☄️ Швидкість: <span id="meteor-speed">1x</span></span>
+                    <button class="header-btn" id="hint-btn-meteor" onclick="useSherlockHint()" style="background:var(--warning); width:45px; border-radius:10px; display:none; justify-content:center; align-items:center;">🔍</button>
+                    <span id="meteor-score"></span>
+                </div>
                 <div id="meteor-area">
                     <div id="meteor-word" class="meteor-word"></div>
                     <div id="meteor-cat" class="meteor-cat">🐈</div>
@@ -343,7 +530,10 @@
             <div class="result-screen" id="meteor-result">
                 <h2>💥 Ой! Кітя отримав по голові...</h2>
                 <div class="result-score" id="meteor-final-score"></div>
-                <button class="btn btn-primary" onclick="showSection('home')">В меню</button>
+                <div style="display:flex; gap:10px; width:100%; margin-top:auto;">
+                    <button class="btn btn-primary" onclick="startMeteor()">Продовжити</button>
+                    <button class="btn" onclick="showSection('home')">В меню</button>
+                </div>
             </div>
         </div>
 
@@ -356,35 +546,30 @@
                 <div style="width: 100%; height: 15px; background: #fee2e2; border-radius: 10px; overflow: hidden; margin-bottom: 15px; border: 2px solid #ef4444;">
                     <div id="boss-hp-bar" style="height: 100%; background: linear-gradient(90deg, #ef4444, #b91c1c); width: 100%; transition: width 0.3s;"></div>
                 </div>
-
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div id="olya-hearts" style="font-size: 1.5rem; letter-spacing: 5px;">❤️❤️❤️</div>
                     <div style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">⏱ <span id="boss-timer-text">6</span>с</div>
                 </div>
             </div>
-
             <div id="boss-active" style="display: flex; flex-direction: column;">
                 <div id="boss-phase-alert" style="text-align: center; color: var(--primary); font-weight: 900; margin-bottom: 10px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px;">ФАЗА 1: РОЗМИНКА</div>
-                
-                <div id="boss-question-box" style="width: 100%; background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; font-size: 1.5rem; font-weight: 800; min-height: 120px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                </div>
-                
+                <div id="boss-question-box" style="width: 100%; background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; font-size: 1.5rem; font-weight: 800; min-height: 120px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"></div>
                 <div id="boss-options" class="options-grid"></div>
-                
                 <div id="boss-typing-area" style="display: none; flex-direction: column; gap: 10px; margin-top: 20px;">
                     <input type="text" id="boss-input" placeholder="Введи англійське слово..." style="padding: 15px; border-radius: 12px; border: 2px solid var(--primary); font-size: 1.2rem; text-align: center; font-family: inherit;" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <button class="btn btn-primary" onclick="checkBossTyping()">💥 Атакувати!</button>
                 </div>
             </div>
-
             <div id="boss-result" style="display:none; background: var(--card-bg); border: 4px solid #ef4444; border-radius: 20px; padding: 20px; flex-direction: column; align-items: center; text-align: center;">
                 <div id="boss-final" style="font-size: 5rem; margin-bottom: 10px;">🏆</div>
                 <h2 id="boss-result-title" style="color: var(--text-main); font-size: 2rem; margin-bottom: 10px;"></h2>
                 <p id="boss-result-desc" style="color: var(--text-muted); margin-bottom: 20px; font-size: 1.1rem; line-height: 1.5;"></p>
-              <button class="btn btn-primary" style="width: 100%;" onclick="this.parentElement.style.display='none'; showSection('home')">ПОВЕРНУТИСЯ</button>
+                <div style="display:flex; gap:10px; width:100%;">
+                    <button class="btn btn-primary" style="flex:2;" onclick="startBoss()">Спробувати ще ⚔️</button>
+                    <button class="btn" style="flex:1;" onclick="showSection('home')">В меню</button>
+                </div>
             </div>
-        </div> 
-
+        </div>
     </div> <nav class="bottom-nav">
         <div class="nav-item active" onclick="showSection('home')"><div class="nav-icon">🏠</div><span>Головна</span></div>
         <div class="nav-item" onclick="showSection('dictionary')"><div class="nav-icon">📖</div><span>Словник</span></div>
