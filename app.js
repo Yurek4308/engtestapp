@@ -442,6 +442,19 @@ function setMasteryMode(mode) {
     if (mode === 'hard') msg = "ЖОРСТКИЙ РЕЖИМ: Тільки 0-4 зірочок! 🧹🔥";
     showToast(msg);
 }
+// Дата початку ваших стосунків: 16 травня 2025 року
+const LOVE_START_DATE = new Date('2025-05-16');
+
+// Масив таємних віх та автоматичних нагород, які Оля отримуватиме безкоштовно
+const loveMilestones = [
+    { days: 365, id: 'anniversary_1', title: "👑 Наша перша Річниця (1 рік разом)! 🎉", rewardName: "🕯️ Романтичне побачення-сюрприз від Юри", rewardIcon: "🕯️" },
+    { days: 400, id: 'love_400', title: "🐾 400 днів безмежного кохання!", rewardName: "🍿 Купон: Ніч кіно з масажем ніжок від коханого", rewardIcon: "🍿" },
+    { days: 500, id: 'love_500', title: "✨ 500 щасливих днів разом!", rewardName: "👑 Золотий купон: Виконання 3 будь-яких примх", rewardIcon: "👑" },
+    { days: 730, id: 'anniversary_2', title: "🌹 Друга річниця нашого кохання (2 роки)! ✨", rewardName: "✈️ Купон: Таємна спільна подорож", rewardIcon: "✈️" }
+];
+
+// Сховище вже розблокованих дат, щоб купони не дублювалися при кожному заході в профіль
+let unlockedMilestones = JSON.parse(localStorage.getItem('unlockedMilestones')) || [];
 // ==========================================
 // ==========================================
 // 3. ІНІЦІАЛІЗАЦІЯ ТА ЗВУК
@@ -469,7 +482,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if(item) {
                 let msg = `Коханий, я активувала купон на "${item.name}"! 👑 Чекаю на виконання!`;
                 if(item.id === 'golden_coupon') {
-                    msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [Впиши свое бажання тут] 👑`;
+                    msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [Впиши своє бажання тут] 👑`;
                 }
                 window.open(`https://t.me/YU_zIK?text=${encodeURIComponent(msg)}`, '_blank');
             }
@@ -483,7 +496,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     initGamification();
-    
+
+    // 🔥 ДОДАЄМО СЮДИ: Автозапуск та синхронізація інтерфейсів при старті програми
+    if (typeof updateMasteryUI === "function") updateMasteryUI();
+    if (typeof updateLoveMilestones === "function") updateLoveMilestones();
+});
     // 🔥 ФІКС: Автоматично підсвічуємо активну кнопку розумного фільтра слів при старті
     if (typeof updateMasteryUI === "function") updateMasteryUI();
 });
@@ -494,8 +511,6 @@ function toggleTheme() {
     document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙'; 
     localStorage.setItem('theme', isDark ? 'dark' : 'light'); 
 }
-
-// ✂️ (Другий дублікат функції unlockAudio успішно видалено звідси)
 
 function speak(text, accent, event) { 
     if(event) event.stopPropagation(); 
@@ -659,6 +674,13 @@ function showSection(id) {
     document.querySelector('.main-content').scrollTop = 0;
     if(id === 'home') document.getElementById('user-stats').style.display = 'flex'; 
     else document.getElementById('user-stats').style.display = 'none'; 
+
+    // 🔥 ДОДАЄМО СЮДИ: Якщо Оля відкриває Профіль, миттєво оновлюємо календар досягнень
+    if(id === 'profile') {
+        if (typeof updateLoveMilestones === 'function') {
+            updateLoveMilestones();
+        }
+    }
     
    if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
     if(id === 'inventory') { renderInventory(); } 
@@ -1894,13 +1916,92 @@ function spawnMeteor() {
         }
     }, 30);
 }
+function updateLoveMilestones() {
+    const now = new Date();
+    // Скидаємо години для точного підрахунку чистих днів
+    const start = new Date(LOVE_START_DATE);
+    start.setHours(0,0,0,0);
+    now.setHours(0,0,0,0);
+    
+    // Рахуємо скільки днів ви разом
+    const diffTime = Math.abs(now - start);
+    const currentDaysTogether = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Оновлюємо текстову цифру у твоєму профілі
+    const daysEl = document.getElementById('together-days');
+    if (daysEl) daysEl.textContent = currentDaysTogether;
+
+    // 🎁 ПЕРЕВІРКА НА АВТО-РОЗБЛОКУВАННЯ ТАЄМНИХ НАГОРОД
+    loveMilestones.forEach(m => {
+        if (currentDaysTogether >= m.days && !unlockedMilestones.includes(m.id)) {
+            unlockedMilestones.push(m.id);
+            localStorage.setItem('unlockedMilestones', JSON.stringify(unlockedMilestones));
+            
+            // Автоматично додаємо купон в інвентар без зняття зірок!
+            inventory.push({
+                id: m.id,
+                name: m.rewardName,
+                price: 0,
+                icon: m.rewardIcon,
+                uid: Date.now() + Math.floor(Math.random() * 1000)
+            });
+            localStorage.setItem('userInventory', JSON.stringify(inventory));
+            
+            // Ефектний виклик котика та тост повідомлення
+            setTimeout(() => {
+                showToast(`🎁 Нагороду розблоковано: ${m.title}`);
+                if (typeof triggerCatReaction === 'function') {
+                    triggerCatReaction('poke', 'happy', `Кохана, ми пройшли віху: ${m.title}! Я підкинув тобі секретний купон! 👑❤️`);
+                }
+                if (typeof renderInventory === 'function') renderInventory();
+                if (typeof updateUI === 'function') updateUI();
+            }, 1500);
+        }
+    });
+
+    // 🗓️ ПОШУК НАСТУПНОЇ МАЙБУТНЬОЇ ВІХИ ДЛЯ ШКАЛИ
+    let nextM = loveMilestones.find(m => m.days > currentDaysTogether);
+    
+    // Якщо Оля пройде абсолютно всі прописані віхи, генеруємо кожні наступні 100 днів автоматично
+    if (!nextM) {
+        const nextTargetDays = Math.ceil((currentDaysTogether + 1) / 100) * 100;
+        nextM = { days: nextTargetDays, title: `${nextTargetDays} днів нашого всесвіту разом! 💞`, id: 'auto_generated' };
+    }
+
+    // Вираховуємо відсоток заповнення шкали між попередньою та наступною датами
+    let prevDays = 0;
+    const currentIdx = loveMilestones.findIndex(m => m.days === nextM.days);
+    if (currentIdx > 0) {
+        prevDays = loveMilestones[currentIdx - 1].days;
+    } else if (currentIdx === -1) {
+        prevDays = Math.floor(currentDaysTogether / 100) * 100;
+    }
+
+    const totalRequired = nextM.days - prevDays;
+    const completed = currentDaysTogether - prevDays;
+    const percent = Math.min(100, Math.max(0, (completed / totalRequired) * 100));
+    const daysLeft = nextM.days - currentDaysTogether;
+
+    // Виводимо дані на екран
+    const titleEl = document.getElementById('milestone-title');
+    const barEl = document.getElementById('milestone-bar');
+    const timeLeftEl = document.getElementById('milestone-time-left');
+
+    if (titleEl) titleEl.textContent = nextM.title;
+    if (barEl) barEl.style.width = percent + '%';
+    if (timeLeftEl) {
+        timeLeftEl.textContent = daysLeft === 0 
+            ? "ДЕНЬ НАСТАВ! Перевір свої Купони! 🎉💝" 
+            : `Залишилось: ${daysLeft} днів ⏳`;
+    }
+}
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
 function exportProgress() { 
-    // 🔥 ДОДАЛИ СЮДИ: wordMastery (зірочки слів) та masteryMode (режим тумблера)
+    // 🔥 ОНОВЛЕНО: Тепер сюди пакується і unlockedMilestones (пройдені річниці)
     const d = { 
         totalXP, lifetimeXP, currentStreak, bestSprint, dailyProg, mistakeWords, 
         inventory, achievs, usedCodes, lastLogin, dailyGoals, userStats, lastWheelDate,
-        wordMastery, masteryMode 
+        wordMastery, masteryMode, unlockedMilestones 
     }; 
     const s = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); 
     navigator.clipboard.writeText(s).then(()=>alert("Код скопійовано! Надішли Юрі 📩")).catch(()=>prompt("Скопіюй вручну:", s)); 
@@ -1926,9 +2027,11 @@ function importProgress() {
             if(d.userStats) localStorage.setItem('userStats', JSON.stringify(d.userStats)); 
             if(d.lastWheelDate) localStorage.setItem('lastWheelDate', d.lastWheelDate); 
             
-            // 🔥 ДОДАЛИ СЮДИ: відновлення зірочок та режиму тумблера з коду прогресу
             if(d.wordMastery) localStorage.setItem('wordMastery', JSON.stringify(d.wordMastery));
             if(d.masteryMode) localStorage.setItem('masteryMode', d.masteryMode);
+            
+            // 🔥 ОНОВЛЕНО: Відновлюємо історію розблокованих річниць та дат
+            if(d.unlockedMilestones) localStorage.setItem('unlockedMilestones', JSON.stringify(d.unlockedMilestones));
             
             alert("Прогрес відновлено!"); 
             location.reload(); 
