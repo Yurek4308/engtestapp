@@ -530,11 +530,15 @@
         </div>
 
         <div id="wordle" class="section">
-            <div id="wordle-active" style="display:flex; flex-direction:column; height:100%;">
-                <div class="status-bar"><span>🔐 Зламай код</span><span id="wordle-attempts">Спроби: 0/6</span></div>
-                <div id="wordle-grid" class="wordle-grid"></div>
-                <div class="hm-keyboard" id="wordle-keyboard"></div>
-            </div>
+    <div id="wordle-active" style="display:flex; flex-direction:column; height:100%;">
+        <div class="status-bar"><span>🔐 Зламай код</span><span id="wordle-attempts">Спроби: 0/6</span></div>
+        <div id="wordle-grid" class="wordle-grid"></div>
+        
+        <button id="wordle-yura-hint" onclick="askYuraHint()" style="display: none; margin: 10px auto; background: linear-gradient(135deg, #ec4899, #f472b6); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 12px rgba(236,72,153,0.15); transition: 0.2s; width: calc(100% - 10px); max-width: 280px;">
+            🙋‍♂️ Спитати Юру (-20 🌟)
+        </button>
+        <div class="hm-keyboard" id="wordle-keyboard"></div>
+    </div>
             <div class="result-screen" id="wordle-result">
                 <h2 id="wordle-result-title"></h2>
                 <div class="result-score" id="wordle-final-word" style="font-size: 2.5rem; letter-spacing: 5px;"></div>
