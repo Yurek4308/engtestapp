@@ -1986,8 +1986,9 @@ function checkWordleRow() {
     setTimeout(() => {
         wdlAttempts++; 
         document.getElementById('wordle-attempts').textContent = `Спроби: ${wdlAttempts}/6`;
-        // 🔥 ФІКС: Перевіряємо, чи наступила 4-та спроба, щоб увімкнути кнопку Юри
-        updateWordleHintButtonVisibility();
+        
+        // 🔥 ФІКС: Перевіряємо, чи наступила 4-та спроба, щоб увімкнути кнопку Юри прямо під час гри!
+        if (typeof updateWordleHintButtonVisibility === 'function') updateWordleHintButtonVisibility();
         
         if(guess === wdlWord) {
             document.getElementById('wordle-active').style.display='none'; document.getElementById('wordle-result').style.display='flex';
