@@ -1760,6 +1760,108 @@ function nextSpy() {
 // --- 2. СЕЙФ (WORDLE) ---
 let wdlWord = "", wdlAttempts = 0, wdlGrid = [], wdlObj = null, wdlLen = 5;
 
+// 🔥 КЕРУВАННЯ ВИДИМІСТЮ КНОПКИ ПІДКАЗКИ ЮРИ
+function updateWordleHintButtonVisibility() {
+    const btn = document.getElementById('wordle-yura-hint');
+    if (!btn) return;
+    
+    // Показуємо кнопку Олі ТІЛЬКИ на 4, 5 та 6 спробах (wdlAttempts >= 3)
+    if (wdlAttempts >= 3 && wdlAttempts < 6) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+}
+
+// 🔥 ФУНКЦІЯ: ПІДКАЗКА ВІД КОХАНОГО ХЛОПЦЯ
+function askYuraHint() {
+    if (wdlAttempts >= 6) return;
+    
+    // 1. Шукаємо першу порожню клітинку в поточному рядку Олі
+    let col = wdlGrid[wdlAttempts].indexOf("");
+    
+    // Запобіжник: якщо Оля вже забила весь рядок буквами, просимо її спочатку щось стерти
+    if (col === -1) {
+        alert("Мур... Олюнь, у тебе цей рядок уже заповнений літерами! Видали якусь букву (⌫), щоб я міг вставити підказку! 😉");
+        return;
+    }
+    
+    // 2. Перевіряємо баланс зірочок
+    if (totalXP < 20) {
+        alert("Бракує зірочок! Підказка Юри коштує 20 🌟");
+        return;
+    }
+    
+    // 3. Списуємо оплату
+    addXP(-20);
+    
+    // Беремо залізобетонно правильну літеру для цієї позиції
+    const correctLetter = wdlWord[col];
+    
+    // Вставляємо її в буфер рядка та миттєво перемальовуємо клітинку на екрані
+    wdlGrid[wdlAttempts][col] = correctLetter;
+    updateWordleCurrentRow();
+    
+    // 4. Твоє фірмове романтичне повідомлення
+    alert(`Юра підказує: На позиції №${col + 1} стоїть буква "${correctLetter}". Ця буква така ж гарна, як і ти! 😍 Поцілунок уже летить! 😘`);
+    
+    // Бонус: змушуємо котика на екрані теж зреагувати та підтримати Олю!
+    if (typeof triggerCatReaction === 'function') {
+        triggerCatReaction('poke', 'happy', `Юра допоміг! Буква "${correctLetter}" стала на своє місце! Дотисни цей сейф! 🔐🐾`);
+    }
+}
+
+// 🔥 КЕРУВАННЯ ВИДИМІСТЮ КНОПКИ ПІДКАЗКИ ЮРИ
+function updateWordleHintButtonVisibility() {
+    const btn = document.getElementById('wordle-yura-hint');
+    if (!btn) return;
+    
+    // Показуємо кнопку Олі ТІЛЬКИ на 4, 5 та 6 спробах (тобто коли в неї лишилося мало шансів)
+    if (wdlAttempts >= 3 && wdlAttempts < 6) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+}
+
+// 🔥 ФУНКЦІЯ: РОМАНТИЧНА ПІДКАЗКА ВІД КОХАНОГО ХЛОПЦЯ
+function askYuraHint() {
+    if (wdlAttempts >= 6) return;
+    
+    // 1. Шукаємо першу порожню клітинку в поточному рядку Олі
+    let col = wdlGrid[wdlAttempts].indexOf("");
+    
+    // Запобіжник: якщо Оля вже заповнила весь рядок літерами, просимо спочатку щось стерти
+    if (col === -1) {
+        alert("Мур... Олюнь, у тебе цей рядок уже заповнений літерами! Видали якусь букву (⌫), щоб я міг вставити підказку! 😉");
+        return;
+    }
+    
+    // 2. Перевіряємо баланс зірочок Олі
+    if (totalXP < 20) {
+        alert("Бракує зірочок! Підказка Юри коштує 20 🌟");
+        return;
+    }
+    
+    // 3. Списуємо 20 зірочок за допомогу
+    addXP(-20);
+    
+    // Беремо залізобетонно правильну літеру для цієї позиції з загаданого слова
+    const correctLetter = wdlWord[col];
+    
+    // Вставляємо її в масив спроби та оновлюємо відображення на екрані
+    wdlGrid[wdlAttempts][col] = correctLetter;
+    updateWordleCurrentRow();
+    
+    // 4. Твоє фірмове повідомлення, яке підніме Олі настрій
+    alert(`Юра підказує: На позиції №${col + 1} стоїть буква "${correctLetter}". Ця буква така ж гарна, як і ти! 😍 Поцілунок уже летить! 😘`);
+    
+    // Котик-помічник на екрані теж радіє успіху
+    if (typeof triggerCatReaction === 'function') {
+        triggerCatReaction('poke', 'happy', `Юра допоміг! Буква "${correctLetter}" стала на своє місце! Дотисни цей сейф! 🔐🐾`);
+    }
+}
+
 function startWordle() {
     const validWords = getVocab().filter(w => w.en.length >= 3 && /^[a-zA-Z]+$/.test(w.en));
     if(validWords.length === 0) { alert("Немає підходящих слів у словнику!"); return; }
@@ -1778,8 +1880,10 @@ function startWordle() {
     initWordleGrid(); 
     drawWordleKeyboard(); 
     document.getElementById('wordle-attempts').textContent = `Спроби: 0/6`;
+    
+    // 🔥 ФІКС: Автоматично ховаємо кнопку підказки на початку нової гри
+    updateWordleHintButtonVisibility();
 }
-
 function initWordleGrid() {
     const g = document.getElementById('wordle-grid'); 
     g.innerHTML = '';
@@ -1882,6 +1986,8 @@ function checkWordleRow() {
     setTimeout(() => {
         wdlAttempts++; 
         document.getElementById('wordle-attempts').textContent = `Спроби: ${wdlAttempts}/6`;
+        // 🔥 ФІКС: Перевіряємо, чи наступила 4-та спроба, щоб увімкнути кнопку Юри
+        updateWordleHintButtonVisibility();
         
         if(guess === wdlWord) {
             document.getElementById('wordle-active').style.display='none'; document.getElementById('wordle-result').style.display='flex';
