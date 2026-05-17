@@ -465,3 +465,62 @@ body.dark {
     position: relative;
     z-index: 1; 
 }
+/* ====================================================================== */
+/* 💥 АПОКАЛІПТИЧНІ АНІМАЦІЇ ДЛЯ КОЛОСАЛЬНИХ ЛЕВЕЛАПІВ 💥                    */
+/* ====================================================================== */
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* 🔥 1. Пульсація заголовка: Neon + Glow */
+@keyframes neonPulse {
+    0% { transform: scale(1); text-shadow: 0 0 5px var(--primary); }
+    50% { transform: scale(1.08); text-shadow: 0 0 15px var(--primary), 0 0 30px #ff00ea, 0 0 45px #ff00ea; }
+    100% { transform: scale(1); text-shadow: 0 0 5px var(--primary); }
+}
+
+/* 🔥 2. Дика тряска всього модального вікна ( Violent Shake) */
+@keyframes extremeShake {
+    0% { transform: translate(0px, 0px) rotate(0deg); }
+    5% { transform: translate(-8px, 5px) rotate(-2deg); }
+    10% { transform: translate(8px, -5px) rotate(2deg); }
+    15% { transform: translate(-6px, -8px) rotate(-1deg); }
+    20% { transform: translate(6px, 8px) rotate(1deg); }
+    25% { transform: translate(-10px, 0px) rotate(-3deg); }
+    30% { transform: translate(10px, 0px) rotate(3deg); }
+    35% { transform: translate(-4px, 7px) rotate(-1deg); }
+    40% { transform: translate(4px, -7px) rotate(1deg); }
+    45% { transform: translate(0px, 0px) rotate(0deg); } /* пауза */
+    100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+
+/* 🔥 3. Ефект веселки на обводці картки Богині */
+@keyframes rainbowBorder {
+    0%, 100% { border-color: #ec4899; box-shadow: 0 0 20px rgba(236, 72, 153, 0.5); }
+    16% { border-color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
+    33% { border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+    50% { border-color: #10b981; box-shadow: 0 0 25px rgba(16, 185, 129, 0.6); }
+    66% { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+    83% { border-color: #8b5cf6; box-shadow: 0 0 25px rgba(139, 92, 246, 0.6); }
+}
+
+/* 🔥 4. Ефект спалаху екрана (Flash) */
+@keyframes screenFlash {
+    0% { opacity: 0; }
+    10% { opacity: 1; background: white; }
+    100% { opacity: 0; background: transparent; }
+}
+
+/* 🔥 5. Повільне обертання та політ зірок фону Богині */
+@keyframes slowOrbit {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Прибираємо дефолтний принт в HTML і робимо через CSS для краси */
+#lu-card.pop {
+    animation: luCardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.4);
+}
+@keyframes luCardPop {
+    from { transform: scale(0.6) translateY(80px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
