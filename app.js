@@ -207,7 +207,8 @@ const catMoods = {
     happy: "😻",
     sad: "😿",
     crown: "👑🐈",
-    shock: "🙀"
+    shock: "🙀",
+    angry: "😾" // 🔥 ДОДАНО СЮДИ
 };
 
 let catMoodTimer = null;
@@ -219,13 +220,17 @@ function triggerCatReaction(category, mood = 'normal', customText = null) {
     
     if (!bubble) return;
     
+    // 🔥 ФІКС 1: Якщо кіт в образі (карантин), ігноруємо всі інші ігрові репліки, поки Оля його не поцілує
+    if (localStorage.getItem('catQuarantine') === 'true' && category !== 'quarantine') return;
+    
     let text = customText;
     if (!text && catReactions[category]) {
         const pool = catReactions[category];
         text = pool[Math.floor(Math.random() * pool.length)];
     }
     
-    bubble.textContent = text;
+    // 🔥 ФІКС 2: Міняємо textContent на innerHTML, щоб рожева кнопка "Я поцілувала" могла відмалюватися
+    bubble.innerHTML = text;
     bubble.classList.add('show');
     
     if (catIcon && catMoods[mood]) {
@@ -235,6 +240,10 @@ function triggerCatReaction(category, mood = 'normal', customText = null) {
     try { if (typeof playSFX === "function") playSFX(true); } catch(e) {}
     
     clearTimeout(catMoodTimer);
+    
+    // 🔥 ФІКС 3: Якщо це образа (карантин), таймер зникнення НЕ запускаємо! Хмаринка висить вічно
+    if (category === 'quarantine') return;
+    
     // Через 4 секунди ховаємо текст і повертаємо коту початковий вигляд 🐈
     catMoodTimer = setTimeout(() => {
         bubble.classList.remove('show');
@@ -242,12 +251,54 @@ function triggerCatReaction(category, mood = 'normal', customText = null) {
     }, 4000);
 }
 
+// 🔥 ПОКАЗАТИ ХМАРИНКУ ОБИДИ КОТИКА
+function showQuarantineBubble() {
+    const catIcon = document.getElementById('main-cat-icon');
+    if (catIcon) catIcon.textContent = catMoods.angry;
+    
+    const quarantineHtml = `
+        <div style="font-weight: 700; font-size: 0.9rem; line-height: 1.4;">Котик образився за підбір кодів! 😾<br><span style="color:var(--primary);">Щоб розблокувати його, підійди до Юри та палко поцілуй його в щоку! 😘</span></div>
+        <button onclick="unlockCatWithKiss()" style="margin-top:12px; background: linear-gradient(135deg, #ec4899, #f472b6); color:white; border:none; padding:8px 14px; border-radius:10px; font-weight:800; font-size:0.8rem; cursor:pointer; width:100%; box-shadow:0 4px 10px rgba(236,72,153,0.2); transition: 0.2s;">Я поцілувала ❤️</button>
+    `;
+    
+    triggerCatReaction('quarantine', 'angry', quarantineHtml);
+}
+
+// 🔥 ЗНЯТТЯ КАРАНТИНУ ПОЦІЛУНКОМ
+function unlockCatWithKiss() {
+    localStorage.removeItem('catQuarantine');
+    const bubble = document.getElementById('cat-bubble');
+    const catIcon = document.getElementById('main-cat-icon');
+    
+    if (bubble) bubble.classList.remove('show');
+    if (catIcon) catIcon.textContent = catMoods.normal;
+    
+    // Повністю обнуляємо лічильник помилок, щоб Оля могла знову вводити коди
+    userStats.failedCodes = 0;
+    saveStats();
+    
+    showToast("Котик вибачив тебе! 🥰🐾");
+    fireParticles(window.innerWidth/2, window.innerHeight/2, true);
+}
+
 // Функція кліку на кота (слухається твоїх оригінальних умов)
 function pokeCat() {
+    // 🔥 ФІКС 4: Якщо Оля тапає по коту під час образи, знову примусово нагадуємо про поцілунок
+    if (localStorage.getItem('catQuarantine') === 'true') {
+        showQuarantineBubble();
+        return;
+    }
+
     const bubble = document.getElementById('cat-bubble');
-    if (!bubble || bubble.classList.contains('show')) return; // Твій фікс від спам-кліків
+    if (!bubble || bubble.classList.contains('show')) return; 
     
-    // Запускаємо випадкову фразу з твоєї великої бази!
+    // Рахуємо кліки в статистику
+    userStats.catClicks = (userStats.catClicks || 0) + 1;
+    saveStats();
+    
+    // Перевірка секретного досягнення
+    if (userStats.catClicks >= 30) checkAchiev('cat_lover');
+    
     triggerCatReaction('poke', 'happy');
 }
 // --- 🌶️ ЛОГІКА ПІКАНТНОГО РУБИЛЬНИКА ---
@@ -299,7 +350,7 @@ const shopItems = [
     { id: 'hint', name: 'Лупа Шерлока (50/50) 🔍', price: 50, icon: '🔍' },
     { id: 'vip_slang', name: 'VIP: Пікантні фрази 🌶️', price: 1000, icon: '🌶️' },
     { id: 'title_queen', name: 'Титул: Володарка серця 👑', price: 1000, icon: '📜' },
-    { id: 'massage', name: 'Масаж спини', price: 500, icon: '💆‍♀️' },
+    { id: 'massage', name: 'Купон: Масаж від Коханого!', price: 500, icon: '💆‍♀️' },
     { id: 'dinner', name: 'Романтична вечеря', price: 1500, icon: '🍷' },
     { id: 'hug', name: 'Безлімітні обійми на день', price: 200, icon: '🫂' },
     { id: 'day_off', name: 'День без рішень 🧘‍♀️', price: 500, icon: '🧘‍♀️' },
@@ -318,7 +369,8 @@ const bmItems = [
 ];
 
 const wheelPrizes = [
-    { type: 'jackpot', val: '500', msg: 'ДЖЕКПОТ! Масаж спини твій!', icon: '💆‍♀️', name: 'Масаж спини (ДЖЕКПОТ)' },
+    // Було перший рядок: { type: 'jackpot', val: '500', msg: 'ДЖЕКПОТ!  Масаж від Коханого твій', icon: '💆‍♀️', name: 'Масаж киці (ДЖЕКПОТ)' },
+   { type: 'jackpot', val: '500', msg: 'ДЖЕКПОТ! Масаж від Коханого твій! 🙌❤️', icon: '💆‍♀️', name: 'Купон: Масаж від Коханого!' },
     { type: 'xp', val: 20, msg: '+20 🌟! Непогано!' },
     { type: 'xp', val: 0, msg: 'Пусто... Цього разу не пощастило 😢' },
     { type: 'xp', val: 20, msg: '+20 🌟! Непогано!' },
@@ -326,8 +378,8 @@ const wheelPrizes = [
     { type: 'xp', val: 20, msg: '+20 🌟! Непогано!' },
     { type: 'xp', val: 50, msg: '+50 🌟! Ого, ти повернула своє!' },
     { type: 'xp', val: 100, msg: 'КЛАС! +100 🌟!' },
-    { type: 'item', val: '🍫🍬', msg: 'Виграш: Солодощі! Шукай у Купонах!', icon: '🍬', name: 'Смаколики (Рулетка)' },
-    { type: 'item', val: '🎁', msg: 'Виграш: Сюрприз! Шукай у Купонах!', icon: '🎁', name: 'Подарунок-сюрприз (Рулетка)' }
+    { type: 'item', val: '🍫🍬', msg: 'Виграш: Солодощі! Шукай у Купонах!', icon: '🍬', name: 'Смаколики' },
+    { type: 'item', val: '🎁', msg: 'Виграш: Сюрприз! Шукай у Купонах!', icon: '🎁', name: 'Подарунок-сюрприз' }
 ];
 
 const goalPool = {
@@ -337,7 +389,8 @@ const goalPool = {
 };
 
 const achievList = { 
-    first_blood: { icon: "🌱", title: "Перший крок", desc: "Зіграти першу гру", secret: false }, perfect: { icon: "👑", title: "Моя відмінниця", desc: "Пройти квіз без помилок", secret: false }, speed: { icon: "⚡", title: "Швидша за вітер", desc: "Набрати 15+ у спринті", secret: false }, love: { icon: "💘", title: "Справжнє кохання", desc: "Знайти таємну пасхалку", secret: false }, streak3: { icon: "🔥", title: "Капітан Стрік", desc: "Зайти 3 дні підряд", secret: false }, streak7: { icon: "🔥", title: "Тиждень в ділі", desc: "Зайти 7 днів підряд", secret: false }, owl: { icon: "🦉", title: "Нічна пташка", desc: "Вчити слова після 22:00", secret: false }, polyglot: { icon: "🎓", title: "Поліглот", desc: "Зіграти 50 ігор загалом", secret: false }, rich: { icon: "💰", title: "Багачка", desc: "Накопичити 2000 зірочок", secret: false }, shopaholic: { icon: "🛍️", title: "Шопоголік", desc: "Купити 3 товари в магазині", secret: false }, early_bird: { icon: "🌅", title: "Рання пташка", desc: "Зайти в додаток з 05:00 до 09:00", secret: false }, sniper: { icon: "🎯", title: "Снайпер", desc: "15/15 у свайп T/F без помилок", secret: false }, bookworm: { icon: "📚", title: "Книжковий черв'як", desc: "Перегорнути 50 карток", secret: false }, builder: { icon: "🏗️", title: "Будівельник", desc: "Зіграти 10 разів у Конструктор", secret: false }, vocab_king: { icon: "📖", title: "Леді Словник", desc: "Відкрити словник 50 разів", secret: false }, marathon: { icon: "🏃‍♀️", title: "Марафон", desc: "Зіграти 10 ігор за день", secret: false }, survivor: { icon: "🪓", title: "Виживальниця", desc: "СЕКРЕТ! Виграти Шибеницю з 1 ❤️", secret: true }, crafter: { icon: "⛏️", title: "Майстер крафту", desc: "СЕКРЕТ! Конструктор без помилок", secret: true }, ninja: { icon: "🥷", title: "Нічний ніндзя", desc: "СЕКРЕТ! Грати з 01:00 до 04:00", secret: true }, sherlock: { icon: "🕵️‍♀️", title: "Шерлок", desc: "СЕКРЕТ! Знайти 3 промокоди", secret: true }, navigator: { icon: "🚐", title: "Головний штурман", desc: "СЕКРЕТ! Знайти код авто", secret: true }, hacker: { icon: "👨‍💻", title: "Хакер", desc: "СЕКРЕТ! Ввести 3 хибних промокоди", secret: true }, sleeping_beauty: { icon: "😴", title: "Спляча красуня", desc: "СЕКРЕТ! Повернутися через 3 дні", secret: true }, hug_addict: { icon: "🫂", title: "Ненаситна", desc: "СЕКРЕТ! Купити 3 рази обійми", secret: true }, lucky_bastard: { icon: "🍀", title: "Улюблениця фортуни", desc: "СЕКРЕТ! Зірвати джекпот", secret: true }, professor: { icon: "👩‍🏫", title: "Професор", desc: "СЕКРЕТ! Зіграти в усі режими", secret: true }, midnight: { icon: "🕛", title: "Опівнічна магія", desc: "СЕКРЕТ! Зіграти рівно опівночі", secret: true }, lucky7: { icon: "🎰", title: "Щаслива сімка", desc: "СЕКРЕТ! Набрати рівно 7 у Спринті", secret: true }, sweet_tooth: { icon: "🍩", title: "Ласунка", desc: "СЕКРЕТ! Ввести солодкий промокод", secret: true }, boss_killer: { icon: "😈", title: "Переможниця", desc: "СЕКРЕТ! Здати Недільний Іспит", secret: true }
+    first_blood: { icon: "🌱", title: "Перший крок", desc: "Зіграти першу гру", secret: false }, perfect: { icon: "👑", title: "Моя відмінниця", desc: "Пройти квіз без помилок", secret: false }, speed: { icon: "⚡", title: "Швидша за вітер", desc: "Набрати 15+ у спринті", secret: false }, love: { icon: "💘", title: "Справжнє кохання", desc: "Знайти таємну пасхалку", secret: false }, streak3: { icon: "🔥", title: "Капітан Стрік", desc: "Зайти 3 дні підряд", secret: false }, streak7: { icon: "🔥", title: "Тиждень в ділі", desc: "Зайти 7 днів підряд", secret: false }, owl: { icon: "🦉", title: "Нічна пташка", desc: "Вчити слова після 22:00", secret: false }, polyglot: { icon: "🎓", title: "Поліглот", desc: "Зіграти 50 ігор загалом", secret: false }, rich: { icon: "💰", title: "Багачка", desc: "Накопичити 2000 зірочок", secret: false }, shopaholic: { icon: "🛍️", title: "Шопоголік", desc: "Купити 3 товари в магазині", secret: false }, early_bird: { icon: "🌅", title: "Рання пташка", desc: "Зайти в додаток з 05:00 до 09:00", secret: false }, sniper: { icon: "🎯", title: "Снайпер", desc: "15/15 у свайп T/F без помилок", secret: false }, bookworm: { icon: "📚", title: "Книжковий черв'як", desc: "Перегорнути 50 карток", secret: false }, builder: { icon: "🏗️", title: "Будівельник", desc: "Зіграти 10 разів уgrid Конструктор", secret: false }, vocab_king: { icon: "📖", title: "Леді Словник", desc: "Відкрити словник 50 разів", secret: false }, marathon: { icon: "🏃‍♀️", title: "Марафон", desc: "Зіграти 10 ігор за день", secret: false }, survivor: { icon: "🪓", title: "Виживальниця", desc: "СЕКРЕТ! Виграти Шибеницю з 1 ❤️", secret: true }, crafter: { icon: "⛏️", title: "Майстер крафту", desc: "СЕКРЕТ! Reconstruction без помилок", secret: true }, ninja: { icon: "🥷", title: "Нічний ніндзя", desc: "СЕКРЕТ! Грати з 01:00 до 04:00", secret: true }, sherlock: { icon: "🕵️‍♀️", title: "Шерлок", desc: "СЕКРЕТ! Знайти 3 промокоди", secret: true }, navigator: { icon: "🚐", title: "Головний штурман", desc: "СЕКРЕТ! Знайти код авто", secret: true }, hacker: { icon: "👨‍💻", title: "Хакер", desc: "СЕКРЕТ! Ввести 3 хибних промокоди", secret: true }, sleeping_beauty: { icon: "😴", title: "Спляча красуня", desc: "СЕКРЕТ! Повернутися через 3 дні", secret: true }, hug_addict: { icon: "🫂", title: "Ненаситна", desc: "СЕКРЕТ! Купити 3 рази обійми", secret: true }, lucky_bastard: { icon: "🍀", title: "Улюблениця фортуни", desc: "СЕКРЕТ! Зірвати джекпот", secret: true }, professor: { icon: "👩‍🏫", title: "Професор", desc: "СЕКРЕТ! Зіграти в усі режими", secret: true }, midnight: { icon: "🕛", title: "Опівнічна магія", desc: "СЕКРЕТ! Зіграти рівно опівночі", secret: true }, lucky7: { icon: "🎰", title: "Щаслива сімка", desc: "СЕКРЕТ! Набрати рівно 7 у Спринті", secret: true }, sweet_tooth: { icon: "🍩", title: "Ласунка", desc: "СЕКРЕТ! Ввести солодкий промокод", secret: true }, boss_killer: { icon: "😈", title: "Переможниця", desc: "СЕКРЕТ! Здати Недільний Іспит", secret: true },
+    detective: { icon: "🕵️‍♀️", title: "Детектив Оля", desc: "Використати Лупу Шерлока 5 разів", secret: false }, love_historian: { icon: "📜", title: "Колекціонерка щастя", desc: "Накопичити 5 використаних купонів в Архіві", secret: false }, spicy_queen: { icon: "🔥", title: "Гаряча штучка", desc: "Зіграти в ігри з пікантними фразами 10 разів", secret: false }, yura_boy: { icon: "🙋‍♂️", title: "На зв'язку з коханим", desc: "СЕКРЕТ! Спитати підказку в Юри в Сейфі 3 рази", secret: true }, cat_lover: { icon: "🐱❤️", title: "Загладила до дірок", desc: "СЕКРЕТ! Клікнути на котика-помічника 30 разів", secret: true }, goddess_status: { icon: "🪐", title: "Космічна сутність", desc: "СЕКРЕТ! Досягти максимального рівня 'Моя Богиня'", secret: true }
 };
 // Твій рідний масив (залишається БЕЗ змін)
 const levelSystem = [
@@ -350,12 +403,13 @@ const levelSystem = [
 ];
 
 // 🔥 НОВИЙ ОБ'ЄКТ (просто вставляєш його нижче)
+// Конфігурація КОЛОСАЛЬНИХ нагород та УНІКАЛЬНИХ ефектів для кожного рівня
 const levelUpConfig = {
     "Студентка": {
         cat: "🐱🎓",
         desc: "Оля офіційно переходить у статус Студентки! Ти робиш величезні кроки вперед, моя розумничка! Юра пишається твоїми стараннями! 📚",
         rewardText: "🌟 +100 зірочок та 🔍 Лупа Шерлока",
-        fxIntensity: 1,
+        fx: { confetti: 1, flash: false, shake: false, cosmic: false, soundTier: 1 },
         action: () => {
             addXP(100);
             inventory.push({ id: 'hint', name: 'Лупа Шерлока (50/50) 🔍', price: 50, icon: '🔍', uid: Date.now() });
@@ -365,7 +419,7 @@ const levelUpConfig = {
         cat: "🐱💡✨",
         desc: "Вау! Справжня Розумничка! Твій мозок лускає слова як горішки. Коханий просто в шоці від твоєї наполегливості! 🥰",
         rewardText: "🌟 +200 зірочок та 🧊 Заморозка стріку",
-        fxIntensity: 2,
+        fx: { confetti: 2, flash: true, shake: false, cosmic: false, soundTier: 2 },
         action: () => {
             addXP(200);
             inventory.push({ id: 'freeze', name: 'Заморозка стріку ❄️', price: 300, icon: '🧊', uid: Date.now() });
@@ -375,32 +429,32 @@ const levelUpConfig = {
         cat: "🐱💃🕶️",
         desc: "Ти витончена, розумна і неймовірно крута Леді! Англійська тепер звучить з твоїх вуст як справжнє королівське мистецтво. 💋",
         rewardText: "🎁 Купон: Безліміт палких цьомчиків на день!",
-        fxIntensity: 3,
+        fx: { confetti: 3, flash: true, shake: false, cosmic: false, soundTier: 3 },
         action: () => {
             inventory.push({ id: 'unlimit_kisses', name: 'Безліміт палких цьомчиків на день', price: 200, icon: '💋', uid: Date.now() });
         }
     },
     "Королева": {
-        cat: "👑🐱👑",
-        desc: "Схиліть голови! Перед нами Королева знань та абсолютна володарка серця Юри! Твій прогрес — це чиста велич! 👑✨",
-        rewardText: "🛍️ Купон: Професійний масаж всієї спини від Юри!",
-        fxIntensity: 4,
-        action: () => {
-            inventory.push({ id: 'massage', name: 'Масаж спини', price: 500, icon: '💆‍♀️', uid: Date.now() });
-        }
-    },
+    cat: "👑🐱👑",
+    desc: "Схиліть голови! Перед нами Королева знань та абсолютна володарка серця Юри! Твій прогрес — це чиста велич! 👑✨",
+    rewardText: "🛍️ Масаж від Коханого!", // 🔥 Оля бачить у вікні левелапу
+    fx: { confetti: 4, flash: true, shake: 'gentle', cosmic: false, soundTier: 4 },
+    action: () => {
+        // 🔥 В інвентар додається офіційний купон
+        inventory.push({ id: 'massage', name: 'Купон: Масаж від Коханого!', price: 500, icon: '💆‍♀️', uid: Date.now() });
+    }
+},
     "Моя Богиня": {
         cat: "🪐🐱👑🌌",
         desc: "АБСОЛЮТНИЙ КОСМІЧНИЙ ПІЗДЄЦ!!! Оля досягла вершини всесвіту і стала моєю Богинею! Немає слів, ти мій ідеал життя! 🌌❤️‍🔥",
         rewardText: "🏆 +3000 🌟 та 🥇 Золотий Джокер (Будь-яке бажання!)",
-        fxIntensity: 5,
+        fx: { confetti: 5, flash: true, shake: 'violent', cosmic: true, soundTier: 5 },
         action: () => {
             addXP(3000);
             inventory.push({ id: 'golden_coupon', name: '🥇 Золотий Джокер (Будь-яке бажання!)', price: 0, icon: '🥇', uid: Date.now() });
         }
     }
 };
-
 // ==========================================
 // ==========================================
 // 2. ГЛОБАЛЬНИЙ СТАН ТА НАЛАШТУВАННЯ
@@ -559,6 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // 🔥 ОНОВЛЮЄМО ЕКРАН АРХІВУ ОДРАЗУ:
             if (typeof renderArchive === 'function') renderArchive();
+            if (couponArchive.length >= 5) checkAchiev('love_historian');
             
             fireParticles(window.innerWidth/2, window.innerHeight/2, true); 
         };
@@ -615,6 +670,30 @@ function playSFX(correct) {
         gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2); 
         osc.start(); osc.stop(audioCtx.currentTime + 0.2); 
     } 
+}
+// 🔥 СЕКРЕТНА МАЖОРНА МЕЛОДІЯ ДЛЯ ТИТУЛІВ
+function playLevelUpMelody() {
+    if (!window.AudioContext && !window.webkitAudioContext) return;
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const notes = [523.25, 659.25, 783.99, 1046.50]; // Ноти: До-Мі-Соль-До (чистий мажор)
+    notes.forEach((freq, index) => {
+        setTimeout(() => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+        }, index * 120); // кожна нота грає з відривом в 120мс
+    });
 }
 
 function fireParticles(x, y, cor) { 
@@ -701,6 +780,10 @@ function initGamification() {
     if(hour >= 5 && hour < 9) checkAchiev('early_bird');
     
     updateUI(); renderShop(); renderInventory(); renderAchievs();
+// 🔥 ПЕРЕВІРКА КАРАНТИНУ ПРИ СТАРТІ: Якщо кота не поцілували, він вилітає злісним знову
+    if (localStorage.getItem('catQuarantine') === 'true') {
+        setTimeout(showQuarantineBubble, 600); // невелика затримка для плавного рендеру
+    }
 }
 
 function updateUI() {
@@ -836,7 +919,12 @@ function checkGoals() {
 
 function gameFinished(perfect = false, type = 'games', score = 0) {
     if(type === 'boss') return; 
-    dailyProg.games++; userStats.totalGames = (userStats.totalGames || 0) + 1;
+    dailyProg.games++; // 🔥 ФІКС: Рахуємо пікантні ігри для ачівки "Гаряча штучка"
+    if (spicyInGames && type !== 'games' && type !== 'boss') {
+        userStats.spicyGamesCount = (userStats.spicyGamesCount || 0) + 1;
+        saveStats();
+        if (userStats.spicyGamesCount >= 10) checkAchiev('spicy_queen');
+    }userStats.totalGames = (userStats.totalGames || 0) + 1;
     if(!userStats.modes) userStats.modes = [];
     if(!userStats.modes.includes(type) && type !== 'games') { userStats.modes.push(type); if(userStats.modes.length >= 8) checkAchiev('professor'); }
     if(type === 'constructor') { userStats.constructorGames = (userStats.constructorGames || 0) + 1; if(userStats.constructorGames >= 10) checkAchiev('builder'); }
@@ -1092,12 +1180,45 @@ function enterPromo() {
     else if(code === 'OLYA') { addXP(200); alert("Найкраща дівчинка на всьому світі 😘 +200 🌟"); ok=true; }
     else if(code === 'FOREVER') { addXP(500); alert("+500 🌟 за моє кохання!"); ok=true; }
     else if(code === 'SMILE') { addXP(100); alert("Твоя посмішка робить мій день яскравішим! +100 🌟"); ok=true; }
-    else if(code === 'MYQUEEN') { inventory.push({ id:'p2', name:'Масаж спини', price:0, icon:'💆‍♀️', uid:Date.now() }); addXP(50); ok=true; alert("Масаж та зірочки твої 👑"); }
+    else if(code === 'MYQUEEN') { 
+    // 🔥 Нараховуємо купон у базу
+    inventory.push({ id:'p2', name:'Купон: Масаж від Коханого!', price:0, icon:'💆‍♀️', uid:Date.now() }); 
+    addXP(50); 
+    ok=true; 
+    // 🔥 Текст у віконці (смс) — чистий та емоційний:
+    alert("Масаж від Коханого та зірочки твої, моя Королево! 👑"); 
+}
     else if(code === 'BESTGIRL') { addXP(300); ok=true; alert("+300 🌟"); }
     else if(code === 'KISSME') { inventory.push({ id:'p4', name:'100 поцілунків', price:0, icon:'😘', uid:Date.now() }); ok=true; alert("Купон додано! 🎁"); }
     else if(code === 'LOVEYOUMORE' || code === 'LOVEYOUSTRONGER') { addXP(300); ok=true; alert("А я тебе ще дужче! +300 🌟"); }
     else if(code === 'CAR') { inventory.push({ id:'p_car', name:'Романтична поїздка за місто', price:0, icon:'🚐', uid:Date.now() }); ok=true; checkAchiev('navigator'); alert("Головний штурман знайдений! 🚐"); }
     else if(code === 'CHOCOLATE') { inventory.push({ id:'p_choc', name:'Кіндер або Шоколадка', price:0, icon:'🍫', uid:Date.now() }); ok=true; checkAchiev('sweet_tooth'); alert("Солодке життя! 🍫"); }
+    else if(code === 'COFFEE') { 
+        inventory.push({ id:'coffee_bed', name:'Кава/Чай у ліжко ☕', price:0, icon:'☕', uid:Date.now() }); 
+        ok=true; 
+        alert("Ням! Кава вже закипає, біжу нести її моїй королеві в ліжечко! ☕🛌"); 
+    }
+    else if(code === 'KITTEN') { 
+        inventory.push({ id:'hug', name:'Безлімітні обійми на день', price:0, icon:'🫂', uid:Date.now() }); 
+        addXP(100); 
+        ok=true; 
+        alert("Котикові обійми активовано! Муррр... +100 🌟 та обіймашки твої! 🐾🫂"); 
+    }
+    else if(code === 'DINNER') { 
+        inventory.push({ id:'dinner', name:'Купон: Масаж від Коханого!', price:0, icon:'💆‍♀️', uid:Date.now() }); 
+        ok=true; 
+        alert("Опа, королівський приз! Готуй спинку, Масаж від Коханого активовано за кодом! 💆‍♀️❤️"); 
+    }
+    else if(code === 'SPICY2026') { 
+        addXP(500); 
+        ok=true; 
+        alert("Оу, хтось налаштований дуже гаряче... 😏🔥 Тримай +500 🌟 для Чорного Ринку! Чекаю ввечері... 🌶️"); 
+    }
+    else if(code === 'YURASLOVE') { 
+        addXP(1000); 
+        ok=true; 
+        alert("Моє кохання до тебе безмежне! Тримай космічний запас зірочок: +1000 🌟! 🌌❤️"); 
+    }
     
     if(ok) {
         usedCodes.push(code); localStorage.setItem('usedCodes', JSON.stringify(usedCodes));
@@ -1108,6 +1229,12 @@ function enterPromo() {
         alert("Невірний код! Спробуй ще раз."); 
         userStats.failedCodes = (userStats.failedCodes || 0) + 1; saveStats();
         if(userStats.failedCodes >= 3) checkAchiev('hacker');
+        
+        // 🔥 АНТИ-ХАКЕР: Кожні 3 помилкові спроби (3, 6, 9...) котик йде в жорсткий ігнор
+        if (userStats.failedCodes % 3 === 0) {
+            localStorage.setItem('catQuarantine', 'true');
+            showQuarantineBubble();
+        }
     }
 }
 
@@ -1133,13 +1260,14 @@ function spinWheel() {
     const wheel = document.getElementById('spin-wheel');
     const r = Math.random(); let prizeIndex;
 
-    if (r < 0.01) { prizeIndex = 0; } 
-    else if (r < 0.10) { prizeIndex = 8; } 
-    else if (r < 0.20) { prizeIndex = 7; } 
-    else if (r < 0.35) { prizeIndex = 6; } 
-    else if (r < 0.60) { prizeIndex = [1, 3, 5][Math.floor(Math.random()*3)]; } 
-    else if (r < 0.95) { prizeIndex = [2, 4][Math.floor(Math.random()*2)]; } 
-    else { prizeIndex = 9; } 
+    // 🔥 ОНОВЛЕНА ПІДКРУТКА: Шанс "Пусто" встановлено чітко на 20%
+    if (r < 0.05) { prizeIndex = 0; }                                    // 👑 ДЖЕКПОТ (Масаж від Коханого!) — 5%
+    else if (r < 0.20) { prizeIndex = 8; }                               // 🍬 Смаколики у купони — 15%
+    else if (r < 0.30) { prizeIndex = 9; }                               // 🎁 Подарунок-сюрприз — 10%
+    else if (r < 0.40) { prizeIndex = 7; }                               // 🚀 КЛАС! +100 зірочок — 10%
+    else if (r < 0.60) { prizeIndex = 6; }                               // ⚖️ +50 зірочок (Повернула своє) — 20%
+    else if (r < 0.80) { prizeIndex = [1, 3, 5][Math.floor(Math.random()*3)]; } // 🔋 +20 зірочок (Невеликий мінус) — 20%
+    else { prizeIndex = [2, 4][Math.floor(Math.random()*2)]; }           // 😢 Пусто (0 зірочок) — рівно 20%!
 
     const sectorAngle = 36; const randomOffset = 5 + Math.random() * 26; 
     const targetDegree = (prizeIndex * sectorAngle) + randomOffset;
@@ -1462,9 +1590,15 @@ function useSherlockHint() {
         }
     }
 
-    // Витрачаємо лупу
+   // Витрачаємо лупу
     inventory.splice(hintIdx, 1);
     localStorage.setItem('userInventory', JSON.stringify(inventory));
+    
+    // 🔥 ДОДАЄМО СЮДИ: Рахуємо використання лупи для ачівки "Детектив Оля"
+    userStats.sherlockUsed = (userStats.sherlockUsed || 0) + 1;
+    saveStats();
+    if (userStats.sherlockUsed >= 5) checkAchiev('detective');
+    
     renderInventory();
     updateUI();
     showToast("🔍 Шерлок допоміг!");
@@ -1869,7 +2003,11 @@ function askYuraHint() {
     // 3. Списуємо оплату
     addXP(-20);
     
-    // Беремо залізобетонно правильну літеру для цієї позиції
+    // 🔥 ДОДАЄМО СЮДИ: Рахуємо підказки Юри
+    userStats.yuraHintsUsed = (userStats.yuraHintsUsed || 0) + 1;
+    saveStats();
+    if (userStats.yuraHintsUsed >= 3) checkAchiev('yura_boy');
+    
     const correctLetter = wdlWord[col];
     
     // Вставляємо її в буфер рядка та миттєво перемальовуємо клітинку на екрані
@@ -2227,34 +2365,116 @@ function updateLoveMilestones() {
             : `Залишилось: ${daysLeft} днів ⏳`;
     }
 }
-// 🔥 ГЕНЕРАТОР ШАЛЕНИХ ЕФЕКТІВ ЛЕВЕЛАПУ
-function runLevelUpFX(intensity) {
+// 🔥 ГЕНЕРАТОР КОЛОСАЛЬНИХ ТА УНІКАЛЬНИХ ЕФЕКТІВ ЛЕВЕЛАПУ
+function runColossalLevelUpFX(tier, fxConfig) {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
+    const modal = document.getElementById('levelup-modal');
+    const card = document.getElementById('lu-card');
+    const cat = document.getElementById('lu-cat-emoji');
+    const title = document.querySelector('#lu-card div[style*=" НОВИЙ ТИТУЛ"]');
+
+    if (!modal || !card) return;
+
+    // Скидаємо всі стилі картки з попередніх разів
+    card.style.animation = "";
+    card.style.border = "3px solid var(--primary)";
+    card.style.transition = "";
+    card.className = "pop"; // Додаємо клас появи
+    if (cat) cat.style.transform = "";
+
+    // 💣 ЕФЕКТ БОГИНІ: КОСМІЧНИЙ ПІЗДЄЦ 💣
+    if (fxConfig.cosmic) {
+        modal.style.transition = "background 2s ease";
+        modal.style.background = "black"; // робимо фон вугільним
+        
+        const cosmicBg = document.getElementById('lu-cosmic-bg');
+        if (cosmicBg) {
+            cosmicBg.style.display = 'block';
+            cosmicBg.innerHTML = '';
+            
+            // 🚀 Створюємо JS-двигуном лавину зірокфону
+            const frag = document.createDocumentFragment();
+            for(let i=0; i<80; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
+                star.style.backgroundColor = 'white';
+                star.style.borderRadius = '50%';
+                star.style.boxShadow = `0 0 ${Math.random() * 4 + 2}px white`;
+                star.style.opacity = Math.random();
+                if(Math.random() < 0.2) star.style.animation = `slowOrbit ${Math.random() * 20 + 30}s infinite linear`;
+                frag.appendChild(star);
+            }
+            cosmicBg.appendChild(frag);
+        }
+
+        // 🌈 Накладаємо веселку на обводку картки
+        card.style.animation = "rainbowBorder 3s infinite linear";
+        
+        // ✨ Робимо заголовок неоновим
+        if(title) {
+            title.style.color = "#ec4899";
+            title.style.animation = "neonPulse 1s infinite";
+        }
+
+        // 🐱 Кіт збільшується і починає шалено крутитися
+        if (cat) {
+            setTimeout(() => {
+                cat.style.transition = "transform 3s cubic-bezier(0.19, 1, 0.22, 1)";
+                cat.style.transform = "scale(1.4) rotate(720deg)";
+            }, 500);
+        }
+    }
+
+    // 🚨 ЕФЕКТ ТРЯСКИ (Gentle / Violent)
+    if (fxConfig.shake) {
+        if (fxConfig.shake === 'gentle') {
+            modal.style.animation = "shake 0.3s"; // один раз
+        } else if (fxConfig.shake === 'violent') {
+            // Дика, безперервна тряска
+            modal.style.animation = "extremeShake 0.4s infinite";
+            setTimeout(() => modal.style.animation = "", 2500); // зупиняємо через 2.5с
+        }
+    }
+
+    // ⚡ ЕФЕКТ СПАЛАХУ ЕКРАНА (Flash)
+    if (fxConfig.flash) {
+        const flash = document.createElement('div');
+        flash.style.position = 'fixed';
+        flash.style.top = flash.style.left = 0;
+        flash.style.width = flash.style.height = '100%';
+        flash.style.zIndex = "999999";
+        flash.style.animation = "screenFlash 0.3s ease-out";
+        flash.style.pointerEvents = "none";
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 400);
+    }
+
+    // 🎉 ЛАВИНА ЧАСТИНОК (Залежить від Confetti)
+    let bursts = fxConfig.confetti * 5;
+    let particlesPerBurst = fxConfig.confetti * 15;
     
-    // Визначаємо набір емодзі залежно від жорсткості рівня
+    // Визначаємо емодзі для цього рівня
     let emojis = ['🌟', '💖', '✨', '⭐'];
-    if (intensity >= 3) emojis.push('💋', '👄', '🔥');
-    if (intensity >= 4) emojis.push('👑', '🥇', '🥰');
-    if (intensity >= 5) emojis.push('🪐', '🌌', '🚀', '👑', '❤️‍🔥');
+    if (tier === "Леді") emojis.push('💋', '👄', '🔥');
+    if (tier === "Королева") emojis.push('👑', '🥇', '🥰');
+    if (fxConfig.cosmic) emojis.push('🪐', '🌌', '❤️‍🔥');
 
-    let bursts = intensity * 4; // Скільки залпів вибухів робити
-    let pCount = intensity * 15; // Скільки частинок у кожному залпі
-
-    // Функція поодинокого вибуху в конкретній точці
     const explode = (x, y) => {
         const frag = document.createDocumentFragment();
-        for(let i=0; i<pCount; i++) {
+        for(let i=0; i<particlesPerBurst; i++) {
             const p = document.createElement('div');
             p.className = 'particle';
             p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-            p.style.left = x + 'px';
-            p.style.top = y + 'px';
-            p.style.fontSize = (Math.random() * (15 * intensity) + 20) + 'px';
+            p.style.left = x + 'px'; p.style.top = y + 'px';
+            p.style.fontSize = (Math.random() * 20 + (5 * fxConfig.confetti)) + 'px';
             p.style.zIndex = "999999";
             
             const angle = Math.random() * Math.PI * 2;
-            const dist = Math.random() * (120 * intensity) + 60;
+            const dist = Math.random() * (120 + (fxConfig.confetti * 20)) + 60;
             p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
             p.style.setProperty('--ty', Math.sin(angle) * dist - 80 + 'px');
             p.style.animationDuration = (Math.random() * 0.5 + 0.7) + 's';
@@ -2271,74 +2491,68 @@ function runLevelUpFX(intensity) {
             let rx = Math.random() * (screenWidth - 100) + 50;
             let ry = Math.random() * (screenHeight - 100) + 50;
             explode(rx, ry);
+            // Програємо звичайний звук вибуху конфеті
             try { if (typeof playSFX === "function") playSFX(true); } catch(e){}
-        }, b * 200);
+        }, b * (150 - (fxConfig.confetti * 10)));
     }
 
-    // 💣 НАЙВИЩИЙ РІВЕНЬ: ПІЗДЄЦ-РЕЖИМ ДЛЯ БОГИНІ (intensity === 5)
-    if (intensity === 5) {
-        const container = document.getElementById('app-container');
-        const card = document.getElementById('lu-card');
-        
-        // 1. Дика тряска всього додатка
-        if (container) {
-            container.style.animation = "shake 0.5s infinite";
-            setTimeout(() => container.style.animation = "", 2500);
-        }
-        
-        // 2. Кіт починає шалено крутитися і пульсувати
-        const cat = document.getElementById('lu-cat-emoji');
-        if (cat) {
-            cat.style.transform = "scale(1.5) rotate(360deg)";
-            cat.style.transition = "transform 2s ease-out";
-        }
-
-        // 3. Додаткові спалахи екрану емодзі кожні 100мс
-        for (let k = 0; k < 30; k++) {
-            setTimeout(() => {
-                explode(Math.random() * screenWidth, Math.random() * screenHeight);
-            }, k * 100);
-        }
-    }
+    // 🔥 ДОДАНА МЕЛОДІЯ: Грає 1 раз суто при підвищенні титулу Олі!
+    try { playLevelUpMelody(); } catch(e){}
 }
 
-// 🔥 ВІДКРИТТЯ ЕКРАНА ЛЕВЕЛАПУ
 function triggerLevelUpModal(levelName) {
     const config = levelUpConfig[levelName];
-    if (!config) return; // Запобіжник для початкового рівня "Кошеня"
+    if (!config) return; 
+
+    // 🔥 ДОДАЄМО СЮДИ: Перевірка секретного досягнення для максимального рівня
+    if (levelName === "Моя Богиня") checkAchiev('goddess_status');
 
     document.getElementById('lu-level-name').textContent = levelName;
     document.getElementById('lu-cat-emoji').textContent = config.cat;
     document.getElementById('lu-text').textContent = config.desc;
     document.getElementById('lu-reward-text').textContent = config.rewardText;
 
-    // Показуємо вікно
     const modal = document.getElementById('levelup-modal');
     if (modal) modal.style.display = 'flex';
 
-    // Запускаємо спецефекти!
-    runLevelUpFX(config.fxIntensity);
+    // 🔥 ЗАПУСКАЄМО ШАЛЕНІ ЕФЕКТИ
+    runColossalLevelUpFX(levelName, config.fx);
     
-    // Активуємо призи (додаємо купони / зірки)
     config.action();
-    
-    // Синхронізуємо купони та UI в фоні
     localStorage.setItem('userInventory', JSON.stringify(inventory));
     if (typeof renderInventory === 'function') renderInventory();
     if (typeof updateUI === 'function') updateUI();
 }
-
 // 🔥 ЗАКРИТТЯ ЕКРАНА ЛЕВЕЛАПУ
 function closeLevelUpModal() {
     const modal = document.getElementById('levelup-modal');
     if (modal) modal.style.display = 'none';
     
-    // Скидаємо трансформацію кота до норми
-    const cat = document.getElementById('lu-cat-emoji');
-    if (cat) cat.style.transform = "scale(1) rotate(0deg)";
+    // 🔥 ФІКС: Скидаємо дикі ефекти Богині
+    const luCard = document.getElementById('lu-card');
+    if (luCard) {
+        luCard.style.animation = ""; // прибираємо веселку
+        luCard.style.border = "";
+        luCard.className = ""; // прибираємо появу
+    }
     
-    // Робимо фінальний перезапуск UI
-    location.reload(); // Перезавантаження оновить стрік, рівні й почистить кеш ефектів
+    const cat = document.getElementById('lu-cat-emoji');
+    if (cat) {
+        cat.style.transform = ""; // прибираємо збільшення і обертання кота
+        cat.style.transition = "";
+    }
+    
+    const cosmicBg = document.getElementById('lu-cosmic-bg');
+    if(cosmicBg) {
+        cosmicBg.style.display = 'none';
+        cosmicBg.innerHTML = '';
+    }
+
+    // Скидаємо фон модалки
+    modal.style.background = "rgba(0,0,0,0.85)";
+    modal.style.transition = "";
+    
+    location.reload(); 
 }
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
 function exportProgress() { 
