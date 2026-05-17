@@ -125,71 +125,131 @@ const sentences = [
 ];
 
 // --- ФРАЗИ ДЛЯ КИТІ-ПОМІЧНИКА (ВІД ЛИЦЯ ЮРИ) ---
-const catTips = [
-    // Прямі зізнання та романтика
-    "Кицюню, не забудь усміхнутися, я тебе дуже-дуже кохаю! 🥰",
-    "Сумуєш за мною? Бо я за тобою просто неймовірно сумую... 🥺",
-    "Ти — моє найбільше щастя. Твій Юра. ❤️",
-    "Що б ти не робила, пам'ятай: я завжди поруч і у всьому тебе підтримую! 🫂",
-    "Моя найкраща в світі дівчинка, ти сьогодні просто сяєш! ✨",
-    "Мяу! Юра просив передати тобі мільйон поцілунків! 😘",
-    "Я кохаю тебе від Землі і до найдальшої зірки! 🌌",
-    "Твоя посмішка — це найкраще, що є в моєму житті. Усміхнись! 😍",
-    "Знаєш, про що я зараз думаю? Про тебе. Як і завжди. ❤️",
-    "Кожне твоє повідомлення робить мій день кращим. Кохаю тебе! 💌",
-    "Навіть цей віртуальний котик знає, що я без тебе не можу! 🐾",
-    "Ти моє маленьке диво. Ніколи про це не забувай! ✨",
-    "Якби за кожну думку про тебе мені давали зірочку, я б уже скупив весь магазин! 🌟",
-    "Я обожнюю твої очі, твій сміх і те, як ти стараєшся! 🥰",
+// ==========================================
+// 🔥 ОБ'ЄДНАНИЙ РОЗУМНИЙ ДВИГУН КОТИКА
+// ==========================================
+const catReactions = {
+    // 🐾 Твій оригінальний гігантський масив перенесено сюди повністю:
+    poke: [
+        // Прямі зізнання та романтика
+        "Кицюню, не забудь усміхнутися, я тебе дуже-дуже кохаю! 🥰",
+        "Сумуєш за мною? Бо я за тобою просто неймовірно сумую... 🥺",
+        "Ти — моє найбільше щастя. Твій Юра. ❤️",
+        "Що б ти не робила, пам'ятай: я завжди поруч і у всьому тебе підтримую! 🫂",
+        "Моя найкраща в світі дівчинка, ти сьогодні просто сяєш! ✨",
+        "Мяу! Юра просив передати тобі мільйон поцілунків! 😘",
+        "Я кохаю тебе від Землі і до найдальшої зірки! 🌌",
+        "Твоя посмішка — це найкраще, що є в моєму житті. Усміхнись! 😍",
+        "Знаєш, про що я зараз думаю? Про тебе. Як і завжди. ❤️",
+        "Кожне твоє повідомлення робить мій день кращим. Кохаю тебе! 💌",
+        "Навіть цей віртуальний котик знає, що я без тебе не можу! 🐾",
+        "Ти моє маленьке диво. Ніколи про це не забувай! ✨",
+        "Якби за кожну думку про тебе мені давали зірочку, я б уже скупив весь магазин! 🌟",
+        "Я обожнюю твої очі, твій сміх і те, як ти стараєшся! 🥰",
 
-    // Турбота про неї
-    "Сонце моє, ти сьогодні добре їла? Не забувай берегти себе! 🍲",
-    "Відпочинь трошки, якщо втомилася. Я тебе дуже люблю! 💆‍♀️",
-    "Нехай твій сьогоднішній день буде таким же прекрасним, як і ти! ☀️",
-    "Одягайся тепліше і пам'ятай, що я тебе грію своїм коханням! 🧣",
-    "Не переживай через дрібниці, ми з усім впораємося разом. 🤝",
+        // Турбота про неї
+        "Сонце моє, ти сьогодні добре їла? Не забувай берегти себе! 🍲",
+        "Відпочинь трошки, якщо втомилася. Я тебе дуже люблю! 💆‍♀️",
+        "Нехай твій сьогоднішній день буде таким же прекрасним, як і ти! ☀️",
+        "Одягайся тепліше і пам'ятай, що я тебе грію своїм коханням! 🧣",
+        "Не переживай через дрібниці, ми з усім впораємося разом. 🤝",
 
-    // Потужна мотивація
-    "Моя розумничка! Я так пишаюся тобою 🥰",
-    "Ти здатна на все, а я завжди буду поруч, щоб допомогти! 🚀",
-    "Навіть якщо щось не виходить з першого разу, ти для мене найкраща! 💖",
-    "Кожен твій крок вперед — це наша маленька спільна перемога! 🥇",
-    "Немає нічого неможливого для такої цілеспрямованої дівчинки! 🔥",
-    "Твоя наполегливість мене просто захоплює. Ти мій ідеал! 💫",
-    "Пам'ятай: головне не швидкість, а те, що ти не зупиняєшся. А я завжди тримаю тебе за руку! 🤝",
-    "Вір у себе так само сильно, як я вірю в тебе! 🌟",
-    "Ще кілька кроків, моя солодка, і ти досягнеш всього, чого забажаєш! 🎯",
-    "Мурр... Юра сказав, що за твої старання дасть тобі справжній поцілунок! 💋",
-    "Помилятися — це нормально, манюня. Головне йти далі! 💪",
+        // Потужна мотивація
+        "Моя розумничка! Я так пишаюся тобою 🥰",
+        "Ти здатна на все, а я завжди буду поруч, щоб допомогти! 🚀",
+        "Навіть якщо щось не виходить з першого разу, ти для мене найкраща! 💖",
+        "Кожен твій крок вперед — це наша маленька спільна перемога! 🥇",
+        "Немає нічого неможливого для такої цілеспрямованої дівчинки! 🔥",
+        "Твоя наполегливість мене просто захоплює. Ти мій ідеал! 💫",
+        "Пам'ятай: головне не швидкість, а те, що ти не зупиняєшся. А я завжди тримаю тебе за руку! 🤝",
+        "Вір у себе так само сильно, як я вірю в тебе! 🌟",
+        "Ще кілька кроків, моя солодка, і ти досягнеш всього, чого забажаєш! 🎯",
+        "Мурр... Юра сказал, що за твої старання дасть тобі справжній поцілунок! 💋",
+        "Помилятися — це нормально, манюня. Головне йти далі! 💪",
 
-    // Ігрові підказки з любов'ю
-    "Твій коханий хлопчик замовив тобі подарунок. Покрути рулетку! 🎁",
-    "Я сховав для тебе секретні коди... Напиши мені, якщо хочеш підказку! 🕵️‍♀️",
-    "Заглянь у Магазин, моя королево, там можна купити мої обійми! 🛍️",
-    "Не забувай про 'Роботу над помилками', моя квіточко! 🧠",
-    "Зробимо швидкий 'Спринт'? Я вболіваю за тебе! ⏱️",
-    "Тс-с... Кажуть, по п'ятницях я відкриваю для тебе Чорний Ринок... 🕶️",
-    "Збери всі щоденні цілі, щоб я міг тобою ще більше пишатися! 🏆",
-    "Зіграй у 'Сейф', уяви, що пароль — це шлях до мого серденька (хоча він і так твій)! 🔐",
-    "Заглянь у Словник, я додав туди твої улюблені смаколики! 🍩",
-    "Бачиш ту кнопочку з купонами? Там є дещо цікаве для нас двох... 😉"
-];
-
-function pokeCat() {
-    const bubble = document.getElementById('cat-bubble');
-    if (!bubble) return;
-    if (bubble.classList.contains('show')) return;
+        // Ігрові підказки з любов'ю
+        "Твій коханий хлопчик замовив тобі подарунок. Покрути рулетку! 🎁",
+        "Я сховав для тебе секретні коди... Напиши мені, якщо хочеш підказку! 🕵️‍♀️",
+        "Заглянь у Магазин, моя королево, там можна купити мої обійми! 🛍️",
+        "Не забувай про 'Роботу над помилками', моя квіточко! 🧠",
+        "Зробимо швидкий 'Спринт'? Я вболіваю за тебе! ⏱️",
+        "Тс-с... Кажуть, по п'ятницях я відкриваю для тебе Чорний Ринок... 🕶️",
+        "Збери всі щоденні цілі, щоб я міг тобою ще більше пишатися! 🏆",
+        "Зіграй у 'Сейф', уяви, що пароль — це шлях до мого серденька (хоча він і так твій)! 🔐",
+        "Заглянь у Словник, я додав туди твої улюблені смаколики! 🍩",
+        "Бачиш ту кнопочку з купонами? Там є дещо цікаве для нас двох... 😉"
+    ],
     
-    bubble.textContent = catTips[Math.floor(Math.random() * catTips.length)];
+    // Автоматичні реакції на події:
+    boss_lose: [
+        "Не сумуй, Юра все одно вважає тебе найкращою! 🫂",
+        "Ех, цей Бос просто бука... Але ти все одно моя найрозумніша розумничка! ❤️",
+        "Нічого, манюня, наступного разу ми розірвемо цього Боса на шматки! 🐾"
+    ],
+    boss_win: [
+        "УРА-А-А! Ми зробили це! Ти просто знищила цього Боса! 😈👑",
+        "Моя королева розгромила іспит! Юра тобою неймовірно пишається! 🏆❤️"
+    ],
+    sprint_record: [
+        "ОГО! Новий рекорд! Ти просто космос, моя Королева Спринту! ⚡👑",
+        "Швидша за блискавку! Юра в шоці від твоєї крутості! 🏎️💨",
+        "Нічого собі швидкість! Тримай корону, ти її чесно заслужила! 👑"
+    ],
+    game_perfect: [
+        "Ідеально! Жодної помилки! Ти просто геній, Олюся! 🧠✨",
+        "Чиста перемога! Юра каже, що за такий раунд належить справжній великий цьом! 💋"
+    ]
+};
+
+// Стан котячих мордочок
+const catMoods = {
+    normal: "🐈",
+    happy: "😻",
+    sad: "😿",
+    crown: "👑🐈",
+    shock: "🙀"
+};
+
+let catMoodTimer = null;
+
+// Головна керуюча функція хмаринки та емодзі
+function triggerCatReaction(category, mood = 'normal', customText = null) {
+    const bubble = document.getElementById('cat-bubble');
+    const catIcon = document.getElementById('main-cat-icon');
+    
+    if (!bubble) return;
+    
+    let text = customText;
+    if (!text && catReactions[category]) {
+        const pool = catReactions[category];
+        text = pool[Math.floor(Math.random() * pool.length)];
+    }
+    
+    bubble.textContent = text;
     bubble.classList.add('show');
     
-    try { 
-        if (typeof playSFX === "function") playSFX(true); 
-    } catch(e) {}
+    if (catIcon && catMoods[mood]) {
+        catIcon.textContent = catMoods[mood];
+    }
     
-    setTimeout(() => bubble.classList.remove('show'), 4000);
+    try { if (typeof playSFX === "function") playSFX(true); } catch(e) {}
+    
+    clearTimeout(catMoodTimer);
+    // Через 4 секунди ховаємо текст і повертаємо коту початковий вигляд 🐈
+    catMoodTimer = setTimeout(() => {
+        bubble.classList.remove('show');
+        if (catIcon) catIcon.textContent = catMoods.normal;
+    }, 4000);
 }
 
+// Функція кліку на кота (слухається твоїх оригінальних умов)
+function pokeCat() {
+    const bubble = document.getElementById('cat-bubble');
+    if (!bubble || bubble.classList.contains('show')) return; // Твій фікс від спам-кліків
+    
+    // Запускаємо випадкову фразу з твоєї великої бази!
+    triggerCatReaction('poke', 'happy');
+}
 // --- 🌶️ ЛОГІКА ПІКАНТНОГО РУБИЛЬНИКА ---
 let spicyInGames = localStorage.getItem('spicyInGames') === 'true';
 
@@ -1282,8 +1342,27 @@ let sprTime=60, sprScore=0, sprQ=[], sprLock=false;
 function startSprint() { const voc = filterMasteryWords(getVocab()); if(voc.length<4){alert("Замало слів!"); return;} showSection('sprint'); document.getElementById('sprint-result').style.display='none'; document.getElementById('sprint-active').style.display='flex'; sprTime=60; sprScore=0; sprQ=shuffleArray(voc); updSpr(); clearInterval(sprintTimerInterval); sprintTimerInterval=setInterval(()=>{sprTime--; updSpr(); if(sprTime<=0) endSpr();},1000); loadSpr(); }
 function updSpr() { document.getElementById('sprint-time-text').textContent=sprTime; document.getElementById('sprint-score-text').textContent=sprScore; let b=document.getElementById('sprint-bar'); b.style.width=Math.max(0,(sprTime/60)*100)+"%"; if(sprTime<15) b.classList.add('low'); else b.classList.remove('low'); }
 function loadSpr() { sprLock = false; let w=sprQ[Math.floor(Math.random()*sprQ.length)]; document.getElementById('sprint-question').innerHTML=`<div style="font-size:3rem;">${w.em}</div>`+w.uk; const o=shuffleArray([w,...shuffleArray(getGameWords().filter(x=>x.en!==w.en)).slice(0,3)]); const c=document.getElementById('sprint-options'); c.innerHTML=''; o.forEach(opt=>{ const b=document.createElement('button'); b.className='option-btn'; b.textContent=opt.en; b.onclick=(e)=>{ if(sprLock) return; sprLock = true; const cor=opt.en===w.en; fireParticles(e.clientX, e.clientY, cor); if(cor){sprScore++; addXP(1); sprTime=Math.min(sprTime+1,60);}else{sprTime=Math.max(sprTime-2,0); trackMistake(w);} updSpr(); if(sprTime>0) setTimeout(loadSpr, 150); else endSpr(); }; c.appendChild(b); }); }
-function endSpr() { clearInterval(sprintTimerInterval); document.getElementById('sprint-active').style.display='none'; document.getElementById('sprint-result').style.display='flex'; document.getElementById('sprint-final-score').textContent=sprScore; if(sprScore>bestSprint){bestSprint=sprScore; localStorage.setItem('sprintRecord',bestSprint); document.getElementById('sprint-badge').textContent=bestSprint; checkAchiev('speed');} gameFinished(false, 'sprint', sprScore); }
-
+function endSpr() { 
+    clearInterval(sprintTimerInterval); 
+    document.getElementById('sprint-active').style.display = 'none'; 
+    document.getElementById('sprint-result').style.display = 'flex'; 
+    document.getElementById('sprint-final-score').textContent = sprScore; 
+    
+    if(sprScore > bestSprint) {
+        bestSprint = sprScore; 
+        localStorage.setItem('sprintRecord', bestSprint); 
+        document.getElementById('sprint-badge').textContent = bestSprint; 
+        checkAchiev('speed');
+        
+        // 🔥 АВТО-РЕАКЦІЯ: Коронація котика за новий рекорд Олі!
+        setTimeout(() => {
+            if (typeof triggerCatReaction === 'function') {
+                triggerCatReaction('sprint_record', 'crown');
+            }
+        }, 400);
+    } 
+    gameFinished(false, 'sprint', sprScore); 
+}
 let sQ=[], sIdx=0, sSco=0, sTar="", sCur=[], sLet=[], spellLock=false;
 function startSpelling() { const voc = getVocab().filter(w => /^[a-zA-Z]+$/.test(w.en)); if(voc.length === 0){ alert("Немає слів!"); return;} showSection('spelling'); document.getElementById('spell-result').style.display='none'; document.getElementById('spell-active').style.display='flex'; sQ=shuffleArray(voc).slice(0, 10); sIdx=0; sSco=0; loadS(); }
 function loadS() { spellLock = false; document.getElementById('spell-counter').textContent=`${sIdx+1}/${sQ.length}`; document.getElementById('spell-score').textContent=sSco; let w=sQ[sIdx]; sTar=w.en.toUpperCase(); document.getElementById('spell-question').textContent=w.em+" "+w.uk; sCur=Array(sTar.length).fill(null); sLet=shuffleArray(sTar.split('').map((l,i)=>({l,id:i}))); rendS(); }
@@ -1456,19 +1535,38 @@ function checkBossTyping() {
 }
 
 function finishBoss(win) { 
-    clearInterval(bossInterval); document.getElementById('boss-active').style.display = 'none'; document.getElementById('boss-result').style.display = 'flex'; 
-    document.getElementById('boss-final').textContent = win ? "👑" : "🪦"; document.getElementById('boss-result-title').textContent = win ? "Боса знищено! 🎉" : "Ти загинула... 💔"; 
+    clearInterval(bossInterval); 
+    document.getElementById('boss-active').style.display = 'none'; 
+    document.getElementById('boss-result').style.display = 'flex'; 
+    
+    document.getElementById('boss-final').textContent = win ? "👑" : "🪦"; 
+    document.getElementById('boss-result-title').textContent = win ? "Боса знищено! 🎉" : "Ти загинула... 💔"; 
     
     if(win) { 
         if(!dailyProg.bossWon) {
             document.getElementById('boss-result-desc').textContent = "Оля - справжня войовниця! Бос переможений. Ось твої +500 🌟 та Золотий купон! Юра тобою пишається! 🥰"; 
-            addXP(500); inventory.push({ id:'golden_coupon', name:'🥇 Золотий Джокер (Будь-яке бажання!)', price:0, icon:'🥇', uid:Date.now() });
-            localStorage.setItem('userInventory', JSON.stringify(inventory)); checkAchiev('boss_killer'); dailyProg.bossWon = true; saveDaily();
+            addXP(500); 
+            inventory.push({ id:'golden_coupon', name:'🥇 Золотий Джокер (Будь-яке бажання!)', price:0, icon:'🥇', uid:Date.now() });
+            localStorage.setItem('userInventory', JSON.stringify(inventory)); 
+            checkAchiev('boss_killer'); 
+            dailyProg.bossWon = true; 
+            saveDaily();
         } else {
             document.getElementById('boss-result-desc').textContent = "Боса розбито вдруге! Нагороду вже отримано, але твоя англійська стала ще сильнішою!";
         }
-    } else { document.getElementById('boss-result-desc').textContent = `Ти пройшла ${bIdx} з 50 питань. Сердечка скінчилися, або час вийшов. Бос сміється з тебе. Повертайся за реваншем!`; } 
-    renderInventory(); updateUI(); 
+    } else { 
+        document.getElementById('boss-result-desc').textContent = `Ти пройшла ${bIdx} з 50 питань. Сердечка скінчилися, або час вийшов. Бос сміється з тебе. Повертайся за реваншем!`; 
+    } 
+    
+    renderInventory(); 
+    updateUI(); 
+
+    // 🔥 АВТО-РЕАКЦІЯ: Котик реагує на результат битви з Босом!
+    setTimeout(() => {
+        if (typeof triggerCatReaction === 'function') {
+            triggerCatReaction(win ? 'boss_win' : 'boss_lose', win ? 'happy' : 'sad');
+        }
+    }, 400);
 }
 // --- 1. СЛОВО-ШПИГУН (ODD ONE OUT) ---
 let spyQ = [], spyI = 0, spyS = 0, spyLock = false;
