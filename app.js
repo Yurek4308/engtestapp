@@ -339,12 +339,67 @@ const goalPool = {
 const achievList = { 
     first_blood: { icon: "🌱", title: "Перший крок", desc: "Зіграти першу гру", secret: false }, perfect: { icon: "👑", title: "Моя відмінниця", desc: "Пройти квіз без помилок", secret: false }, speed: { icon: "⚡", title: "Швидша за вітер", desc: "Набрати 15+ у спринті", secret: false }, love: { icon: "💘", title: "Справжнє кохання", desc: "Знайти таємну пасхалку", secret: false }, streak3: { icon: "🔥", title: "Капітан Стрік", desc: "Зайти 3 дні підряд", secret: false }, streak7: { icon: "🔥", title: "Тиждень в ділі", desc: "Зайти 7 днів підряд", secret: false }, owl: { icon: "🦉", title: "Нічна пташка", desc: "Вчити слова після 22:00", secret: false }, polyglot: { icon: "🎓", title: "Поліглот", desc: "Зіграти 50 ігор загалом", secret: false }, rich: { icon: "💰", title: "Багачка", desc: "Накопичити 2000 зірочок", secret: false }, shopaholic: { icon: "🛍️", title: "Шопоголік", desc: "Купити 3 товари в магазині", secret: false }, early_bird: { icon: "🌅", title: "Рання пташка", desc: "Зайти в додаток з 05:00 до 09:00", secret: false }, sniper: { icon: "🎯", title: "Снайпер", desc: "15/15 у свайп T/F без помилок", secret: false }, bookworm: { icon: "📚", title: "Книжковий черв'як", desc: "Перегорнути 50 карток", secret: false }, builder: { icon: "🏗️", title: "Будівельник", desc: "Зіграти 10 разів у Конструктор", secret: false }, vocab_king: { icon: "📖", title: "Леді Словник", desc: "Відкрити словник 50 разів", secret: false }, marathon: { icon: "🏃‍♀️", title: "Марафон", desc: "Зіграти 10 ігор за день", secret: false }, survivor: { icon: "🪓", title: "Виживальниця", desc: "СЕКРЕТ! Виграти Шибеницю з 1 ❤️", secret: true }, crafter: { icon: "⛏️", title: "Майстер крафту", desc: "СЕКРЕТ! Конструктор без помилок", secret: true }, ninja: { icon: "🥷", title: "Нічний ніндзя", desc: "СЕКРЕТ! Грати з 01:00 до 04:00", secret: true }, sherlock: { icon: "🕵️‍♀️", title: "Шерлок", desc: "СЕКРЕТ! Знайти 3 промокоди", secret: true }, navigator: { icon: "🚐", title: "Головний штурман", desc: "СЕКРЕТ! Знайти код авто", secret: true }, hacker: { icon: "👨‍💻", title: "Хакер", desc: "СЕКРЕТ! Ввести 3 хибних промокоди", secret: true }, sleeping_beauty: { icon: "😴", title: "Спляча красуня", desc: "СЕКРЕТ! Повернутися через 3 дні", secret: true }, hug_addict: { icon: "🫂", title: "Ненаситна", desc: "СЕКРЕТ! Купити 3 рази обійми", secret: true }, lucky_bastard: { icon: "🍀", title: "Улюблениця фортуни", desc: "СЕКРЕТ! Зірвати джекпот", secret: true }, professor: { icon: "👩‍🏫", title: "Професор", desc: "СЕКРЕТ! Зіграти в усі режими", secret: true }, midnight: { icon: "🕛", title: "Опівнічна магія", desc: "СЕКРЕТ! Зіграти рівно опівночі", secret: true }, lucky7: { icon: "🎰", title: "Щаслива сімка", desc: "СЕКРЕТ! Набрати рівно 7 у Спринті", secret: true }, sweet_tooth: { icon: "🍩", title: "Ласунка", desc: "СЕКРЕТ! Ввести солодкий промокод", secret: true }, boss_killer: { icon: "😈", title: "Переможниця", desc: "СЕКРЕТ! Здати Недільний Іспит", secret: true }
 };
-
+// Твій рідний масив (залишається БЕЗ змін)
 const levelSystem = [
-    { xp: 0, name: "Кошеня", icon: "🐾" }, { xp: 100, name: "Студентка", icon: "📚" },
-    { xp: 500, name: "Розумничка", icon: "💡" }, { xp: 1000, name: "Леді", icon: "💃" },
-    { xp: 2500, name: "Королева", icon: "👑" }, { xp: 5000, name: "Моя Богиня", icon: "🌌" }
+    { xp: 0, name: "Кошеня", icon: "🐾" }, 
+    { xp: 100, name: "Студентка", icon: "📚" },
+    { xp: 500, name: "Розумничка", icon: "💡" }, 
+    { xp: 1000, name: "Леді", icon: "💃" },
+    { xp: 2500, name: "Королева", icon: "👑" }, 
+    { xp: 5000, name: "Моя Богиня", icon: "🌌" }
 ];
+
+// 🔥 НОВИЙ ОБ'ЄКТ (просто вставляєш його нижче)
+const levelUpConfig = {
+    "Студентка": {
+        cat: "🐱🎓",
+        desc: "Оля офіційно переходить у статус Студентки! Ти робиш величезні кроки вперед, моя розумничка! Юра пишається твоїми стараннями! 📚",
+        rewardText: "🌟 +100 зірочок та 🔍 Лупа Шерлока",
+        fxIntensity: 1,
+        action: () => {
+            addXP(100);
+            inventory.push({ id: 'hint', name: 'Лупа Шерлока (50/50) 🔍', price: 50, icon: '🔍', uid: Date.now() });
+        }
+    },
+    "Розумничка": {
+        cat: "🐱💡✨",
+        desc: "Вау! Справжня Розумничка! Твій мозок лускає слова як горішки. Коханий просто в шоці від твоєї наполегливості! 🥰",
+        rewardText: "🌟 +200 зірочок та 🧊 Заморозка стріку",
+        fxIntensity: 2,
+        action: () => {
+            addXP(200);
+            inventory.push({ id: 'freeze', name: 'Заморозка стріку ❄️', price: 300, icon: '🧊', uid: Date.now() });
+        }
+    },
+    "Леді": {
+        cat: "🐱💃🕶️",
+        desc: "Ти витончена, розумна і неймовірно крута Леді! Англійська тепер звучить з твоїх вуст як справжнє королівське мистецтво. 💋",
+        rewardText: "🎁 Купон: Безліміт палких цьомчиків на день!",
+        fxIntensity: 3,
+        action: () => {
+            inventory.push({ id: 'unlimit_kisses', name: 'Безліміт палких цьомчиків на день', price: 200, icon: '💋', uid: Date.now() });
+        }
+    },
+    "Королева": {
+        cat: "👑🐱👑",
+        desc: "Схиліть голови! Перед нами Королева знань та абсолютна володарка серця Юри! Твій прогрес — це чиста велич! 👑✨",
+        rewardText: "🛍️ Купон: Професійний масаж всієї спини від Юри!",
+        fxIntensity: 4,
+        action: () => {
+            inventory.push({ id: 'massage', name: 'Масаж спини', price: 500, icon: '💆‍♀️', uid: Date.now() });
+        }
+    },
+    "Моя Богиня": {
+        cat: "🪐🐱👑🌌",
+        desc: "АБСОЛЮТНИЙ КОСМІЧНИЙ ПІЗДЄЦ!!! Оля досягла вершини всесвіту і стала моєю Богинею! Немає слів, ти мій ідеал життя! 🌌❤️‍🔥",
+        rewardText: "🏆 +3000 🌟 та 🥇 Золотий Джокер (Будь-яке бажання!)",
+        fxIntensity: 5,
+        action: () => {
+            addXP(3000);
+            inventory.push({ id: 'golden_coupon', name: '🥇 Золотий Джокер (Будь-яке бажання!)', price: 0, icon: '🥇', uid: Date.now() });
+        }
+    }
+};
 
 // ==========================================
 // ==========================================
@@ -750,7 +805,26 @@ function renderProfile() {
 
 function saveDaily() { localStorage.setItem('dailyProg', JSON.stringify(dailyProg)); }
 function saveStats() { localStorage.setItem('userStats', JSON.stringify(userStats)); }
-function addXP(amount) { totalXP += amount; localStorage.setItem('totalXP', totalXP); if(amount > 0) { lifetimeXP += amount; localStorage.setItem('lifetimeXP', lifetimeXP); } if (totalXP >= 2000) checkAchiev('rich'); updateUI(); }
+function addXP(amount) { 
+    // Запам'ятовуємо старий титул перед нарахуванням очок
+    let oldLvl = getLevelInfo();
+    
+    totalXP += amount; 
+    localStorage.setItem('totalXP', totalXP); 
+    if(amount > 0) { lifetimeXP += amount; localStorage.setItem('lifetimeXP', lifetimeXP); } 
+    if (totalXP >= 2000) checkAchiev('rich'); 
+    updateUI(); 
+
+    // Вираховуємо новий титул
+    let newLvl = getLevelInfo();
+    
+    // 🔥 Якщо назва титулу змінилася — це левелап!
+    if (oldLvl && newLvl && oldLvl.name !== newLvl.name) {
+        setTimeout(() => {
+            triggerLevelUpModal(newLvl.name);
+        }, 600); // невелика затримка для краси
+    }
+}
 function showToast(m) { const t = document.getElementById('toast'); if(!t)return; document.getElementById('toast-msg').textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
 
 function checkGoals() {
@@ -2152,6 +2226,119 @@ function updateLoveMilestones() {
             ? "ДЕНЬ НАСТАВ! Перевір свої Купони! 🎉💝" 
             : `Залишилось: ${daysLeft} днів ⏳`;
     }
+}
+// 🔥 ГЕНЕРАТОР ШАЛЕНИХ ЕФЕКТІВ ЛЕВЕЛАПУ
+function runLevelUpFX(intensity) {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    // Визначаємо набір емодзі залежно від жорсткості рівня
+    let emojis = ['🌟', '💖', '✨', '⭐'];
+    if (intensity >= 3) emojis.push('💋', '👄', '🔥');
+    if (intensity >= 4) emojis.push('👑', '🥇', '🥰');
+    if (intensity >= 5) emojis.push('🪐', '🌌', '🚀', '👑', '❤️‍🔥');
+
+    let bursts = intensity * 4; // Скільки залпів вибухів робити
+    let pCount = intensity * 15; // Скільки частинок у кожному залпі
+
+    // Функція поодинокого вибуху в конкретній точці
+    const explode = (x, y) => {
+        const frag = document.createDocumentFragment();
+        for(let i=0; i<pCount; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.fontSize = (Math.random() * (15 * intensity) + 20) + 'px';
+            p.style.zIndex = "999999";
+            
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * (120 * intensity) + 60;
+            p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+            p.style.setProperty('--ty', Math.sin(angle) * dist - 80 + 'px');
+            p.style.animationDuration = (Math.random() * 0.5 + 0.7) + 's';
+            
+            frag.appendChild(p);
+            setTimeout(() => p.remove(), 1200);
+        }
+        document.body.appendChild(frag);
+    };
+
+    // Запускаємо серію вибухів по всьому екрану
+    for (let b = 0; b < bursts; b++) {
+        setTimeout(() => {
+            let rx = Math.random() * (screenWidth - 100) + 50;
+            let ry = Math.random() * (screenHeight - 100) + 50;
+            explode(rx, ry);
+            try { if (typeof playSFX === "function") playSFX(true); } catch(e){}
+        }, b * 200);
+    }
+
+    // 💣 НАЙВИЩИЙ РІВЕНЬ: ПІЗДЄЦ-РЕЖИМ ДЛЯ БОГИНІ (intensity === 5)
+    if (intensity === 5) {
+        const container = document.getElementById('app-container');
+        const card = document.getElementById('lu-card');
+        
+        // 1. Дика тряска всього додатка
+        if (container) {
+            container.style.animation = "shake 0.5s infinite";
+            setTimeout(() => container.style.animation = "", 2500);
+        }
+        
+        // 2. Кіт починає шалено крутитися і пульсувати
+        const cat = document.getElementById('lu-cat-emoji');
+        if (cat) {
+            cat.style.transform = "scale(1.5) rotate(360deg)";
+            cat.style.transition = "transform 2s ease-out";
+        }
+
+        // 3. Додаткові спалахи екрану емодзі кожні 100мс
+        for (let k = 0; k < 30; k++) {
+            setTimeout(() => {
+                explode(Math.random() * screenWidth, Math.random() * screenHeight);
+            }, k * 100);
+        }
+    }
+}
+
+// 🔥 ВІДКРИТТЯ ЕКРАНА ЛЕВЕЛАПУ
+function triggerLevelUpModal(levelName) {
+    const config = levelUpConfig[levelName];
+    if (!config) return; // Запобіжник для початкового рівня "Кошеня"
+
+    document.getElementById('lu-level-name').textContent = levelName;
+    document.getElementById('lu-cat-emoji').textContent = config.cat;
+    document.getElementById('lu-text').textContent = config.desc;
+    document.getElementById('lu-reward-text').textContent = config.rewardText;
+
+    // Показуємо вікно
+    const modal = document.getElementById('levelup-modal');
+    if (modal) modal.style.display = 'flex';
+
+    // Запускаємо спецефекти!
+    runLevelUpFX(config.fxIntensity);
+    
+    // Активуємо призи (додаємо купони / зірки)
+    config.action();
+    
+    // Синхронізуємо купони та UI в фоні
+    localStorage.setItem('userInventory', JSON.stringify(inventory));
+    if (typeof renderInventory === 'function') renderInventory();
+    if (typeof updateUI === 'function') updateUI();
+}
+
+// 🔥 ЗАКРИТТЯ ЕКРАНА ЛЕВЕЛАПУ
+function closeLevelUpModal() {
+    const modal = document.getElementById('levelup-modal');
+    if (modal) modal.style.display = 'none';
+    
+    // Скидаємо трансформацію кота до норми
+    const cat = document.getElementById('lu-cat-emoji');
+    if (cat) cat.style.transform = "scale(1) rotate(0deg)";
+    
+    // Робимо фінальний перезапуск UI
+    location.reload(); // Перезавантаження оновить стрік, рівні й почистить кеш ефектів
 }
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
 function exportProgress() { 
