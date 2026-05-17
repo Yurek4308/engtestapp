@@ -455,7 +455,8 @@ const loveMilestones = [
 
 // Сховище вже розблокованих дат, щоб купони не дублювалися при кожному заході в профіль
 let unlockedMilestones = JSON.parse(localStorage.getItem('unlockedMilestones')) || [];
-// ==========================================
+// 🔥 НОВА ЗМІННА: База даних використаних купонів Олі
+let couponArchive = JSON.parse(localStorage.getItem('couponArchive')) || [];
 // ==========================================
 // 3. ІНІЦІАЛІЗАЦІЯ ТА ЗВУК
 // ==========================================
@@ -485,27 +486,38 @@ document.addEventListener("DOMContentLoaded", () => {
                     msg = `Мій Золотий Джокер! Я перемогла Боса! Моє бажання: [Впиши своє бажання тут] 👑`;
                 }
                 window.open(`https://t.me/YU_zIK?text=${encodeURIComponent(msg)}`, '_blank');
+                
+                // 🔥 ДОДАЄМО В АРХІВ ЩАСНЯ ПЕРЕД ВИДАЛЕННЯМ:
+                couponArchive.push({
+                    id: item.id,
+                    name: item.name,
+                    icon: item.icon || '🎁',
+                    usedAt: new Date().toLocaleDateString('uk-UA')
+                });
+                localStorage.setItem('couponArchive', JSON.stringify(couponArchive));
             }
             inventory = inventory.filter(x => x.uid != curCuid); 
             localStorage.setItem('userInventory', JSON.stringify(inventory)); 
             closeCoupon(); 
             updateUI(); 
             renderInventory(); 
+            
+            // 🔥 ОНОВЛЮЄМО ЕКРАН АРХІВУ ОДРАЗУ:
+            if (typeof renderArchive === 'function') renderArchive();
+            
             fireParticles(window.innerWidth/2, window.innerHeight/2, true); 
         };
     }
     
     initGamification();
 
-    // 🔥 ДОДАЄМО СЮДИ: Автозапуск та синхронізація інтерфейсів при старті програми
+    // 🔥 АВТОЗАПУСК СИСТЕМ ПРИ СТАРТІ:
     if (typeof updateMasteryUI === "function") updateMasteryUI();
     if (typeof updateLoveMilestones === "function") updateLoveMilestones();
-});
-    // 🔥 ФІКС: Автоматично підсвічуємо активну кнопку розумного фільтра слів при старті
-    if (typeof updateMasteryUI === "function") updateMasteryUI();
+    if (typeof renderArchive === "function") renderArchive();
 });
 
-function toggleTheme() { 
+function toggleTheme() {
     let isDark = document.getElementById('app-container').classList.toggle('dark'); 
     document.body.classList.toggle('dark', isDark); 
     document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙'; 
@@ -683,7 +695,10 @@ function showSection(id) {
     }
     
    if(id === 'dictionary') { document.getElementById('dict-search').value = ''; renderDictionary(); userStats.dictOpens = (userStats.dictOpens || 0) + 1; saveStats(); if(userStats.dictOpens >= 50) checkAchiev('vocab_king'); } 
-    if(id === 'inventory') { renderInventory(); } 
+   if(id === 'inventory') { 
+        renderInventory(); 
+        if (typeof renderArchive === 'function') renderArchive(); // 🔥 ОНОВЛЮЄМО АРХІВ
+    }
     if(id === 'shop') { renderShop(); } 
     if(id === 'wheel') { checkWheelCooldown(); } 
     if(id === 'profile') { renderProfile(); } // 🔥 ДОДАЛИ ЦЕЙ РЯДОК
@@ -924,7 +939,43 @@ function renderInventory() {
     }); 
 }
 
-function openCoupon(u) { 
+// ======================================================================
+// 🔥 ВСТАВЛЯЄМО СЮДИ: НОВА ФУНКЦІЯ РЕНДЕРУ АРХІВУ ВИКОРИСТАНИХ КУПОНІВ
+// ======================================================================
+function renderArchive() {
+    const container = document.getElementById('archive-list');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    if (couponArchive.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:20px; font-weight:700; font-size:0.85rem; width:100%;">Тут поки порожньо. Час активувати якийсь купон! 🥰</div>`;
+        return;
+    }
+    
+    // Нові використані купони показуємо першими (зверху)
+    couponArchive.slice().reverse().forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'shop-card'; 
+        card.style.opacity = '0.6';
+        card.style.border = '1px dashed var(--text-muted)';
+        card.style.background = 'var(--bg)';
+        card.style.filter = 'grayscale(0.3)';
+        
+        card.innerHTML = `
+            <div class="shop-icon" style="background: rgba(0,0,0,0.02); filter: none;">${item.icon}</div>
+            <div class="shop-info">
+                <div class="shop-name" style="text-decoration: line-through; color: var(--text-muted); font-size: 0.9rem;">${item.name}</div>
+                <div style="color: var(--primary); font-size: 0.75rem; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <span>🗓️ Використано:</span> <span>${item.usedAt}</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Твоя оригінальна функція відкриття купона продовжується далі без змін:
+function openCoupon(u) {
     const i = inventory.find(x => x.uid == u); 
     if(!i) return; 
     curCuid = u; 
@@ -1997,11 +2048,11 @@ function updateLoveMilestones() {
 }
 // НЕ ЗАБУДЬ ЗАЛИШИТИ ФУНКЦІЇ ЕКСПОРТУ В САМОМУ КІНЦІ:
 function exportProgress() { 
-    // 🔥 ОНОВЛЕНО: Тепер сюди пакується і unlockedMilestones (пройдені річниці)
+    // 🔥 ОНОВЛЕНО: Додали couponArchive в загальний пакунок резервної копії
     const d = { 
         totalXP, lifetimeXP, currentStreak, bestSprint, dailyProg, mistakeWords, 
         inventory, achievs, usedCodes, lastLogin, dailyGoals, userStats, lastWheelDate,
-        wordMastery, masteryMode, unlockedMilestones 
+        wordMastery, masteryMode, unlockedMilestones, couponArchive 
     }; 
     const s = btoa(unescape(encodeURIComponent(JSON.stringify(d)))); 
     navigator.clipboard.writeText(s).then(()=>alert("Код скопійовано! Надішли Юрі 📩")).catch(()=>prompt("Скопіюй вручну:", s)); 
@@ -2029,9 +2080,10 @@ function importProgress() {
             
             if(d.wordMastery) localStorage.setItem('wordMastery', JSON.stringify(d.wordMastery));
             if(d.masteryMode) localStorage.setItem('masteryMode', d.masteryMode);
-            
-            // 🔥 ОНОВЛЕНО: Відновлюємо історію розблокованих річниць та дат
             if(d.unlockedMilestones) localStorage.setItem('unlockedMilestones', JSON.stringify(d.unlockedMilestones));
+            
+            // 🔥 ОНОВЛЕНО: Відновлюємо Архів купонів з коду
+            if(d.couponArchive) localStorage.setItem('couponArchive', JSON.stringify(d.couponArchive));
             
             alert("Прогрес відновлено!"); 
             location.reload(); 
